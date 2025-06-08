@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canadian Real Estate Stress Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1em;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input:disabled, select:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+        button {
+            width: 100%;
+            padding: 0.75em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .section, #result, .disclaimer {
+            margin-top: 1.5em;
+            padding: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        #payment-section {
+            display: none;
+        }
+        #result {
+            display: none;
+        }
+        .error {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 0.5em;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 1.5em;
+            font-size: 0.75em;
+            color: #666;
+        }
+        .payment-link {
+            text-align: center;
+            margin: 1em 0;
+        }
+        .payment-link a {
+            display: inline-block;
+            padding: 0.75em 1.5em;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .payment-link a:hover {
+            background-color: #0056b3;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 0.5em;
+            display: block;
+            width: 100%;
+            height: 200px;
+        }
+        #downloadBtn {
+            margin-top: 1em;
+            background-color: #333;
+            color: white;
+            padding: 0.75em;
+            text-align: center;
+            display: inline-block;
+            border-radius: 4px;
+            text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #downloadBtn:hover {
+            background-color: #555;
+        }
+        .draggable {
+            width: 100px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            cursor: move;
+            user-select: none;
+            margin: 10px 0;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .drop-zone.active {
+            border-color: #007BFF;
+            background-color: #e0f0ff;
+        }
+        .price-highlight {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d32f2f;
+            background-color: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            animation: pulse 1.5s infinite;
+        }
+        s {
+            color: #666;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Canadian Real Estate Stress Tester</h1>
+    <div class="section">
+        <h2>About Us</h2>
+        <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools. Operated by Continental Market Group, our approach is rooted in impartiality, allowing the latest 2025 data and potential policy impacts to speak for themselves. We analyze market trends, government policies, and economic factors to deliver clear, objective insights into your property’s future.</p>
+    </div>
+    <div class="section">
+        <h2>Why Choose Us?</h2>
+        <p>Unlike banks, realtors, or government entities, we have no agenda. We’re not selling you a home, a mortgage, or any financial product. Our sole focus is providing the most timely data available to show how your property could be impacted over the next 24 months. The absence of a federal budget as of June 2025 creates uncertainty that property appraisals—costing $300–$600 CAD—cannot address. Our Stress Tester, now only <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer), offers:</p>
+        <ul>
+            <li>Affordable, fast results compared to costly appraisals.</li>
+            <li>Forward-looking 24-month risk assessment, not just current value.</li>
+            <li>Analysis of policy impacts (e.g., GST/HST, interest rates).</li>
+            <li>Unbiased insights driven by AI and public data.</li>
+        </ul>
+        <p><strong>Hurry!</strong> Regular Price: <s>$39.99 CAD</s>, Now Only: <span class="price-highlight">$19.99 CAD</span> for a Limited Time!</p>
+    </div>
+    <div class="section">
+        <h3>Geo-Location Setup</h3>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+                Include geo-location in my assessment
+            </label>
+        </div>
+        <div id="geoLocationSection" style="display: none;">
+            <p>Drag the "Geo-Location" element below into the drop zone to set your property’s location, or paste coordinates from Google Maps.</p>
+            <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
+            <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
+            <div class="form-group">
+                <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
+                <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
+                <div class="error" id="geoLocationError"></div>
+            </div>
+            <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
+        </div>
+    </div>
+    <div class="section payment-link" id="payment-section">
+        <h3>Ready to Stress Test Your Property?</h3>
+        <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
+        <p><a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8w3a7C02" target="_blank" id="stripeLink">Buy Now with Stripe</a></p>
+        <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+    </div>
+    <form id="stressTestForm">
+        <div class="form-group">
+            <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
+            <input type="number" id="appraisalPrice" name="appraisalPrice" disabled required>
+            <div class="error" id="appraisalPriceError"></div>
+        </div>
+        <div class="form-group">
+            <label for="bedrooms">Number of Bedrooms:</label>
+            <input type="number" id="bedrooms" name="bedrooms" disabled required>
+            <div class="error" id="bedroomsError"></div>
+        </div>
+        <div class="form-group">
+            <label for="bathrooms">Number of Bathrooms:</label>
+            <input type="number" id="bathrooms" name="bathrooms" disabled required>
+            <div class="error" id="bathroomsError"></div>
+        </div>
+        <div class="form-group">
+            <label for="squareFootage">Square Footage:</label>
+            <input type="number" id="squareFootage" name="squareFootage" disabled required>
+            <div class="error" id="squareFootageError"></div>
+        </div>
+        <div class="form-group">
+            <label for="province">Province:</label>
+            <select id="province" name="province" disabled required>
+                <option value="">Select Province</option>
+                <option value="AB">Alberta</option>
+                <option value="BC">British Columbia</option>
+                <option value="MB">Manitoba</option>
+                <option value="NB">New Brunswick</option>
+                <option value="NL">Newfoundland and Labrador</option>
+                <option value="NS">Nova Scotia</option>
+                <option value="ON">Ontario</option>
+                <option value="PE">Prince Edward Island</option>
+                <option value="QC">Quebec</option>
+                <option value="SK">Saskatchewan</option>
+                <option value="NT">Northwest Territories</option>
+                <option value="NU">Nunavut</option>
+                <option value="YT">Yukon</option>
+            </select>
+            <div class="error" id="provinceError"></div>
+        </div>
+        <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" disabled required>
+            <div class="error" id="cityError"></div>
+        </div>
+        <div class="form-group">
+            <label for="condition">Property Age:</label>
+            <select id="condition" name="condition" disabled required>
+                <option value="0-5">0–5 years</option>
+                <option value="5-15">5–15 years</option>
+                <option value="15-30">15–30 years</option>
+                <option value="30+">30+ years</option>
+            </select>
+            <div class="error" id="conditionError"></div>
+        </div>
+        <button type="submit" id="submitBtn" disabled>Calculate Stress Test</button>
+    </form>
+    <div id="result"></div>
+    <div class="disclaimer">
+        <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
+    </div>
+    <div class="footer">
+        <p><a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-use">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved.</p>
+    </div>
+
+    <script>
+        let isPaid = false;
+        let hasGeoLocation = false;
+        let useGeoLocation = false;
+
+        function toggleGeoLocation() {
+            useGeoLocation = document.getElementById('useGeoLocation').checked;
+            const geoSection = document.getElementById('geoLocationSection');
+            geoSection.style.display = useGeoLocation ? 'block' : 'none';
+            checkGeoLocationStatus();
+        }
+
+        function checkGeoLocationStatus() {
+            const paymentSection = document.getElementById('payment-section');
+            if (!useGeoLocation || (useGeoLocation && hasGeoLocation)) {
+                paymentSection.style.display = 'block';
+            } else {
+                paymentSection.style.display = 'none';
+            }
+        }
+
+        function simulatePayment() {
+            isPaid = true;
+            document.getElementById('payment-section').style.display = 'none';
+            enableForm();
+        }
+
+        function enableForm() {
+            document.querySelectorAll('#stressTestForm input, #stressTestForm select').forEach(el => {
+                el.disabled = false;
+            });
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        const draggable = document.getElementById('geoLocationDraggable');
+        const dropZone = document.getElementById('geoLocationDropZone');
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        const geoInput = document.getElementById('geoLocation');
+
+        // Initialize canvas
+        ctx.fillStyle = '#e0e0e0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#000';
+        ctx.font = '12px Arial';
+        ctx.fillText('Click to set location after dragging', 10, 20);
+
+        // Drag-and-drop setup
+        draggable.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', 'geoLocation');
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('active');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('active');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            const data = e.dataTransfer.getData('text/plain');
+            if (data === 'geoLocation') {
+                dropZone.innerHTML = '<p>Geo-Location Set! Click the canvas to set coordinates or paste from Google Maps.</p>';
+                hasGeoLocation = true;
+                checkGeoLocationStatus();
+            }
+        });
+
+        // Canvas click for coordinates
+        canvas.addEventListener('click', (e) => {
+            if (!hasGeoLocation) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            // Map to lat/lng (Canada: ~41 to 83 lat, -141 to -52 lng)
+            const lat = 41 + (y / canvas.height) * (83 - 41);
+            const lng = -141 + (x / canvas.width) * (-52 - -141);
+            geoInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+            // Draw marker
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#e0e0e0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        });
+
+        // Allow manual coordinate input
+        geoInput.addEventListener('input', () => {
+            if (hasGeoLocation) {
+                const coords = geoInput.value.split(',').map(parseFloat);
+                if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                    hasGeoLocation = true;
+                    checkGeoLocationStatus();
+                }
+            }
+        });
+
+        document.getElementById('stressTestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!isPaid) {
+                alert('Please complete payment to generate results.');
+                return;
+            }
+
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+            // Get form values
+            const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value);
+            const bedrooms = parseInt(document.getElementById('bedrooms').value);
+            const bathrooms = parseFloat(document.getElementById('bathrooms').value);
+            const squareFootage = parseInt(document.getElementById('squareFootage').value);
+            const province = document.getElementById('province').value;
+            const city = document.getElementById('city').value.trim();
+            const geoLocation = useGeoLocation ? document.getElementById('geoLocation').value : '';
+            const condition = document.getElementById('condition').value;
+
+            // Validate inputs
+            let isValid = true;
+            if (isNaN(appraisalPrice) || appraisalPrice < 0) {
+                document.getElementById('appraisalPriceError').textContent = 'Please enter a valid price.';
+                isValid = false;
+            }
+            if (isNaN(bedrooms) || bedrooms < 0) {
+                document.getElementById('bedroomsError').textContent = 'Please enter a valid number of bedrooms.';
+                isValid = false;
+            }
+            if (isNaN(bathrooms) || bathrooms < 0) {
+                document.getElementById('bathroomsError').textContent = 'Please enter a valid number of bathrooms.';
+                isValid = false;
+            }
+            if (isNaN(squareFootage) || squareFootage < 0) {
+                document.getElementById('squareFootageError').textContent = 'Please enter a valid square footage.';
+                isValid = false;
+            }
+            if (!province) {
+                document.getElementById('provinceError').textContent = 'Please select a province.';
+                isValid = false;
+            }
+            if (!city) {
+                document.getElementById('cityError').textContent = 'Please enter a city.';
+                isValid = false;
+            }
+            if (useGeoLocation && !geoLocation) {
+                document.getElementById('geoLocationError').textContent = 'Please set a geo-location.';
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Static 2025 data
+            const avgHomePrice = 650000;
+            const stressTestRate = 5.25;
+            const avgMortgageRate = 4.0;
+            const cpi = 2.5;
+            const gstHstRates = { ON: 13, NS: 13, NB: 13, NL: 13, PE: 13, BC: 12, AB: 5, SK: 5, MB: 5, QC: 0 };
+            const hafCities = ['toronto', 'vancouver', 'montreal', 'calgary', 'ottawa'];
+
+            // Geo-location scoring
+            let geoScore = 0;
+            if (useGeoLocation && geoLocation) {
+                const [lat, lng] = geoLocation.split(',').map(parseFloat);
+                const urbanRanges = [
+                    { city: 'toronto', lat: [43.6, 43.8], lng: [-79.6, -79.1] },
+                    { city: 'vancouver', lat: [49.1, 49.3], lng: [-123.2, -122.9] }
+                ];
+                const isUrban = urbanRanges.some(range => 
+                    lat >= range.lat[0] && lat <= range.lat[1] && lng >= range.lng[0] && lng <= range.lng[1]
+                );
+                geoScore = isUrban ? -1 : 1;
+            }
+
+            // Calculate scores
+            const valueRatio = appraisalPrice / avgHomePrice;
+            const valueScore = valueRatio < 0.8 ? 2 : valueRatio < 1.5 ? 0 : -2;
+            const featuresScore = (bedrooms >= 3 && bathrooms >= 2 && squareFootage >= 1500) ? 2 : 0;
+            const conditionScore = condition === '0-5' ? 2 : condition === '5-15' ? 1 : condition === '15-30' ? 0 : -2;
+            const interestScore = stressTestRate > avgMortgageRate + 1 ? -1 : 1;
+            const gstHstScore = ['ON', 'NS', 'NB', 'NL', 'PE', 'BC'].includes(province) ? -1 : 1;
+            const hafScore = hafCities.includes(city.toLowerCase()) ? -1 : 0;
+            const locationScore = ['ON', 'BC'].includes(province) ? -1 : ['SK', 'MB'].includes(province) ? 1 : 0;
+            const cpiScore = cpi > 2 ? 1 : -1;
+            const budgetScore = -1; // No federal budget
+
+            const totalScore = valueScore + featuresScore + conditionScore + geoScore + interestScore + gstHstScore + hafScore + locationScore + cpiScore + budgetScore;
+
+            // Interpret score
+            let riskLevel, outlook, declineRisk, explanation;
+            if (totalScore >= 5) {
+                riskLevel = 'Tailwinds';
+                outlook = 'Price Increase Likely';
+                declineRisk = '0%–10%';
+                explanation = 'Strong property features, affordable price, and favorable policies support price growth.';
+            } else if (totalScore >= -5) {
+                riskLevel = 'Neutral';
+                outlook = 'Stable Prices';
+                declineRisk = '10%–20%';
+                explanation = 'Balanced factors; market pressures offset by policy support.';
+            } else {
+                riskLevel = 'Headwinds';
+                outlook = 'Price Decline Likely';
+                declineRisk = '20%–50%';
+                explanation = 'High prices, GST/HST, or increased supply signal significant decline risk.';
+            }
+
+            // Generate result
+            const resultText = `
+                <h3>Canadian Real Estate Stress Test Result</h3>
+                <p><strong>Property Stress Score:</strong> ${totalScore}</p>
+                <p><strong>Risk Level:</strong> ${riskLevel}</p>
+                <p><strong>Price Outlook:</strong> ${outlook}</p>
+                <p><strong>Price Decline Risk:</strong> ${declineRisk}</p>
+                <p><strong>Explanation:</strong> ${explanation}</p>
+                <h4>Details:</h4>
+                <ul>
+                    <li><strong>Value Ratio:</strong> ${valueRatio.toFixed(2)} (Score: ${valueScore})</li>
+                    <li><strong>Features:</strong> ${bedrooms} beds, ${bathrooms} baths, ${squareFootage} sq.ft. (Score: ${featuresScore})</li>
+                    <li><strong>Age:</strong> ${condition.replace('-', '–')} years (Score: ${conditionScore})</li>
+                    <li><strong>Geo-Location:</strong> ${geoLocation || 'Not used'} (Score: ${geoScore})</li>
+                    <li><strong>Interest Rates:</strong> ${interestScore === -1 ? 'Headwinds (high stress test)' : 'Tailwinds (neutral rates)'}</li>
+                    <li><strong>GST/HST:</strong> ${gstHstScore === -1 ? 'Headwinds (tax applies)' : 'Tailwinds (exempt)'}</li>
+                    <li><strong>Housing Accelerator Fund:</strong> ${hafScore === -1 ? 'Headwinds (increased supply)' : 'Neutral'}</li>
+                    <li><strong>Location:</strong> ${locationScore === -1 ? 'Headwinds (high-price market)' : locationScore === 1 ? 'Tailwinds (affordable market)' : 'Neutral'}</li>
+                    <li><strong>CPI:</strong> ${cpi}% (Score: ${cpiScore})</li>
+                    <li><strong>Budget Uncertainty:</strong> Headwinds (Score: ${budgetScore})</li>
+                </ul>
+                <a href="#" id="downloadBtn" onclick="downloadResult()">Download Results</a>
+            `;
+            document.getElementById('result').innerHTML = resultText;
+            document.getElementById('result').style.display = 'block';
+
+            // Download function
+            window.downloadResult = function() {
+                const blob = new Blob([resultText.replace(/<[^>]+>/g, '')], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'StressTestResult.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+        });
+    </script>
+</body>
+</html>
