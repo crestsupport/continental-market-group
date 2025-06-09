@@ -164,7 +164,7 @@
             <h3>Ready to Stress Test Your Canadian Property?</h3>
             <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
             <div id="payment">
-                <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link">Buy Now ($19.99)</a>
+                <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
             </div>
         </div>
         <div class="section">
@@ -247,7 +247,7 @@
             <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 Canadian public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
         </div>
         <div class="footer">
-            <p><a href="/privacy-policy.html">Privacy Policy</a> | <a href="/terms-of-use.html">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
+            <p><a href="/privacy-policy.html">Privacy Policy</a> | <a href="/terms-of-use.html">Terms of Use</a> | <a href="/index.html">Home</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
         </div>
     </div>
     <script>
@@ -300,20 +300,21 @@
 
                 try {
                     console.log('Attempting to get input values');
-                    const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value) || 0;
-                    const bedrooms = parseInt(document.getElementById('bedrooms').value) || 0;
-                    const bathrooms = parseInt(document.getElementById('bathrooms').value) || 0;
-                    const squareFootage = parseInt(document.getElementById('squareFootage').value) || 0;
+                    const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value);
+                    const bedrooms = parseInt(document.getElementById('bedrooms').value);
+                    const bathrooms = parseInt(document.getElementById('bathrooms').value);
+                    const squareFootage = parseInt(document.getElementById('squareFootage').value);
                     const location = document.getElementById('location').value || 'Unknown';
                     const geoLocation = document.getElementById('geoLocation').value || 'N/A';
                     const propertyCategory = document.getElementById('propertyCategory').value || 'house';
                     const province = document.getElementById('province').value || 'ON';
 
-                    console.log('Input values retrieved:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
-
-                    if (appraisalPrice <= 0 || squareFootage <= 0) {
-                        throw new Error('Appraisal price and square footage must be positive numbers.');
+                    // Validate inputs before proceeding
+                    if (!appraisalPrice || !bedrooms || !bathrooms || !squareFootage || appraisalPrice <= 0 || squareFootage <= 0) {
+                        throw new Error('Please enter positive numbers for appraisal price, bedrooms, bathrooms, and square footage.');
                     }
+
+                    console.log('Input values retrieved:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
 
                     console.log('Starting calculations');
                     const categoryFactor = {
