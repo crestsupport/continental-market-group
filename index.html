@@ -160,7 +160,7 @@
     </style>
 </head>
 <body>
-    <h1>Canadian Real Estate Stress Tester 🇨🇦 <img src="images/real_estate_arrow.gif" alt="Real Estate Up/Down Arrow" class="arrow-gif"></h1>
+    <h1>Canadian Real Estate Stress Tester 🇨🇦 <img src="images/real_estate_arrow.gif" alt="Real Estate Up/Down Arrow" class="arrow-gif" onerror="this.src='https://via.placeholder.com/100x50?text=No+Arrow';this.onerror=null;"></h1>
     <div class="section">
         <h2>About Us</h2>
         <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach is rooted in impartiality, leveraging the latest 2025 Canadian data and potential policy impacts to deliver clear, objective insights into your property’s future.</p>
@@ -305,3 +305,64 @@
 
                 // Province factor: adjust locationFactor based on province
                 const provinceFactor = {
+                    'ON': 1.2,  // Ontario (higher due to Toronto)
+                    'BC': 1.15, // British Columbia (higher due to Vancouver)
+                    'QC': 1.0,  // Quebec (average)
+                    'AB': 1.05, // Alberta (moderate)
+                    'NS': 0.95, // Nova Scotia (lower)
+                    'NB': 0.95, // New Brunswick (lower)
+                    'MB': 0.95, // Manitoba (lower)
+                    'PE': 0.9,  // Prince Edward Island (lower)
+                    'SK': 0.95, // Saskatchewan (lower)
+                    'NL': 0.9,  // Newfoundland and Labrador (lower)
+                    'NT': 0.85, // Northwest Territories (lower)
+                    'YT': 0.85, // Yukon (lower)
+                    'NU': 0.85  // Nunavut (lower)
+                }[province] || 1.0;
+
+                // Simulated 2025-2027 market data with policy adjustments
+                const basePricePerSqFt = 500; // 2025 Ontario average
+                const growthRate = 0.02 * categoryFactor; // Adjusted by category
+                const interestRateImpact = location.includes('Toronto') || province === 'ON' ? 0.01 : 0.005; // Higher impact in Ontario
+                const locationFactor = provinceFactor; // Use province-based factor
+                const roomFactor = (bedrooms + bathrooms * 0.5) / 10; // Weight rooms
+                const currentPricePerSqFt = basePricePerSqFt * locationFactor * (1 + roomFactor) * (1 - interestRateImpact);
+                const futurePricePerSqFt = currentPricePerSqFt * Math.pow(1 + growthRate, 2); // 2-year projection
+
+                // Calculate current and projected values
+                const currentValue = appraisalPrice;
+                const projectedValue = squareFootage * futurePricePerSqFt;
+                const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
+
+                // Draw simple map (placeholder)
+                const ctx = document.getElementById('mapCanvas').getContext('2d');
+                ctx.clearRect(0, 0, 400, 200);
+                ctx.fillStyle = '#007BFF'; // Blue map marker
+                ctx.fillRect(50, 50, 100, 100); // Static marker
+
+                // 2-year outlook with policy considerations
+                let outlook;
+                if (percentageChange > 3) {
+                    outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years for a ${propertyCategory} in ${province}, supported by lower interest rates and Canadian housing initiatives, though tempered by tariff risks.`;
+                } else if (percentageChange < -3) {
+                    outlook = `Potential value decrease of ${(-percentageChange).toFixed(1)}% over 2 years for a ${propertyCategory} in ${province}, influenced by trade uncertainty and policy constraints.`;
+                } else {
+                    outlook = `Value expected to remain stable (±3%) over 2 years for a ${propertyCategory} in ${province}, balancing interest rate cuts and potential budget impacts.`;
+                }
+
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').innerHTML = `
+                    <p>Current Value: $${currentValue.toLocaleString()}</p>
+                    <p>Projected Value (2 Years): $${projectedValue.toLocaleString()}</p>
+                    <p>2-Year Outlook: ${outlook}</p>
+                    <p>Location: ${location} (Geo: ${geoLocation})</p>
+                    <p>Property Type: ${propertyCategory}</p>
+                    <p>Province: ${province}</p>
+                `;
+            }
+
+            toggleGeoLocation();
+        });
+    </script>
+</body>
+</html>
