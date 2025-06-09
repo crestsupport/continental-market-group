@@ -161,7 +161,7 @@
     <div class="section">
         <h2>About Us</h2>
         <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools. Operated by Continental Market Group, our approach is rooted in impartiality, allowing the latest 2025 data and potential policy impacts to speak for themselves. We analyze market trends, government policies, and economic factors to deliver clear, objective insights into your property’s future.</p>
-    <h3>Ready to Stress Test Your Property?</h3>
+ <h3>Ready to Stress Test Your Property?</h3>
 <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
 <div id="payment">
     <button id="checkout-button">Buy Now ($19.99)</button>
@@ -302,40 +302,3 @@
 <div class="footer">
     <p><a href="./privacy-policy">Privacy Policy</a> | <a href="./terms-of-use">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved.</p>
 </div>
-            <label for="province">Province:</label>
-            <select id="province" name="province" disabled required>
-                <option value="">Select Province</option>
-                <option value="AB">Alberta</option>
-                <option value="BC">British Columbia</option>
-                <option value="MB">Manitoba</option>
-                <option value="NB">New Brunswick</option>
-                <option value="NL">Newfoundland and Labrador</option>
-                <option value="NS">Nova Scotia</option>
-                <option value="ON">Ontario</option>
-              
-            <select id="condition" name="condition" disabled required>
-                <option value="0-5">0–5 years</option>
-                <option value="5-15">5–15 years</option>
-                <option value="15-30">15–30 years</option>
-                <option value="30+">30+ years</option>
-            </select>
-            <div class="error" id="conditionError"></div>
-        </div>
-        <button type="submit" id="submitBtn" disabled>Calculate Stress Test</button>
-    </form>
-    <div id="result"></div>
-    <div class="disclaimer">
-        <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
-    </div>
-    <div class="footer">
-        <p><a href="./privacy-policy">Privacy Policy</a> | <a href="./terms-of-use">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved.</p>
-    </div>
-
-    <script>
-        let isPaid = false;
-        let hasGeoLocation = false;
-        let useGeoLocation = false;
-
-        function toggleGeoLocation() {
-            useGeoLocation = document.getElementById('useGeoLocation').checked;
-            const geoSection
