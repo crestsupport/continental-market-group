@@ -152,4 +152,146 @@
     <h1>Canadian Real Estate Stress Tester</h1>
     <div class="section">
         <h2>About Us</h2>
-        <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate
+        <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools. Operated by Continental Market Group, our approach is rooted in impartiality, allowing the latest 2025 data and potential policy impacts to speak for themselves. We analyze market trends, government policies, and economic factors to deliver clear, objective insights into your property’s future.</p>
+        <h3>Ready to Stress Test Your Property?</h3>
+        <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
+        <div id="payment">
+            <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link">Buy Now ($19.99)</a>
+        </div>
+        <script>
+            let isPaid = false;
+            let hasGeoLocation = false;
+            let useGeoLocation = false;
+
+            function toggleGeoLocation() {
+                useGeoLocation = document.getElementById('useGeoLocation').checked;
+                const geoSection = document.getElementById('geoLocationSection');
+                geoSection.style.display = useGeoLocation ? 'block' : 'none';
+                toggleFormFields();
+                console.log('Geo toggle updated, useGeoLocation:', useGeoLocation);
+            }
+
+            function toggleFormFields() {
+                const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'province', 'city', 'condition', 'submitBtn'];
+                console.log('Toggling fields, isPaid:', isPaid, 'useGeoLocation:', useGeoLocation, 'hasGeoLocation:', hasGeoLocation);
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element) {
+                        element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
+                        console.log(`Field ${field} disabled: ${element.disabled}`);
+                    } else {
+                        console.log(`Element ${field} not found`);
+                    }
+                });
+            }
+
+            // Check if payment was successful from the success URL
+            window.addEventListener('load', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('session_id')) {
+                    isPaid = true;
+                    console.log('Payment successful, isPaid set to:', isPaid);
+                    toggleFormFields();
+                    alert('Payment confirmed. Form is now enabled.');
+                }
+            });
+
+            function simulatePayment() {
+                isPaid = true;
+                console.log('Simulate payment triggered, isPaid set to:', isPaid);
+                toggleFormFields();
+                alert('Payment simulated. Form is now enabled for demo purposes.');
+            }
+
+            toggleGeoLocation();
+            // Temporary override to enable fields for testing (remove later)
+            document.querySelectorAll('select, input, button').forEach(el => el.disabled = false);
+        </script>
+        <p><button type="button" id="simulatePayment" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+    </div>
+    <div class="section">
+        <h3>Geo-Location Setup</h3>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+                Include geo-location in my assessment
+            </label>
+        </div>
+        <div id="geoLocationSection" style="display: none;">
+            <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
+            <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
+            <div class="form-group">
+                <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
+                <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
+                <div class="error" id="geoLocationError"></div>
+            </div>
+            <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
+        </div>
+    </div>
+    <form id="stressTestForm">
+        <div class="form-group">
+            <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
+            <input type="number" id="appraisalPrice" name="appraisalPrice" min="0" disabled required>
+            <div class="error" id="appraisalPriceError"></div>
+        </div>
+        <div class="form-group">
+            <label for="bedrooms">Number of Bedrooms:</label>
+            <input type="number" id="bedrooms" name="bedrooms" min="0" disabled required>
+            <div class="error" id="bedroomsError"></div>
+        </div>
+        <div class="form-group">
+            <label for="bathrooms">Number of Bathrooms:</label>
+            <input type="number" id="bathrooms" name="bathrooms" min="0" disabled required>
+            <div class="error" id="bathroomsError"></div>
+        </div>
+        <div class="form-group">
+            <label for="squareFootage">Square Footage:</label>
+            <input type="number" id="squareFootage" name="squareFootage" min="0" disabled required>
+            <div class="error" id="squareFootageError"></div>
+        </div>
+        <div class="form-group">
+            <label for="province">Province:</label>
+            <select id="province" name="province" disabled required>
+                <option value="">Select Province</option>
+                <option value="AB">Alberta</option>
+                <option value="BC">British Columbia</option>
+                <option value="MB">Manitoba</option>
+                <option value="NB">New Brunswick</option>
+                <option value="NL">Newfoundland and Labrador</option>
+                <option value="NS">Nova Scotia</option>
+                <option value="ON">Ontario</option>
+                <option value="PE">Prince Edward Island</option>
+                <option value="QC">Quebec</option>
+                <option value="SK">Saskatchewan</option>
+                <option value="NT">Northwest Territories</option>
+                <option value="NU">Nunavut</option>
+                <option value="YT">Yukon</option>
+            </select>
+            <div class="error" id="provinceError"></div>
+        </div>
+        <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" disabled required>
+            <div class="error" id="cityError"></div>
+        </div>
+        <div class="form-group">
+            <label for="condition">Property Age:</label>
+            <select id="condition" name="condition" disabled required>
+                <option value="0-5">0–5 years</option>
+                <option value="5-15">5–15 years</option>
+                <option value="15-30">15–30 years</option>
+                <option value="30+">30+ years</option>
+            </select>
+            <div class="error" id="conditionError"></div>
+        </div>
+        <button type="submit" id="submitBtn" disabled>Calculate Stress Test</button>
+    </form>
+    <div id="result"></div>
+    <div class="disclaimer">
+        <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
+    </div>
+    <div class="footer">
+        <p><a href="./privacy-policy.html">Privacy Policy</a> | <a href="./terms-of-use.html">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved.</p>
+    </div>
+</body>
+</html>
