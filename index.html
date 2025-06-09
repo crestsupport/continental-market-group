@@ -201,7 +201,7 @@
             const { error } = await stripe.redirectToCheckout({ sessionId: id });
             if (error) {
                 console.error('Error:', error);
-  isPaid = true; // Temporary; update with success verification later
+isPaid = true; // Temporary; update with success verification later
         toggleFormFields();
       }
     } catch (error) {
@@ -232,19 +232,6 @@
             <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
             <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
             <div class="error" id="geoLocationError"></div>
-        </div>
-        <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
-    </div>
-</div>
-<form id="stressTestForm">       
-  });
-
-  function simulatePayment() {
-      isPaid = true;
-      toggleFormFields();
-  }
-
-  
         </div>
         <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
     </div>
@@ -314,3 +301,49 @@
 <div class="footer">
     <p><a href="./privacy-policy">Privacy Policy</a> | <a href="./terms-of-use">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved.</p>
 </div>
+      toggleFormFields();
+  }
+
+  toggleGeoLocation(); // Initial call
+</script>
+<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+<div class="section">
+    <h3>Geo-Location Setup</h3>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+            Include geo-location in my assessment
+        </label>
+    </div>
+    <div id="geoLocationSection" style="display: none;">
+        <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
+        <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
+        <div class="form-group">
+            <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
+            <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
+            <div class="error" id="geoLocationError"></div>
+        </div>
+        <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
+    </div>
+</div>
+<form id="stressTestForm">       
+
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" disabled required>
+        <div class="error" id="bedroomsError"></div>
+    </div>
+    <div class="form-group">
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" disabled required>
+        <div class="error" id="bathroomsError"></div>
+    </div>
+    <div class="form-group">
+        <label for="squareFootage">Square Footage:</label>
+        <input type="number" id="squareFootage" name="squareFootage" disabled required>
+        <div class="error" id="squareFootageError"></div>
+    </div>
+    <div class="form-group">
+        <label for="province">Province:</label>
+        <select id="province" name="province" disabled required>
+            <option value="">Select Province</option>
+       
