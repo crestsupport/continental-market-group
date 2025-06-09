@@ -237,6 +237,64 @@
         <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
     </div>
 </div>
+<form id="stressTestForm">
+    <div class="form-group">
+        <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
+        <input type="number" id="appraisalPrice" name="appraisalPrice" disabled required>
+        <div class="error" id="appraisalPriceError"></div>
+    </div>
+    <div class="form-group">
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" disabled required>
+        <div class="error" id="bedroomsError"></div>
+    </div>
+    <div class="form-group">
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" disabled required>
+        <div class="error" id="bathroomsError"></div>
+    </div>
+    <div class="form-group">
+        <label for="squareFootage">Square Footage:</label>
+        <input type="number" id="squareFootage" name="squareFootage" disabled required>
+        <div class="error" id="squareFootageError"></div>
+    </div>
+    <div class="form-group">
+        <label for="province">Province:</label>
+        <select id="province" name="province" disabled required>
+            <option value="">Select Province</option>
+            <option value="AB">Alberta</option>
+            <option value="BC">British Columbia</option>
+            <option value="MB">Manitoba</option>
+            <option value="NB">New Brunswick</option>
+            <option value="NL">Newfoundland and Labrador</option>
+            <option value="NS">Nova Scotia</option>
+            <option value="ON">Ontario</option>
+            <option value="PE">Prince Edward Island</option>
+            <option value="QC">Quebec</option>
+            <option value="SK">Saskatchewan</option>
+            <option value="NT">Northwest Territories</option>
+            <option value="NU">Nunavut</option>
+            <option value="YT">Yukon</option>
+        </select>
+        <div class="error" id="provinceError"></div>
+    </div>
+    <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" disabled required>
+        <div class="error" id="cityError"></div>
+    </div>
+    <div class="form-group">
+        <label for="condition">Property Age:</label>
+        <select id="condition" name="condition" disabled required>
+            <option value="0-5">0–5 years</option>
+            <option value="5-15">5–15 years</option>
+            <option value="15-30">15–30 years</option>
+            <option value="30+">30+ years</option>
+        </select>
+        <div class="error" id="conditionError"></div>
+    </div>
+    <button type="submit" id="submitBtn" disabled>Calculate Stress Test</button>
+</form>
 <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
 <div id="payment">
     <button id="checkout-button">Buy Now ($19.99)</button>
@@ -301,28 +359,56 @@
             Include geo-location in my assessment
         </label>
     
+    let isPaid = false;
+    let hasGeoLocation = false;
+    let useGeoLocation = false;
+
+    function toggleGeoLocation() {
+        useGeoLocation = document.getElementById('useGeoLocation').checked;
+        const geoSection = document.getElementById('geoLocationSection');
+        geoSection.style.display = useGeoLocation ? 'block' : 'none';
+        toggleFormFields();
+    }
+
+    function toggleFormFields() {
+        const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'province', 'city', 'condition', 'submitBtn'];
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
+        });
+    }
+
+    // Initialize Stripe with your publishable key
+    const stripe = Stripe('pk_test_your_key_here'); // Replace with your actual Stripe publishable key
+
+    const checkoutButton = document.getElementById('checkout-button');
+    checkoutButton.addEventListener('click', async () => {
+        try {
+            const response = await fetch('https://stripe-backend-gold.vercel.app/create-checkout-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const { id } = await response.json();
+            const { error } = await stripe.redirectToCheckout({ sessionId: id });
+            if (error) {
+                console.error('Error:', error);
+            
+<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+<div class="section">
+    <h3>Geo-Location Setup</h3>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+            Include geo-location in my assessment
+        </label>
+    
             <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
             Include geo-location in my assessment
         </label>
     
             });
             const { id } = await response.json();
-            const { error } = await stripe.redirectToCheckout({ sessionId: id });
-            if (error) {
-                console.error('Error:', error);
-            } else {
-              
-
-    
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            const { id } = await response.json();
-
-            // Redirect to Stripe Checkout
-            const { error } = await stripe.redirectToCheckout({ sessionId: id });
-            if (error) {
-                console.error(error);
+         
             }
         });
     </script>
