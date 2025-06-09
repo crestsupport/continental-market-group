@@ -183,7 +183,7 @@
                 const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'province', 'city', 'condition', 'submitBtn'];
                 fields.forEach(field => {
                     const element = document.getElementById(field);
-                    element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
+                    if (element) element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
                 });
             }
 
@@ -202,8 +202,7 @@
                     if (error) {
                         console.error('Error:', error);
                     } else {
-                        // Note: This is a placeholder. In a real app, use a backend callback to set isPaid = true after successful payment.
-                        // For demo, we'll rely on simulatePayment().
+                        // Placeholder: Backend should confirm payment success
                     }
                 } catch (error) {
                     console.error('Fetch error:', error);
