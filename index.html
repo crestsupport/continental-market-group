@@ -201,7 +201,7 @@
             const { error } = await stripe.redirectToCheckout({ sessionId: id });
             if (error) {
                 console.error('Error:', error);
-          isPaid = true; // Temporary; update with success verification later
+  isPaid = true; // Temporary; update with success verification later
         toggleFormFields();
       }
     } catch (error) {
@@ -216,8 +216,8 @@
 
   toggleGeoLocation(); // Initial call
 </script>
-<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button         <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
-
+<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+<div class="section">
     <h3>Geo-Location Setup</h3>
     <div class="form-group">
         <label>
@@ -232,6 +232,19 @@
             <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
             <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
             <div class="error" id="geoLocationError"></div>
+        </div>
+        <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
+    </div>
+</div>
+<form id="stressTestForm">       
+  });
+
+  function simulatePayment() {
+      isPaid = true;
+      toggleFormFields();
+  }
+
+  
         </div>
         <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
     </div>
