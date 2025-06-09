@@ -7,29 +7,30 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px; /* Increased to accommodate background */
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            background-image: url('https://images.pexels.com/photos/675837/pexels-photo-675837.jpeg?auto=compress&cs=tinysrgb&w=600'); /* Canadian mountain landscape */
-            background-repeat: no-repeat;
-            background-position: right center;
-            background-size: 300px auto;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .content-wrapper {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            max-width: 500px; /* Adjusted to leave space for background */
-            margin-left: 0;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         h1, h2, h3 {
             color: #333;
-            text-align: center;
         }
         .form-group {
             margin-bottom: 1em;
+            text-align: left;
         }
         label {
             display: block;
@@ -50,7 +51,7 @@
         button, .payment-link a {
             width: 100%;
             padding: 0.75em;
-            background-color: #007BFF; /* Blue button */
+            background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 4px;
@@ -65,14 +66,13 @@
             cursor: not-allowed;
         }
         button:hover:not(:disabled), .payment-link a:hover:not(:disabled) {
-            background-color: #0056b3; /* Darker blue */
+            background-color: #0056b3;
         }
         .section, #result, .disclaimer {
             margin-top: 1.5em;
             padding: 1em;
-            border: 1px solid #ccc;
             border-radius: 4px;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.95);
         }
         #payment-section {
             display: none;
@@ -103,25 +103,10 @@
             width: 100%;
             height: 200px;
         }
-        #downloadBtn {
-            margin-top: 1em;
-            background-color: #333;
-            color: white;
-            padding: 0.75em;
-            text-align: center;
-            display: inline-block;
-            border-radius: 4px;
-            text-decoration: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        #downloadBtn:hover {
-            background-color: #555;
-        }
         .draggable {
             width: 100px;
             padding: 10px;
-            background-color: #007BFF; /* Blue */
+            background-color: #007BFF;
             color: white;
             text-align: center;
             border-radius: 4px;
@@ -219,4 +204,39 @@
                     <option value="NS">Nova Scotia</option>
                     <option value="NB">New Brunswick</option>
                     <option value="MB">Manitoba</option>
-                    <option value="BC">
+                    <option value="BC">British Columbia</option>
+                    <option value="PE">Prince Edward Island</option>
+                    <option value="SK">Saskatchewan</option>
+                    <option value="AB">Alberta</option>
+                    <option value="NL">Newfoundland and Labrador</option>
+                    <option value="NT">Northwest Territories</option>
+                    <option value="YT">Yukon</option>
+                    <option value="NU">Nunavut</option>
+                </select>
+                <div class="error" id="provinceError"></div>
+            </div>
+            <div class="form-group">
+                <label for="bedrooms">Number of Bedrooms:</label>
+                <input type="number" id="bedrooms" name="bedrooms" min="0" required>
+                <div class="error" id="bedroomsError"></div>
+            </div>
+            <div class="form-group">
+                <label for="bathrooms">Number of Bathrooms:</label>
+                <input type="number" id="bathrooms" name="bathrooms" min="0" required>
+                <div class="error" id="bathroomsError"></div>
+            </div>
+            <div class="form-group">
+                <label for="squareFootage">Square Footage:</label>
+                <input type="number" id="squareFootage" name="squareFootage" min="0" required>
+                <div class="error" id="squareFootageError"></div>
+            </div>
+            <div class="form-group">
+                <label for="location">City/Neighborhood:</label>
+                <input type="text" id="location" name="location" required>
+                <div class="error" id="locationError"></div>
+            </div>
+            <button type="submit" id="submitBtn">Calculate 2-Year Outlook</button>
+        </form>
+        <div id="result"></div>
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 Canadian public data for informational purposes only. It is not financial, legal, or real estate advice
