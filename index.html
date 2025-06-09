@@ -204,6 +204,7 @@
             } else {
                 isPaid = true; // Temporary; update with success verification later
          <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
 <div class="section">
     <h3>Geo-Location Setup</h3>
     <div class="form-group">
@@ -229,65 +230,6 @@
         <input type="number" id="appraisalPrice" name="appraisalPrice" disabled required>
         <div class="error" id="appraisalPriceError"></div>
     </div>
-    <div class="form-group">
-        <label for="bedrooms">Number of Bedrooms:</label>
-        <input type="number" id="bedrooms" name="bedrooms" disabled required>
-        <div class="error" id="bedroomsError"></div>
-    </div>
-    <div class="form-group">
-        <label for="bathrooms">Number of Bathrooms:</label>
-        <input type="number" id="bathrooms" name="bathrooms" disabled required>
-        <div class="error" id="bathroomsError"></div>
-    </div>
-    <div class="form-group">
-        <label for="squareFootage">Square Footage:</label>
-        <input type="number" id="squareFootage" name="squareFootage" disabled required>
-        <div class="error" id="squareFootageError"></div>
-    </div>
-    <div class="form-group">
-        <label for="province">Province:</label>
-        <select id="province" name="province" disabled required>
-            <option value="">Select Province</option>
-            <option value="AB">Alberta</option>
-            <option value="BC">British Columbia</option>
-            <option value="MB">Manitoba</option>
-            <option value="NB">New Brunswick</option>
-            <option value="NL">Newfoundland and Labrador</option>
-            <option value="NS">Nova Scotia</option>
-            <option value="ON">Ontario</option>
-            <option value="PE">Prince Edward Island</option>
-            <option value="QC">Quebec</option>
-            <option value="SK">Saskatchewan</option>
-            <option value="NT">Northwest Territories</option>
-            <option value="NU">Nunavut</option>
-            <option value="YT">Yukon</option>
-        </select>
-        <div class="error" id="provinceError"></div>
-    </div>
-    <div class="form-group">
-        <label for="city">City:</label>
-        <input type="text" id="city" name="city" disabled required>
-        <div class="error" id="cityError"></div>
-    </div>
-    <div class="form-group">
-        <label for="condition">Property Age:</label>
-        <select id="condition" name="condition" disabled required>
-            <option value="0-5">0–5 years</option>
-            <option value="5-15">5–15 years</option>
-            <option value="15-30">15–30 years</option>
-            <option value="30+">30+ years</option>
-        </select>
-        <div class="error" id="conditionError"></div>
-    </div>
-    <button type="submit" id="submitBtn" disabled>Calculate Stress Test</button>
-</form>
-<div id="result"></div>
-<div class="disclaimer">
-    <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
-</div>
-<div class="footer">
-    <p><a href="./privacy-policy">Privacy Policy</a> | <a href="./terms-of-use">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved.</p>
-</div>    
     <div class="form-group">
         <label for="bedrooms">Number of Bedrooms:</label>
         <input type="number" id="bedrooms" name="bedrooms" disabled required>
