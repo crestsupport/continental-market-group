@@ -237,6 +237,34 @@
         <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
     </div>
 </div>
+<p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
+<div id="payment">
+    <button id="checkout-button">Buy Now ($19.99)</button>
+</div>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    let isPaid = false;
+    let hasGeoLocation = false;
+    let useGeoLocation = false;
+
+    function toggleGeoLocation() {
+        useGeoLocation = document.getElementById('useGeoLocation').checked;
+        const geoSection = document.getElementById('geoLocationSection');
+        geoSection.style.display = useGeoLocation ? 'block' : 'none';
+        toggleFormFields();
+    }
+
+    function toggleFormFields() {
+        const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'province', 'city', 'condition', 'submitBtn'];
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
+        });
+    }
+
+    // Initialize Stripe with your publishable key
+    const stripe = Stripe('pk_test_your_key_here'); // Replace with your actual Stripe publishable key
+
     const checkoutButton = document.getElementById('checkout-button');
     checkoutButton.addEventListener('click', async () => {
         try {
@@ -265,17 +293,32 @@
     toggleGeoLocation(); // Initial call
 </script>
 <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
-            <div class="form-group">
-                <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
-                <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
-                <div class="error" id="geoLocationError"></div>
-            </div>
-            <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
-        </div>
-    </div>
+<div class="section">
+    <h3>Geo-Location Setup</h3>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+            Include geo-location in my assessment
+        </label>
+    
+            });
+            const { id } = await response.json();
+            const { error } = await stripe.redirectToCheckout({ sessionId: id });
+            if (error) {
+                console.error('Error:', error);
+            } else {
+                isPaid = true; // Temporary; update with success verification later
+                toggleFormFields();
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+        }
+    });
 
-    <h3>Ready to Stress Test Your Property?</h3>
-    <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
+    function simulatePayment() {
+        isPaid = true;
+        toggleFormFields();
+
     <div id="payment">
         <button id="checkout-button">Buy Now ($19.99)</button>
     
