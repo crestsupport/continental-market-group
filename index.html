@@ -201,7 +201,7 @@
             const { error } = await stripe.redirectToCheckout({ sessionId: id });
             if (error) {
                 console.error('Error:', error);
-isPaid = true; // Temporary; update with success verification later
+     isPaid = true; // Temporary; update with success verification later
         toggleFormFields();
       }
     } catch (error) {
@@ -323,7 +323,7 @@ isPaid = true; // Temporary; update with success verification later
     <div class="form-group">
         <label for="bedrooms">Number of Bedrooms:</label>
         <input type="number" id="bedrooms" name="bedrooms" disabled required>
-       
+        
             <option value="NB">New Brunswick</option>
             <option value="NL">Newfoundland and Labrador</option>
             <option value="NS">Nova Scotia</option>
@@ -342,4 +342,4 @@ isPaid = true; // Temporary; update with success verification later
         <input type="text" id="city" name="city" disabled required>
         <div class="error" id="cityError"></div>
     </div>
- 
+  
