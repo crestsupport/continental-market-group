@@ -177,83 +177,63 @@
                 const geoSection = document.getElementById('geoLocationSection');
                 geoSection.style.display = useGeoLocation ? 'block' : 'none';
                 toggleFormFields();
+                console.log('Geo toggle updated, useGeoLocation:', useGeoLocation);
             }
 
             function toggleFormFields() {
                 const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'province', 'city', 'condition', 'submitBtn'];
-               <script src="https://js.stripe.com/v3/"></script>
-<script>
-    let isPaid = false;
-    let hasGeoLocation = false;
-    let useGeoLocation = false;
-
-    function toggleGeoLocation() {
-        useGeoLocation = document.getElementById('useGeoLocation').checked;
-        const geoSection = document.getElementById('geoLocationSection');
-        geoSection.style.display = useGeoLocation ? 'block' : 'none';
-        toggleFormFields();
-    }
-
-    function toggleFormFields() {
-        const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'province', 'city', 'condition', 'submitBtn'];
-        fields.forEach(field => {
-            const element = document.getElementById(field);
-            if (element) element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
-        });
-    }
-
-    // Initialize Stripe with your publishable key
-    const stripe = Stripe('pk_test_your_key_here'); // Replace with your actual Test Publishable Key
-
-    const checkoutButton = document.getElementById('checkout-button');
-    checkoutButton.addEventListener('click', async () => {
-        console.log('Checkout button clicked');
-        try {
-            const response = await fetch('https://stripe-backend-gold.vercel.app/create-checkout-session', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            console.log('Fetch response status:', response.status);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-            console.log('Response data:', data);
-            const { id } = data;
-            if (!id) throw new Error('No session ID returned');
-            console.log('Session ID:', id);
-            const { error } = await stripe.redirectToCheckout({ sessionId: id });
-            if (error) {
-                console.error('Stripe redirect error:', error);
-            }
-        } catch (error) {
-            console.error('Error during checkout:', error.message);
-        }
-    });
-
-    function simulatePayment() {
-        isPaid = true;
-        toggleFormFields();
-        alert('Payment simulated. Form is now enabled for demo purposes.');
-    }
-
-    toggleGeoLocation(); // Initial call
-</script>                        console.error('Error:', error);
+                console.log('Toggling fields, isPaid:', isPaid, 'useGeoLocation:', useGeoLocation, 'hasGeoLocation:', hasGeoLocation);
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element) {
+                        element.disabled = !isPaid || (useGeoLocation && !hasGeoLocation);
+                        console.log(`Field ${field} disabled: ${element.disabled}`);
                     } else {
-                        // Placeholder: Backend should confirm payment success
+                        console.log(`Element ${field} not found`);
+                    }
+                });
+            }
+
+            // Initialize Stripe with your publishable key
+            const stripe = Stripe('pk_test_your_key_here'); // Replace with your actual Test Publishable Key
+
+            const checkoutButton = document.getElementById('checkout-button');
+            checkoutButton.addEventListener('click', async () => {
+                console.log('Checkout button clicked');
+                try {
+                    const response = await fetch('https://stripe-backend-gold.vercel.app/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                    });
+                    console.log('Fetch response status:', response.status);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    const { id } = data;
+                    if (!id) throw new Error('No session ID returned');
+                    console.log('Session ID:', id);
+                    const { error } = await stripe.redirectToCheckout({ sessionId: id });
+                    if (error) {
+                        console.error('Stripe redirect error:', error);
                     }
                 } catch (error) {
-                    console.error('Fetch error:', error);
+                    console.error('Error during checkout:', error.message);
                 }
             });
 
             function simulatePayment() {
                 isPaid = true;
+                console.log('Simulate payment triggered, isPaid set to:', isPaid);
                 toggleFormFields();
                 alert('Payment simulated. Form is now enabled for demo purposes.');
             }
 
-            toggleGeoLocation(); // Initial call
+            toggleGeoLocation();
+            // Temporary override to enable fields for testing (remove later)
+            document.querySelectorAll('select, input, button').forEach(el => el.disabled = false);
+
         </script>
-        <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+        <p><button type="button" id="simulatePayment" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
     </div>
     <div class="section">
         <h3>Geo-Location Setup</h3>
