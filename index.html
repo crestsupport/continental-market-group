@@ -25,6 +25,7 @@
             width: 100%;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            display: block; /* Ensure content is visible */
         }
         h1, h2, h3 {
             color: #333;
@@ -380,19 +381,4 @@
                         console.error('Result div not found');
                     }
                 } catch (error) {
-                    const resultDiv = document.getElementById('result');
-                    if (resultDiv) {
-                        resultDiv.style.display = 'block';
-                        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-                        console.error('Assessment error:', error);
-                    } else {
-                        console.error('Result div not found for error display');
-                    }
-                }
-            }
-
-            toggleGeoLocation();
-        });
-    </script>
-</body>
-</html>
+                    const resultDiv
