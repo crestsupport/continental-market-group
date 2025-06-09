@@ -7,20 +7,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
+            max-width: 800px; /* Increased to accommodate background */
             margin: 20px auto;
             padding: 20px;
             background-color: #f9f9f9;
-            background-image: url('https://images.pexels.com/photos/1676809/pexels-photo-1676809.jpeg?auto=compress&cs=tinysrgb&w=600'); /* Canadian forest image */
+            background-image: url('https://images.pexels.com/photos/675837/pexels-photo-675837.jpeg?auto=compress&cs=tinysrgb&w=600'); /* Canadian mountain landscape */
             background-repeat: no-repeat;
-            background-position: right 0 top 0;
-            background-size: auto 100%;
+            background-position: right center;
+            background-size: 300px auto;
         }
         .content-wrapper {
             background-color: white;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            max-width: 500px; /* Adjusted to leave space for background */
+            margin-left: 0;
         }
         h1, h2, h3 {
             color: #333;
@@ -217,115 +219,4 @@
                     <option value="NS">Nova Scotia</option>
                     <option value="NB">New Brunswick</option>
                     <option value="MB">Manitoba</option>
-                    <option value="BC">British Columbia</option>
-                    <option value="PE">Prince Edward Island</option>
-                    <option value="SK">Saskatchewan</option>
-                    <option value="AB">Alberta</option>
-                    <option value="NL">Newfoundland and Labrador</option>
-                    <option value="NT">Northwest Territories</option>
-                    <option value="YT">Yukon</option>
-                    <option value="NU">Nunavut</option>
-                </select>
-                <div class="error" id="provinceError"></div>
-            </div>
-            <div class="form-group">
-                <label for="bedrooms">Number of Bedrooms:</label>
-                <input type="number" id="bedrooms" name="bedrooms" min="0" required>
-                <div class="error" id="bedroomsError"></div>
-            </div>
-            <div class="form-group">
-                <label for="bathrooms">Number of Bathrooms:</label>
-                <input type="number" id="bathrooms" name="bathrooms" min="0" required>
-                <div class="error" id="bathroomsError"></div>
-            </div>
-            <div class="form-group">
-                <label for="squareFootage">Square Footage:</label>
-                <input type="number" id="squareFootage" name="squareFootage" min="0" required>
-                <div class="error" id="squareFootageError"></div>
-            </div>
-            <div class="form-group">
-                <label for="location">City/Neighborhood:</label>
-                <input type="text" id="location" name="location" required>
-                <div class="error" id="locationError"></div>
-            </div>
-            <button type="submit" id="submitBtn">Calculate 2-Year Outlook</button>
-        </form>
-        <div id="result"></div>
-        <div class="disclaimer">
-            <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 Canadian public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
-        </div>
-        <div class="footer">
-            <p><a href="./privacy-policy.html">Privacy Policy</a> | <a href="./terms-of-use.html">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
-        </div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let hasGeoLocation = false;
-            let useGeoLocation = false;
-
-            function toggleGeoLocation() {
-                const geoCheckbox = document.getElementById('useGeoLocation');
-                if (geoCheckbox) {
-                    useGeoLocation = geoCheckbox.checked;
-                    const geoSection = document.getElementById('geoLocationSection');
-                    geoSection.style.display = useGeoLocation ? 'block' : 'none';
-                    toggleFormFields();
-                    console.log('Geo toggle updated, useGeoLocation:', useGeoLocation);
-                } else {
-                    console.error('Geo-location checkbox not found');
-                }
-            }
-
-            function toggleFormFields() {
-                const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'location', 'geoLocation', 'propertyCategory', 'province', 'submitBtn'];
-                console.log('Toggling fields, useGeoLocation:', useGeoLocation, 'hasGeoLocation:', hasGeoLocation);
-                fields.forEach(field => {
-                    const element = document.getElementById(field);
-                    if (element) {
-                        element.disabled = useGeoLocation && !hasGeoLocation;
-                        console.log(`Field ${field} disabled: ${element.disabled}`);
-                    } else {
-                        console.log(`Element ${field} not found`);
-                    }
-                });
-            }
-
-            function assessProperty(event) {
-                event.preventDefault();
-
-                const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value);
-                const bedrooms = parseInt(document.getElementById('bedrooms').value);
-                const bathrooms = parseInt(document.getElementById('bathrooms').value);
-                const squareFootage = parseInt(document.getElementById('squareFootage').value);
-                const location = document.getElementById('location').value;
-                const geoLocation = document.getElementById('geoLocation').value;
-                const propertyCategory = document.getElementById('propertyCategory').value;
-                const province = document.getElementById('province').value;
-
-                // Category factor: adjust growth based on property type
-                const categoryFactor = {
-                    'house': 1.05,    // 5% higher growth for houses
-                    'condo': 0.95,    // 5% lower growth for condos
-                    'townhouse': 1.0  // Neutral for townhouses
-                }[propertyCategory] || 1.0;
-
-                // Province factor: adjust locationFactor based on province
-                const provinceFactor = {
-                    'ON': 1.2,  // Ontario (higher due to Toronto)
-                    'BC': 1.15, // British Columbia (higher due to Vancouver)
-                    'QC': 1.0,  // Quebec (average)
-                    'AB': 1.05, // Alberta (moderate)
-                    'NS': 0.95, // Nova Scotia (lower)
-                    'NB': 0.95, // New Brunswick (lower)
-                    'MB': 0.95, // Manitoba (lower)
-                    'PE': 0.9,  // Prince Edward Island (lower)
-                    'SK': 0.95, // Saskatchewan (lower)
-                    'NL': 0.9,  // Newfoundland and Labrador (lower)
-                    'NT': 0.85, // Northwest Territories (lower)
-                    'YT': 0.85, // Yukon (lower)
-                    'NU': 0.85  // Nunavut (lower)
-                }[province] || 1.0;
-
-                // Simulated 2025-2027 market data with policy adjustments
-                const basePricePerSqFt = 500; // 2025 Ontario average
-                const growthRate = 0.02 * category
+                    <option value="BC">
