@@ -25,7 +25,7 @@
             width: 100%;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            display: block; /* Ensure content is visible */
+            display: block;
         }
         h1, h2, h3 {
             color: #333;
@@ -247,7 +247,7 @@
             <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 Canadian public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
         </div>
         <div class="footer">
-            <p><a href="./privacy-policy.html">Privacy Policy</a> | <a href="./terms-of-use.html">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
+            <p><a href="/privacy-policy.html">Privacy Policy</a> | <a href="/terms-of-use.html">Terms of Use</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
         </div>
     </div>
     <script>
@@ -278,7 +278,7 @@
                         element.disabled = useGeoLocation && !hasGeoLocation;
                         console.log(`Field ${field} disabled: ${element.disabled}`);
                     } else {
-                        console.log(`Element ${field} not found`);
+                        console.error(`Element ${field} not found`);
                     }
                 });
             }
@@ -286,7 +286,8 @@
             const form = document.getElementById('stressTestForm');
             if (form) {
                 form.addEventListener('submit', function(event) {
-                    console.log('Form submitted');
+                    console.log('Form submitted, preventing default');
+                    event.preventDefault(); // Explicitly prevent default before calling assessProperty
                     assessProperty(event);
                 });
             } else {
@@ -294,10 +295,11 @@
             }
 
             function assessProperty(event) {
-                event.preventDefault();
                 console.log('assessProperty function called');
+                event.preventDefault(); // Double safeguard
 
                 try {
+                    console.log('Attempting to get input values');
                     const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value) || 0;
                     const bedrooms = parseInt(document.getElementById('bedrooms').value) || 0;
                     const bathrooms = parseInt(document.getElementById('bathrooms').value) || 0;
@@ -307,12 +309,13 @@
                     const propertyCategory = document.getElementById('propertyCategory').value || 'house';
                     const province = document.getElementById('province').value || 'ON';
 
-                    console.log('Input values:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
+                    console.log('Input values retrieved:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
 
                     if (appraisalPrice <= 0 || squareFootage <= 0) {
                         throw new Error('Appraisal price and square footage must be positive numbers.');
                     }
 
+                    console.log('Starting calculations');
                     const categoryFactor = {
                         'house': 1.05,
                         'condo': 0.95,
@@ -347,14 +350,7 @@
                     const projectedValue = squareFootage * futurePricePerSqFt;
                     const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
 
-                    console.log('Calculated values:', { currentValue, projectedValue, percentageChange });
-
-                    const ctx = document.getElementById('mapCanvas')?.getContext('2d');
-                    if (ctx) {
-                        ctx.clearRect(0, 0, 400, 200);
-                        ctx.fillStyle = '#007BFF';
-                        ctx.fillRect(50, 50, 100, 100);
-                    }
+                    console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
 
                     let outlook;
                     if (percentageChange > 3) {
@@ -367,6 +363,7 @@
 
                     const resultDiv = document.getElementById('result');
                     if (resultDiv) {
+                        console.log('Result div found, updating content');
                         resultDiv.style.display = 'block';
                         resultDiv.innerHTML = `
                             <p>Current Value: $${currentValue.toLocaleString()}</p>
@@ -381,4 +378,20 @@
                         console.error('Result div not found');
                     }
                 } catch (error) {
-                    const resultDiv
+                    console.log('Error caught:', error.message);
+                    const resultDiv = document.getElementById('result');
+                    if (resultDiv) {
+                        resultDiv.style.display = 'block';
+                        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                        console.error('Assessment error displayed:', error);
+                    } else {
+                        console.error('Result div not found for error display');
+                    }
+                }
+            }
+
+            toggleGeoLocation();
+        });
+    </script>
+</body>
+</html>
