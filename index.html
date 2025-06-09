@@ -201,11 +201,23 @@
             const { error } = await stripe.redirectToCheckout({ sessionId: id });
             if (error) {
                 console.error('Error:', error);
-            } else {
-                isPaid = true; // Temporary; update with success verification later
-         <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
-<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
-<div class="section">
+          isPaid = true; // Temporary; update with success verification later
+        toggleFormFields();
+      }
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+  });
+
+  function simulatePayment() {
+      isPaid = true;
+      toggleFormFields();
+  }
+
+  toggleGeoLocation(); // Initial call
+</script>
+<p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button         <p><button type="button" onclick="simulatePayment()">Simulate Payment (For Demo)</button></p>
+
     <h3>Geo-Location Setup</h3>
     <div class="form-group">
         <label>
