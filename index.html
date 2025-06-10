@@ -160,7 +160,7 @@
         <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
         <div class="section">
             <h2>About Us</h2>
-            <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach is rooted in impartiality, leveraging the latest 2025 Canadian data from sources like CREA, Statistics Canada, Bank of Canada, and CMHC, and considers potential impacts from interest rates, government policies, and market trends to deliver insights.</p>
+            <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and city-specific pricing (e.g., Toronto, Vancouver) to project values. It also considers potential impacts from interest rates, government policies, and market trends.</p>
             <h3>Ready to Stress Test Your Canadian Property?</h3>
             <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
             <div id="payment">
@@ -244,7 +244,7 @@
         </form>
         <div id="result"></div>
         <div class="disclaimer">
-            <p><strong>Disclaimer:</strong> This tool provides estimates based on 2025 Canadian public data for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
+            <p><strong>Disclaimer:</strong> This tool provides estimates based on data up to May 2025 trends for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
         </div>
         <div class="footer">
             <p><a href="/privacy-policy.html">Privacy Policy</a> | <a href="/terms-of-use.html">Terms of Use</a> | <a href="/index.html">Home</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
@@ -317,12 +317,17 @@
                     console.log('Input values retrieved:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
 
                     console.log('Starting calculations');
-                    const categoryFactor = {
-                        'house': 1.05,
-                        'condo': 0.95,
-                        'townhouse': 1.0
-                    }[propertyCategory] || 1.0;
+                    // City-specific base prices per square foot (approximated from May 2025 trends)
+                    const cityBasePrices = {
+                        'Toronto': 800,
+                        'Vancouver': 2000,
+                        'Montreal': 400,
+                        'Hamilton': 300,
+                        'default': 500
+                    };
+                    const basePricePerSqFt = cityBasePrices[location] || cityBasePrices['default'];
 
+                    // Province adjustment factor
                     const provinceFactor = {
                         'ON': 1.2,
                         'BC': 1.15,
@@ -339,12 +344,17 @@
                         'NU': 0.85
                     }[province] || 1.0;
 
-                    const basePricePerSqFt = 500;
-                    const growthRate = 0.02 * categoryFactor;
+                    // Type-specific premiums (relative to house baseline)
+                    const typePremium = {
+                        'house': 1.0,
+                        'condo': location === 'Toronto' ? 0.9 : (location === 'Vancouver' ? 1.2 : 1.1), // Toronto discount, Vancouver premium
+                        'townhouse': 0.95
+                    }[propertyCategory] || 1.0;
+
+                    const growthRate = 0.02 * typePremium;
                     const interestRateImpact = location.includes('Toronto') || province === 'ON' ? 0.01 : 0.005;
-                    const locationFactor = provinceFactor;
                     const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
-                    const currentPricePerSqFt = basePricePerSqFt * locationFactor * (1 + roomFactor) * (1 - interestRateImpact);
+                    const currentPricePerSqFt = basePricePerSqFt * provinceFactor * typePremium * (1 + roomFactor) * (1 - interestRateImpact);
                     const futurePricePerSqFt = currentPricePerSqFt * Math.pow(1 + growthRate, 2);
 
                     const currentValue = appraisalPrice;
@@ -356,17 +366,17 @@
                     // Probability estimate
                     let increaseChance, declineChance;
                     if (percentageChange > 3) {
-                        increaseChance = Math.min(70 + (percentageChange - 3), 95); // Cap at 95%
+                        increaseChance = Math.min(70 + (percentageChange - 3), 95);
                         declineChance = 100 - increaseChance;
-                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years for a ${propertyCategory} in ${province}, supported by lower interest rates and Canadian housing initiatives, though tempered by tariff risks.`;
+                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), supported by market trends, though tempered by policy risks.`;
                     } else if (percentageChange < -3) {
-                        declineChance = Math.min(80 + (Math.abs(percentageChange) - 3), 95); // Cap at 95%
+                        declineChance = Math.min(80 + (Math.abs(percentageChange) - 3), 95);
                         increaseChance = 100 - declineChance;
-                        outlook = `Potential value decrease of ${(-percentageChange).toFixed(1)}% over 2 years for a ${propertyCategory} in ${province}, influenced by trade uncertainty and policy constraints.`;
+                        outlook = `Potential value decrease of ${(-percentageChange).toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), influenced by oversupply and economic factors.`;
                     } else {
                         increaseChance = 50;
                         declineChance = 50;
-                        outlook = `Value expected to remain stable (±3%) over 2 years for a ${propertyCategory} in ${province}, balancing interest rate cuts and potential budget impacts.`;
+                        outlook = `Value expected to remain stable (±3%) over 2 years for a ${propertyCategory} in ${province} (${location}), balancing growth and market pressures.`;
                     }
 
                     const resultDiv = document.getElementById('result');
