@@ -106,37 +106,6 @@
             font-size: 0.875em;
             margin-top: 0.5em;
         }
-        canvas {
-            border: 1px solid #ccc;
-            margin-top: 0.5em;
-            display: block;
-            width: 100%;
-            height: 200px;
-        }
-        .draggable {
-            width: 100px;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            text-align: center;
-            border-radius: 4px;
-            cursor: move;
-            user-select: none;
-            margin: 10px 0;
-            font-family: 'Roboto', sans-serif;
-        }
-        .drop-zone {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-        .drop-zone.active {
-            border-color: #007BFF;
-            background-color: #e0f0ff;
-        }
         .price-highlight {
             font-size: 1.2em;
             font-weight: bold;
@@ -172,7 +141,7 @@
             <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
             <div class="section">
                 <h2>About Us</h2>
-                <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages national data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and city-specific pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
+                <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages national data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and postal code-specific pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
                 <h3>Ready to Stress Test Your Canadian Property?</h3>
                 <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
                 <div id="payment">
@@ -180,27 +149,11 @@
                 </div>
             </div>
             <div class="section">
-                <h3>Geo-Location Setup</h3>
+                <h3>Postal Code Input</h3>
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
-                        Include geo-location in my assessment (Note: If using browser geo-location, city input is optional for a more accurate picture)
-                    </label>
-                </div>
-                <div id="geoLocationSection" style="display: none;">
-                    <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
-                    <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
-                    <div class="form-group">
-                        <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
-                        <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
-                        <div class="error" id="geoLocationError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label>To enhance your stress test result, please input your geolocation coordinates (latitude, longitude) here for a more accurate assessment.</label>
-                        <input type="text" id="manualCoords" name="manualCoords" placeholder="e.g., 43.6532, -79.3832">
-                        <div class="error" id="manualCoordsError"></div>
-                    </div>
-                    <canvas id="mapCanvas" width="400" height="200" aria-label="Map for setting property location"></canvas>
+                    <label for="postalCode">Enter Your Postal Code (e.g., M5V 2T6):</label>
+                    <input type="text" id="postalCode" name="postalCode" pattern="[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d" placeholder="e.g., M5V 2T6" required>
+                    <div class="error" id="postalCodeError"></div>
                 </div>
             </div>
             <form id="stressTestForm" onsubmit="assessProperty(event)">
@@ -276,8 +229,8 @@
             <p><strong>Modifications:</strong> We may update these Terms of Use at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
 
             <h3>Privacy Policy</h3>
-            <p><strong>Information We Collect:</strong> The Service may collect geolocation data if you enable it, processed in-browser and not stored or transmitted by us. No personal information (e.g., name, email) is collected unless voluntarily provided via the "Contact Us" link.</p>
-            <p><strong>Use of Information:</strong> Any data collected is used solely to provide the Service's functionality (e.g., geolocation-based assessments). We do not sell, trade, or share your information with third parties.</p>
+            <p><strong>Information We Collect:</strong> The Service collects postal code data entered by users, processed in-browser and not stored or transmitted by us. No other personal information (e.g., name, email) is collected unless voluntarily provided via the "Contact Us" link.</p>
+            <p><strong>Use of Information:</strong> Any data collected is used solely to provide the Service's functionality (e.g., postal code-based assessments). We do not sell, trade, or share your information with third parties.</p>
             <p><strong>Data Security:</strong> We implement reasonable security measures to protect against unauthorized access or disclosure. However, no online transmission is completely secure, and we cannot guarantee absolute security.</p>
             <p><strong>Cookies and Tracking:</strong> The Service does not use cookies or tracking technologies. Your browser may store temporary data for functionality, which is cleared upon session end.</p>
             <p><strong>Compliance with PIPEDA:</strong> We adhere to the Personal Information Protection and Electronic Documents Act (PIPEDA) by limiting data collection to what is necessary and ensuring transparency in our practices.</p>
@@ -290,53 +243,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded and parsed');
-            let hasGeoLocation = false;
-            let useGeoLocation = false;
             const canvas = document.getElementById('mapCanvas');
-            const ctx = canvas.getContext('2d');
-
-            function toggleGeoLocation() {
-                const geoCheckbox = document.getElementById('useGeoLocation');
-                if (geoCheckbox) {
-                    useGeoLocation = geoCheckbox.checked;
-                    const geoSection = document.getElementById('geoLocationSection');
-                    geoSection.style.display = useGeoLocation ? 'block' : 'none';
-                    toggleFormFields();
-                    if (!useGeoLocation) {
-                        document.getElementById('geoLocation').value = '';
-                        drawMap({ lat: 0, lng: 0 });
-                    }
-                    console.log('Geo toggle updated, useGeoLocation:', useGeoLocation);
-                } else {
-                    console.error('Geo-location checkbox not found');
-                }
-            }
-
-            function toggleFormFields() {
-                const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'location', 'geoLocation', 'manualCoords', 'propertyCategory', 'province', 'submitBtn'];
-                console.log('Toggling fields, useGeoLocation:', useGeoLocation, 'hasGeoLocation:', hasGeoLocation);
-                fields.forEach(field => {
-                    const element = document.getElementById(field);
-                    if (element) {
-                        element.disabled = useGeoLocation && !hasGeoLocation;
-                        console.log(`Field ${field} disabled: ${element.disabled}`);
-                    } else {
-                        console.error(`Element ${field} not found`);
-                    }
-                });
-            }
-
-            function drawMap(coords) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'blue';
-                const x = (coords.lng + 180) * (canvas.width / 360);
-                const y = canvas.height - (coords.lat + 90) * (canvas.height / 180);
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = 'black';
-                ctx.fillText(`Lat: ${coords.lat.toFixed(4)}, Lng: ${coords.lng.toFixed(4)}`, 10, 20);
-            }
+            if (canvas) canvas.remove(); // Remove unused canvas element
 
             const form = document.getElementById('stressTestForm');
             if (form) {
@@ -349,24 +257,32 @@
                 console.error('Form element not found');
             }
 
-            // National market data (update these numbers daily with national checks)
+            // National market data with postal code factors (simplified example)
             const marketData = {
-                lastUpdated: '2025-06-10', // Change this to today's date (e.g., '2025-06-10')
+                lastUpdated: '2025-06-10',
                 nationalTrends: {
-                    priceChangeAnnual: -0.036, // Update: Yearly % price drop (e.g., -0.036 for 3.6% based on nesto.ca April 2025)
-                    salesDrop: 0.075, // Update: % drop in sales (e.g., 0.075 for 7.5% based on CREA April 2025)
-                    unsoldInventory: 0.143, // Update: % increase in unsold homes (e.g., 0.143 for 14.3% based on CREA April 2025)
-                    basePrice: 679 // Update: National average price per unit ($679,866 rounded, adjust if new data emerges)
+                    priceChangeAnnual: -0.036,
+                    salesDrop: 0.075,
+                    unsoldInventory: 0.143,
+                    basePrice: 679
                 },
                 policyImpact: {
-                    interestRate: 0.0275, // Update: Bank of Canada rate (e.g., 0.0275 for 2.75% as of June 2025)
-                    economicUncertainty: 0.10 // Update: % impact of economic worries (e.g., 0.10 for 10% based on current trade concerns)
+                    interestRate: 0.0275,
+                    economicUncertainty: 0.10
                 },
                 weights: {
                     priceChange: 0.4,
                     salesDrop: 0.3,
                     unsoldInventory: 0.2,
                     policyImpact: 0.1
+                },
+                postalCodeFactors: {
+                    'M5V': 1.2, // Downtown Toronto
+                    'V6B': 1.15, // Vancouver
+                    'H3B': 1.0,  // Montreal
+                    'T2P': 1.05, // Calgary
+                    'B3J': 0.95  // Halifax
+                    // Add more postal code prefixes as needed
                 }
             };
 
@@ -381,7 +297,7 @@
                     const bathrooms = parseInt(document.getElementById('bathrooms').value);
                     const squareFootage = parseInt(document.getElementById('squareFootage').value);
                     const location = document.getElementById('location').value || 'Unknown';
-                    const manualCoords = document.getElementById('manualCoords').value || '';
+                    const postalCode = document.getElementById('postalCode').value.toUpperCase().replace(/\s/g, '');
                     const propertyCategory = document.getElementById('propertyCategory').value || 'house';
                     const province = document.getElementById('province').value || 'ON';
 
@@ -389,47 +305,65 @@
                         throw new Error('Please enter positive numbers for appraisal price, bedrooms, bathrooms, and square footage.');
                     }
 
-                    // Validate and parse manual coordinates first
-                    let coords = { lat: 0, lng: 0 };
-                    if (manualCoords) {
-                        const coordArray = manualCoords.split(',').map(Number);
-                        if (coordArray.length === 2 && !isNaN(coordArray[0]) && !isNaN(coordArray[1])) {
-                            coords.lat = coordArray[0];
-                            coords.lng = coordArray[1];
-                            if (coords.lat < -90 || coords.lat > 90 || coords.lng < -180 || coords.lng > 180) {
-                                throw new Error('Coordinates must be: Latitude (-90 to 90), Longitude (-180 to 180)');
-                            }
-                            document.getElementById('geoLocation').value = `${coords.lat}, ${coords.lng}`;
-                            drawMap(coords);
-                            proceedWithAssessment(coords);
-                            return;
-                        } else {
-                            throw new Error('Invalid coordinate format. Use "latitude, longitude" (e.g., 43.6532, -79.3832)');
-                        }
+                    if (!postalCode.match(/[A-Za-z]\d[A-Za-z]\d[A-Za-z]\d/)) {
+                        throw new Error('Please enter a valid Canadian postal code (e.g., M5V 2T6).');
                     }
 
-                    // If no manual coords and geolocation is enabled, use it
-                    if (useGeoLocation && navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                coords.lat = position.coords.latitude;
-                                coords.lng = position.coords.longitude;
-                                hasGeoLocation = true;
-                                toggleFormFields();
-                                document.getElementById('geoLocation').value = `${coords.lat}, ${coords.lng}`;
-                                drawMap(coords);
-                                proceedWithAssessment(coords);
-                            },
-                            (error) => {
-                                throw new Error('Geolocation failed: ' + error.message);
-                            }
-                        );
+                    const postalCodePrefix = postalCode.slice(0, 3);
+                    const postalFactor = marketData.postalCodeFactors[postalCodePrefix] || 1.0;
+
+                    // Calculate national market sentiment score (-1 to 1, negative for decline)
+                    const nationalData = marketData.nationalTrends;
+                    const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
+                                          (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
+                                          (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
+                                          (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
+                    const adjustedGrowthRate = sentimentScore * 0.5;
+
+                    const interestRateImpact = 0.01;
+                    const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
+                    const currentPricePerUnit = nationalData.basePrice * postalFactor * (1 + roomFactor) * (1 - interestRateImpact);
+                    const futurePricePerUnit = currentPricePerUnit * Math.pow(1 + adjustedGrowthRate, 2);
+
+                    const currentValue = appraisalPrice;
+                    const projectedValue = squareFootage * futurePricePerUnit;
+                    const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
+
+                    console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
+
+                    let increaseChance, declineChance, outlook;
+                    if (percentageChange < -5) {
+                        declineChance = Math.min(70 + (Math.abs(percentageChange) - 5), 95);
+                        increaseChance = 100 - declineChance;
+                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years, driven by national market trends and economic uncertainty.`;
+                    } else if (percentageChange > 5) {
+                        increaseChance = Math.min(70 + (percentageChange - 5), 95);
+                        declineChance = 100 - increaseChance;
+                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, supported by national trends, though tempered by risks.`;
                     } else {
-                        // Default to 0,0 if no geolocation or manual input
-                        drawMap(coords);
-                        proceedWithAssessment(coords);
+                        increaseChance = 40;
+                        declineChance = 60;
+                        outlook = `Value expected to decline or remain stable (±5%) over 2 years, reflecting current national market conditions.`;
                     }
 
+                    const resultDiv = document.getElementById('result');
+                    if (resultDiv) {
+                        console.log('Result div found, updating content');
+                        resultDiv.style.display = 'block';
+                        resultDiv.innerHTML = `
+                            <p>Current Value: $${currentValue.toLocaleString()}</p>
+                            <p>Projected Value (2 Years): $${projectedValue.toLocaleString()}</p>
+                            <p>2-Year Outlook: ${outlook}</p>
+                            <p>Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline</p>
+                            <p>Location: ${location} (Postal Code: ${postalCode})</p>
+                            <p>Property Type: ${propertyCategory}</p>
+                            <p>Province: ${province}</p>
+                            <p>Market Data Last Updated: ${marketData.lastUpdated}</p>
+                        `;
+                        console.log('Result displayed');
+                    } else {
+                        console.error('Result div not found');
+                    }
                 } catch (error) {
                     console.log('Error caught:', error.message);
                     const resultDiv = document.getElementById('result');
@@ -440,75 +374,6 @@
                     } else {
                         console.error('Result div not found for error display');
                     }
-                }
-            }
-
-            function proceedWithAssessment(coords) {
-                console.log('Proceeding with assessment, coords:', coords);
-                const nationalData = marketData.nationalTrends;
-                const basePricePerUnit = nationalData.basePrice;
-
-                const provinceFactor = {
-                    'ON': 1.2, 'BC': 1.15, 'QC': 1.0, 'AB': 1.05, 'NS': 0.95, 'NB': 0.95, 'MB': 0.95,
-                    'PE': 0.9, 'SK': 0.95, 'NL': 0.9, 'NT': 0.85, 'YT': 0.85, 'NU': 0.85
-                }[province] || 1.0;
-
-                const typePremium = {
-                    'house': 1.0,
-                    'condo': 1.1,
-                    'townhouse': 0.95
-                }[propertyCategory] || 1.0;
-
-                // Calculate national market sentiment score (-1 to 1, negative for decline)
-                const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
-                                      (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
-                                      (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
-                                      (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
-                const adjustedGrowthRate = sentimentScore * 0.5; // Scale to reasonable range
-
-                const interestRateImpact = 0.01; // National average impact
-                const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
-                const currentPricePerUnit = basePricePerUnit * provinceFactor * typePremium * (1 + roomFactor) * (1 - interestRateImpact);
-                const futurePricePerUnit = currentPricePerUnit * Math.pow(1 + adjustedGrowthRate, 2);
-
-                const currentValue = appraisalPrice;
-                const projectedValue = squareFootage * futurePricePerUnit;
-                const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
-
-                console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
-
-                let increaseChance, declineChance, outlook;
-                if (percentageChange < -5) {
-                    declineChance = Math.min(70 + (Math.abs(percentageChange) - 5), 95);
-                    increaseChance = 100 - declineChance;
-                    outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years, driven by national market trends and economic uncertainty.`;
-                } else if (percentageChange > 5) {
-                    increaseChance = Math.min(70 + (percentageChange - 5), 95);
-                    declineChance = 100 - increaseChance;
-                    outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, supported by national trends, though tempered by risks.`;
-                } else {
-                    increaseChance = 40;
-                    declineChance = 60;
-                    outlook = `Value expected to decline or remain stable (±5%) over 2 years, reflecting current national market conditions.`;
-                }
-
-                const resultDiv = document.getElementById('result');
-                if (resultDiv) {
-                    console.log('Result div found, updating content');
-                    resultDiv.style.display = 'block';
-                    resultDiv.innerHTML = `
-                        <p>Current Value: $${currentValue.toLocaleString()}</p>
-                        <p>Projected Value (2 Years): $${projectedValue.toLocaleString()}</p>
-                        <p>2-Year Outlook: ${outlook}</p>
-                        <p>Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline</p>
-                        <p>Location: ${location} (Geo: ${coords.lat}, ${coords.lng})</p>
-                        <p>Property Type: ${propertyCategory}</p>
-                        <p>Province: ${province}</p>
-                        <p>Market Data Last Updated: ${marketData.lastUpdated}</p>
-                    `;
-                    console.log('Result displayed');
-                } else {
-                    console.error('Result div not found');
                 }
             }
 
@@ -527,8 +392,6 @@
                     }
                 });
             });
-
-            toggleGeoLocation();
         });
     </script>
 </body>
