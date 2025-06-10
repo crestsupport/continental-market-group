@@ -14,7 +14,7 @@
             background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
             background-size: cover;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
         }
         .content-wrapper {
@@ -25,7 +25,28 @@
             width: 100%;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            display: block;
+        }
+        .nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        .nav a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+        .nav a:hover {
+            color: #0056b3;
+        }
+        section {
+            margin-top: 60px; /* Space for fixed nav */
+            padding: 1em;
+            scroll-margin-top: 60px; /* Offset for smooth scroll */
         }
         h1, h2, h3 {
             color: #333;
@@ -72,14 +93,10 @@
         button:hover:not(:disabled), .payment-link a:hover:not(:disabled) {
             background-color: #0056b3;
         }
-        .section, #result, .disclaimer {
-            margin-top: 1.5em;
+        .section, #result, .disclaimer, #terms-privacy {
             padding: 1em;
             border-radius: 4px;
             background-color: rgba(255, 255, 255, 0.95);
-        }
-        #payment-section {
-            display: none;
         }
         #result {
             display: none;
@@ -88,17 +105,6 @@
             color: red;
             font-size: 0.875em;
             margin-top: 0.5em;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 1.5em;
-            font-size: 0.75em;
-            color: #666;
-            border-top: 1px solid #ccc;
-        }
-        .payment-link {
-            text-align: center;
-            margin: 1em 0;
         }
         canvas {
             border: 1px solid #ccc;
@@ -156,104 +162,130 @@
     </style>
 </head>
 <body>
+    <div class="nav">
+        <a href="#home">Home</a>
+        <a href="#terms-privacy">Terms & Privacy</a>
+        <a href="mailto:catalystcg@outlook.com">Contact Us</a>
+    </div>
     <div class="content-wrapper">
-        <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
-        <div class="section">
-            <h2>About Us</h2>
-            <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages national data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and city-specific pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
-            <h3>Ready to Stress Test Your Canadian Property?</h3>
-            <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
-            <div id="payment">
-                <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
+        <section id="home">
+            <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
+            <div class="section">
+                <h2>About Us</h2>
+                <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages national data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and city-specific pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
+                <h3>Ready to Stress Test Your Canadian Property?</h3>
+                <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
+                <div id="payment">
+                    <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
+                </div>
             </div>
-        </div>
-        <div class="section">
-            <h3>Geo-Location Setup</h3>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
-                    Include geo-location in my assessment (Note: If using Google geo-location, city input is optional for a more accurate picture)
-                </label>
-            </div>
-            <div id="geoLocationSection" style="display: none;">
-                <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
-                <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
+            <div class="section">
+                <h3>Geo-Location Setup</h3>
                 <div class="form-group">
-                    <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
-                    <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
-                    <div class="error" id="geoLocationError"></div>
+                    <label>
+                        <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+                        Include geo-location in my assessment (Note: If using browser geo-location, city input is optional for a more accurate picture)
+                    </label>
+                </div>
+                <div id="geoLocationSection" style="display: none;">
+                    <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
+                    <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
+                    <div class="form-group">
+                        <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
+                        <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
+                        <div class="error" id="geoLocationError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>To enhance your stress test result, please input your geolocation coordinates (latitude, longitude) here for a more accurate assessment.</label>
+                        <input type="text" id="manualCoords" name="manualCoords" placeholder="e.g., 43.6532, -79.3832">
+                        <div class="error" id="manualCoordsError"></div>
+                    </div>
+                    <canvas id="mapCanvas" width="400" height="200" aria-label="Map for setting property location"></canvas>
+                </div>
+            </div>
+            <form id="stressTestForm" onsubmit="assessProperty(event)">
+                <div class="form-group">
+                    <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
+                    <input type="number" id="appraisalPrice" name="appraisalPrice" min="0" required>
+                    <div class="error" id="appraisalPriceError"></div>
                 </div>
                 <div class="form-group">
-                    <label for="manualCoords">Or enter coordinates manually (Lat, Long):</label>
-                    <input type="text" id="manualCoords" name="manualCoords" placeholder="e.g., 43.6532, -79.3832">
-                    <div class="error" id="manualCoordsError"></div>
+                    <label for="propertyCategory">Property Category:</label>
+                    <select id="propertyCategory" name="propertyCategory" required>
+                        <option value="house">House</option>
+                        <option value="condo">Condo</option>
+                        <option value="townhouse">Townhouse</option>
+                    </select>
+                    <div class="error" id="propertyCategoryError"></div>
                 </div>
-                <canvas id="mapCanvas" width="400" height="200" aria-label="Google Maps placeholder for setting property location"></canvas>
+                <div class="form-group">
+                    <label for="province">Province/Territory:</label>
+                    <select id="province" name="province" required>
+                        <option value="ON">Ontario</option>
+                        <option value="QC">Quebec</option>
+                        <option value="NS">Nova Scotia</option>
+                        <option value="NB">New Brunswick</option>
+                        <option value="MB">Manitoba</option>
+                        <option value="BC">British Columbia</option>
+                        <option value="PE">Prince Edward Island</option>
+                        <option value="SK">Saskatchewan</option>
+                        <option value="AB">Alberta</option>
+                        <option value="NL">Newfoundland and Labrador</option>
+                        <option value="NT">Northwest Territories</option>
+                        <option value="YT">Yukon</option>
+                        <option value="NU">Nunavut</option>
+                    </select>
+                    <div class="error" id="provinceError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="bedrooms">Number of Bedrooms:</label>
+                    <input type="number" id="bedrooms" name="bedrooms" min="0" required>
+                    <div class="error" id="bedroomsError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="bathrooms">Number of Bathrooms:</label>
+                    <input type="number" id="bathrooms" name="bathrooms" min="0" required>
+                    <div class="error" id="bathroomsError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="squareFootage">Square Footage:</label>
+                    <input type="number" id="squareFootage" name="squareFootage" min="0" required>
+                    <div class="error" id="squareFootageError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="location">City:</label>
+                    <input type="text" id="location" name="location" required>
+                    <div class="error" id="locationError"></div>
+                </div>
+                <button type="submit" id="submitBtn">Calculate 2-Year Outlook</button>
+            </form>
+            <div id="result"></div>
+            <div class="disclaimer">
+                <p><strong>Disclaimer:</strong> This tool provides estimates based on national data up to May 2025 trends for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time local conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
             </div>
-        </div>
-        <form id="stressTestForm" onsubmit="assessProperty(event)">
-            <div class="form-group">
-                <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
-                <input type="number" id="appraisalPrice" name="appraisalPrice" min="0" required>
-                <div class="error" id="appraisalPriceError"></div>
-            </div>
-            <div class="form-group">
-                <label for="propertyCategory">Property Category:</label>
-                <select id="propertyCategory" name="propertyCategory" required>
-                    <option value="house">House</option>
-                    <option value="condo">Condo</option>
-                    <option value="townhouse">Townhouse</option>
-                </select>
-                <div class="error" id="propertyCategoryError"></div>
-            </div>
-            <div class="form-group">
-                <label for="province">Province/Territory:</label>
-                <select id="province" name="province" required>
-                    <option value="ON">Ontario</option>
-                    <option value="QC">Quebec</option>
-                    <option value="NS">Nova Scotia</option>
-                    <option value="NB">New Brunswick</option>
-                    <option value="MB">Manitoba</option>
-                    <option value="BC">British Columbia</option>
-                    <option value="PE">Prince Edward Island</option>
-                    <option value="SK">Saskatchewan</option>
-                    <option value="AB">Alberta</option>
-                    <option value="NL">Newfoundland and Labrador</option>
-                    <option value="NT">Northwest Territories</option>
-                    <option value="YT">Yukon</option>
-                    <option value="NU">Nunavut</option>
-                </select>
-                <div class="error" id="provinceError"></div>
-            </div>
-            <div class="form-group">
-                <label for="bedrooms">Number of Bedrooms:</label>
-                <input type="number" id="bedrooms" name="bedrooms" min="0" required>
-                <div class="error" id="bedroomsError"></div>
-            </div>
-            <div class="form-group">
-                <label for="bathrooms">Number of Bathrooms:</label>
-                <input type="number" id="bathrooms" name="bathrooms" min="0" required>
-                <div class="error" id="bathroomsError"></div>
-            </div>
-            <div class="form-group">
-                <label for="squareFootage">Square Footage:</label>
-                <input type="number" id="squareFootage" name="squareFootage" min="0" required>
-                <div class="error" id="squareFootageError"></div>
-            </div>
-            <div class="form-group">
-                <label for="location">City:</label>
-                <input type="text" id="location" name="location" required>
-                <div class="error" id="locationError"></div>
-            </div>
-            <button type="submit" id="submitBtn">Calculate 2-Year Outlook</button>
-        </form>
-        <div id="result"></div>
-        <div class="disclaimer">
-            <p><strong>Disclaimer:</strong> This tool provides estimates based on national data up to May 2025 trends for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time local conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
-        </div>
-        <div class="footer">
-            <p><a href="terms-privacy.html">Terms & Privacy</a> | <a href="https://crestsupport.github.io/continental-market-group/">Home</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
-        </div>
+        </section>
+        <section id="terms-privacy">
+            <h2>Terms & Privacy</h2>
+            <h3>Terms of Use</h3>
+            <p><strong>Acceptance of Terms:</strong> By accessing or using the Canadian Real Estate Stress Tester ("Service") provided by Continental Market Group ("Company," "we," "us," or "our"), you agree to be bound by these Terms of Use. If you do not agree, please do not use the Service.</p>
+            <p><strong>Use of Service:</strong> The Service is intended for personal, non-commercial use. You may not use the Service for any illegal or unauthorized purpose. We reserve the right to terminate or restrict access to the Service at our discretion without notice.</p>
+            <p><strong>Payment and Fees:</strong> Access to certain features requires payment via Stripe. All fees are in CAD and non-refundable unless required by law. Pricing is subject to change, and we will notify users of significant changes with reasonable notice.</p>
+            <p><strong>Intellectual Property:</strong> All content, including text, graphics, and code, is the property of Continental Market Group and protected by Canadian and international copyright laws. You may not reproduce or distribute any content without our written consent.</p>
+            <p><strong>Disclaimer of Warranties:</strong> The Service is provided "as is" without warranties of any kind, either express or implied, including but not limited to accuracy, reliability, or fitness for a particular purpose. We do not guarantee that the Service will be uninterrupted or error-free.</p>
+            <p><strong>Limitation of Liability:</strong> To the fullest extent permitted by law, the Company shall not be liable for any indirect, incidental, special, or consequential damages arising from the use or inability to use the Service, including but not limited to financial losses or decisions based on assessment results.</p>
+            <p><strong>Modifications:</strong> We may update these Terms of Use at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+
+            <h3>Privacy Policy</h3>
+            <p><strong>Information We Collect:</strong> The Service may collect geolocation data if you enable it, processed in-browser and not stored or transmitted by us. No personal information (e.g., name, email) is collected unless voluntarily provided via the "Contact Us" link.</p>
+            <p><strong>Use of Information:</strong> Any data collected is used solely to provide the Service's functionality (e.g., geolocation-based assessments). We do not sell, trade, or share your information with third parties.</p>
+            <p><strong>Data Security:</strong> We implement reasonable security measures to protect against unauthorized access or disclosure. However, no online transmission is completely secure, and we cannot guarantee absolute security.</p>
+            <p><strong>Cookies and Tracking:</strong> The Service does not use cookies or tracking technologies. Your browser may store temporary data for functionality, which is cleared upon session end.</p>
+            <p><strong>Compliance with PIPEDA:</strong> We adhere to the Personal Information Protection and Electronic Documents Act (PIPEDA) by limiting data collection to what is necessary and ensuring transparency in our practices.</p>
+            <p><strong>Your Rights:</strong> You may contact us at <a href="mailto:catalystcg@outlook.com">catalystcg@outlook.com</a> to inquire about any data processed or to request its deletion, though minimal data is retained.</p>
+            <p><strong>Changes to Privacy Policy:</strong> We may update this policy to reflect changes in our practices. Updates will be posted here, and continued use signifies acceptance.</p>
+
+            <p><strong>Contact Us:</strong> For questions about these Terms or Privacy Policy, email us at <a href="mailto:catalystcg@outlook.com">catalystcg@outlook.com</a>.</p>
+        </section>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -479,6 +511,17 @@
                     console.error('Result div not found');
                 }
             }
+
+            // Smooth scroll for navigation
+            document.querySelectorAll('.nav a').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
 
             toggleGeoLocation();
         });
