@@ -287,16 +287,38 @@
             if (form) {
                 form.addEventListener('submit', function(event) {
                     console.log('Form submitted, preventing default');
-                    event.preventDefault(); // Explicitly prevent default before calling assessProperty
+                    event.preventDefault();
                     assessProperty(event);
                 });
             } else {
                 console.error('Form element not found');
             }
 
+            // Configurable market data (update manually with latest trends)
+            const marketData = {
+                lastUpdated: '2025-06-10',
+                cityTrends: {
+                    'Toronto': { priceChangeAnnual: -0.073, salesDrop: 0.30, unsoldInventory: 0.50, basePrice: 800 },
+                    'Vancouver': { priceChangeAnnual: -0.02, salesDrop: 0.15, unsoldInventory: 0.20, basePrice: 2000 },
+                    'Montreal': { priceChangeAnnual: 0.0, salesDrop: 0.10, unsoldInventory: 0.10, basePrice: 400 },
+                    'Hamilton': { priceChangeAnnual: -0.05, salesDrop: 0.20, unsoldInventory: 0.15, basePrice: 300 },
+                    'default': { priceChangeAnnual: -0.03, salesDrop: 0.15, unsoldInventory: 0.10, basePrice: 500 }
+                },
+                policyImpact: {
+                    interestRate: 0.0275, // Bank of Canada rate as of June 2025
+                    economicUncertainty: 0.10 // Weight for trade war, job losses
+                },
+                weights: {
+                    priceChange: 0.4,
+                    salesDrop: 0.3,
+                    unsoldInventory: 0.2,
+                    policyImpact: 0.1
+                }
+            };
+
             function assessProperty(event) {
                 console.log('assessProperty function called');
-                event.preventDefault(); // Double safeguard
+                event.preventDefault();
 
                 try {
                     console.log('Attempting to get input values');
@@ -309,7 +331,6 @@
                     const propertyCategory = document.getElementById('propertyCategory').value || 'house';
                     const province = document.getElementById('province').value || 'ON';
 
-                    // Validate inputs before proceeding
                     if (!appraisalPrice || !bedrooms || !bathrooms || !squareFootage || appraisalPrice <= 0 || squareFootage <= 0) {
                         throw new Error('Please enter positive numbers for appraisal price, bedrooms, bathrooms, and square footage.');
                     }
@@ -317,45 +338,31 @@
                     console.log('Input values retrieved:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
 
                     console.log('Starting calculations');
-                    // City-specific base prices per square foot (approximated from May 2025 trends)
-                    const cityBasePrices = {
-                        'Toronto': 800,
-                        'Vancouver': 2000,
-                        'Montreal': 400,
-                        'Hamilton': 300,
-                        'default': 500
-                    };
-                    const basePricePerSqFt = cityBasePrices[location] || cityBasePrices['default'];
+                    const cityData = marketData.cityTrends[location] || marketData.cityTrends['default'];
+                    const basePricePerSqFt = cityData.basePrice;
 
-                    // Province adjustment factor
                     const provinceFactor = {
-                        'ON': 1.2,
-                        'BC': 1.15,
-                        'QC': 1.0,
-                        'AB': 1.05,
-                        'NS': 0.95,
-                        'NB': 0.95,
-                        'MB': 0.95,
-                        'PE': 0.9,
-                        'SK': 0.95,
-                        'NL': 0.9,
-                        'NT': 0.85,
-                        'YT': 0.85,
-                        'NU': 0.85
+                        'ON': 1.2, 'BC': 1.15, 'QC': 1.0, 'AB': 1.05, 'NS': 0.95, 'NB': 0.95, 'MB': 0.95,
+                        'PE': 0.9, 'SK': 0.95, 'NL': 0.9, 'NT': 0.85, 'YT': 0.85, 'NU': 0.85
                     }[province] || 1.0;
 
-                    // Type-specific premiums (relative to house baseline)
                     const typePremium = {
                         'house': 1.0,
-                        'condo': location === 'Toronto' ? 0.9 : (location === 'Vancouver' ? 1.2 : 1.1), // Toronto discount, Vancouver premium
+                        'condo': location === 'Toronto' ? 0.9 : (location === 'Vancouver' ? 1.2 : 1.1),
                         'townhouse': 0.95
                     }[propertyCategory] || 1.0;
 
-                    const growthRate = 0.02 * typePremium;
+                    // Calculate market sentiment score (-1 to 1, negative for decline)
+                    const sentimentScore = (cityData.priceChangeAnnual * marketData.weights.priceChange) +
+                                          (cityData.salesDrop * marketData.weights.salesDrop * -1) +
+                                          (cityData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
+                                          (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
+                    const adjustedGrowthRate = sentimentScore * 0.5; // Scale to reasonable range (-0.5 to 0.5)
+
                     const interestRateImpact = location.includes('Toronto') || province === 'ON' ? 0.01 : 0.005;
                     const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
                     const currentPricePerSqFt = basePricePerSqFt * provinceFactor * typePremium * (1 + roomFactor) * (1 - interestRateImpact);
-                    const futurePricePerSqFt = currentPricePerSqFt * Math.pow(1 + growthRate, 2);
+                    const futurePricePerSqFt = currentPricePerSqFt * Math.pow(1 + adjustedGrowthRate, 2);
 
                     const currentValue = appraisalPrice;
                     const projectedValue = squareFootage * futurePricePerSqFt;
@@ -363,20 +370,19 @@
 
                     console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
 
-                    // Probability estimate
-                    let increaseChance, declineChance;
-                    if (percentageChange > 3) {
-                        increaseChance = Math.min(70 + (percentageChange - 3), 95);
-                        declineChance = 100 - increaseChance;
-                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), supported by market trends, though tempered by policy risks.`;
-                    } else if (percentageChange < -3) {
-                        declineChance = Math.min(80 + (Math.abs(percentageChange) - 3), 95);
+                    let increaseChance, declineChance, outlook;
+                    if (percentageChange < -5) {
+                        declineChance = Math.min(70 + (Math.abs(percentageChange) - 5), 95);
                         increaseChance = 100 - declineChance;
-                        outlook = `Potential value decrease of ${(-percentageChange).toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), influenced by oversupply and economic factors.`;
+                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), driven by oversupply, sales decline, and economic uncertainty.`;
+                    } else if (percentageChange > 5) {
+                        increaseChance = Math.min(70 + (percentageChange - 5), 95);
+                        declineChance = 100 - increaseChance;
+                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), supported by market trends, though tempered by risks.`;
                     } else {
-                        increaseChance = 50;
-                        declineChance = 50;
-                        outlook = `Value expected to remain stable (±3%) over 2 years for a ${propertyCategory} in ${province} (${location}), balancing growth and market pressures.`;
+                        increaseChance = 40;
+                        declineChance = 60;
+                        outlook = `Value expected to decline or remain stable (±5%) over 2 years for a ${propertyCategory} in ${province} (${location}), reflecting current market conditions.`;
                     }
 
                     const resultDiv = document.getElementById('result');
@@ -391,6 +397,7 @@
                             <p>Location: ${location} (Geo: ${geoLocation})</p>
                             <p>Property Type: ${propertyCategory}</p>
                             <p>Province: ${province}</p>
+                            <p>Market Data Last Updated: ${marketData.lastUpdated}</p>
                         `;
                         console.log('Result displayed');
                     } else {
@@ -412,6 +419,5 @@
             toggleGeoLocation();
         });
     </script>
-    <!-- Added to force re-build at 04:41 AM EDT, June 10, 2025 -->
 </body>
 </html>
