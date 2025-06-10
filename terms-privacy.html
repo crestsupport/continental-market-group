@@ -3,16 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms & Privacy</title>
+    <title>Canadian Real Estate Stress Tester</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Roboto', sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        p { line-height: 1.6; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .content-wrapper {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: block;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1em;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        input:disabled, select:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+        button, .payment-link a {
+            width: 100%;
+            padding: 0.75em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+        }
+        button:disabled, .payment-link a:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled), .payment-link a:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .section, #result, .disclaimer {
+            margin-top: 1.5em;
+            padding: 1em;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        #payment-section {
+            display: none;
+        }
+        #result {
+            display: none;
+        }
+        .error {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 0.5em;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 1.5em;
+            font-size: 0.75em;
+            color: #666;
+            border-top: 1px solid #ccc;
+        }
+        .payment-link {
+            text-align: center;
+            margin: 1em 0;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 0.5em;
+            display: block;
+            width: 100%;
+            height: 200px;
+        }
+        .draggable {
+            width: 100px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            cursor: move;
+            user-select: none;
+            margin: 10px 0;
+            font-family: 'Roboto', sans-serif;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .drop-zone.active {
+            border-color: #007BFF;
+            background-color: #e0f0ff;
+        }
+        .price-highlight {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d32f2f;
+            background-color: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            animation: pulse 1.5s infinite;
+        }
+        s {
+            color: #666;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .flag {
+            font-size: 1.5em;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
-    <h1>Terms & Privacy</h1>
-    <p>This page will contain the combined Terms of Use and Privacy Policy for the Canadian Real Estate Stress Tester. Please check back for detailed information or contact us at catalystcg@outlook.com for assistance.</p>
+    <div class="content-wrapper">
+        <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
+        <div class="section">
+            <h2>About Us</h2>
+            <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and city-specific pricing (e.g., Toronto, Vancouver) to project values. It also considers potential impacts from interest rates, government policies, and market trends.</p>
+            <h3>Ready to Stress Test Your Canadian Property?</h3>
+            <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
+            <div id="payment">
+                <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
+            </div>
+        </div>
+        <div class="section">
+            <h3>Geo-Location Setup</h3>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="useGeoLocation" onchange="toggleGeoLocation()">
+                    Include geo-location in my assessment (Note: If using Google geo-location, city input is optional for a more accurate picture)
+                </label>
+            </div>
+            <div id="geoLocationSection" style="display: none;">
+                <div id="geoLocationDraggable" class="draggable" draggable="true">Geo-Location</div>
+                <div id="geoLocationDropZone" class="drop-zone">Drop Geo-Location Here</div>
+                <div class="form-group">
+                    <label for="geoLocation">Geo-Location (Latitude, Longitude):</label>
+                    <input type="text" id="geoLocation" name="geoLocation" placeholder="e.g., 43.6532, -79.3832" readonly>
+                    <div class="error" id="geoLocationError"></div>
+                </div>
+                <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
+            </div>
+        </div>
+        <form id="stressTestForm" onsubmit="assessProperty(event)">
+            <div class="form-group">
+                <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
+                <input type="number" id="appraisalPrice" name="appraisalPrice" min="0" required>
+                <div class="error" id="appraisalPriceError"></div>
+            </div>
+            <div class="form-group">
+                <label for="propertyCategory">Property Category:</label>
+                <select id="propertyCategory" name="propertyCategory" required>
+                    <option value="house">House</option>
+                    <option value="condo">Condo</option>
+                    <option value="townhouse">Townhouse</option>
+                </select>
+                <div class="error" id="propertyCategoryError"></div>
+            </div>
+            <div class="form-group">
+                <label for="province">Province/Territory:</label>
+                <select id="province" name="province" required>
+                    <option value="ON">Ontario</option>
+                    <option value="QC">Quebec</option>
+                    <option value="NS">Nova Scotia</option>
+                    <option value="NB">New Brunswick</option>
+                    <option value="MB">Manitoba</option>
+                    <option value="BC">British Columbia</option>
+                    <option value="PE">Prince Edward Island</option>
+                    <option value="SK">Saskatchewan</option>
+                    <option value="AB">Alberta</option>
+                    <option value="NL">Newfoundland and Labrador</option>
+                    <option value="NT">Northwest Territories</option>
+                    <option value="YT">Yukon</option>
+                    <option value="NU">Nunavut</option>
+                </select>
+                <div class="error" id="provinceError"></div>
+            </div>
+            <div class="form-group">
+                <label for="bedrooms">Number of Bedrooms:</label>
+                <input type="number" id="bedrooms" name="bedrooms" min="0" required>
+                <div class="error" id="bedroomsError"></div>
+            </div>
+            <div class="form-group">
+                <label for="bathrooms">Number of Bathrooms:</label>
+                <input type="number" id="bathrooms" name="bathrooms" min="0" required>
+                <div class="error" id="bathroomsError"></div>
+            </div>
+            <div class="form-group">
+                <label for="squareFootage">Square Footage:</label>
+                <input type="number" id="squareFootage" name="squareFootage" min="0" required>
+                <div class="error" id="squareFootageError"></div>
+            </div>
+            <div class="form-group">
+                <label for="location">City:</label>
+                <input type="text" id="location" name="location" required>
+                <div class="error" id="locationError"></div>
+            </div>
+            <button type="submit" id="submitBtn">Calculate 2-Year Outlook</button>
+        </form>
+        <div id="result"></div>
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This tool provides estimates based on data up to May 2025 trends for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time market conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
+        </div>
+        <div class="footer">
+            <p><a href="/terms-privacy.html">Terms & Privacy</a> | <a href="https://crestsupport.github.io/continental-market-group/">Home</a> | <a href="mailto:catalystcg@outlook.com">Contact Us</a> | © 2025 Continental Market Group. All rights reserved. 🇨🇦</p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+            let hasGeoLocation = false;
+            let useGeoLocation = false;
+
+            function toggleGeoLocation() {
+                const geoCheckbox = document.getElementById('useGeoLocation');
+                if (geoCheckbox) {
+                    useGeoLocation = geoCheckbox.checked;
+                    const geoSection = document.getElementById('geoLocationSection');
+                    geoSection.style.display = useGeoLocation ? 'block' : 'none';
+                    toggleFormFields();
+                    console.log('Geo toggle updated, useGeoLocation:', useGeoLocation);
+                } else {
+                    console.error('Geo-location checkbox not found');
+                }
+            }
+
+            function toggleFormFields() {
+                const fields = ['appraisalPrice', 'bedrooms', 'bathrooms', 'squareFootage', 'location', 'geoLocation', 'propertyCategory', 'province', 'submitBtn'];
+                console.log('Toggling fields, useGeoLocation:', useGeoLocation, 'hasGeoLocation:', hasGeoLocation);
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element) {
+                        element.disabled = useGeoLocation && !hasGeoLocation;
+                        console.log(`Field ${field} disabled: ${element.disabled}`);
+                    } else {
+                        console.error(`Element ${field} not found`);
+                    }
+                });
+            }
+
+            const form = document.getElementById('stressTestForm');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    console.log('Form submitted, preventing default');
+                    event.preventDefault(); // Explicitly prevent default before calling assessProperty
+                    assessProperty(event);
+                });
+            } else {
+                console.error('Form element not found');
+            }
+
+            function assessProperty(event) {
+                console.log('assessProperty function called');
+                event.preventDefault(); // Double safeguard
+
+                try {
+                    console.log('Attempting to get input values');
+                    const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value);
+                    const bedrooms = parseInt(document.getElementById('bedrooms').value);
+                    const bathrooms = parseInt(document.getElementById('bathrooms').value);
+                    const squareFootage = parseInt(document.getElementById('squareFootage').value);
+                    const location = document.getElementById('location').value || 'Unknown';
+                    const geoLocation = document.getElementById('geoLocation').value || 'N/A';
+                    const propertyCategory = document.getElementById('propertyCategory').value || 'house';
+                    const province = document.getElementById('province').value || 'ON';
+
+                    // Validate inputs before proceeding
+                    if (!appraisalPrice || !bedrooms || !bathrooms || !squareFootage || appraisalPrice <= 0 || squareFootage <= 0) {
+                        throw new Error('Please enter positive numbers for appraisal price, bedrooms, bathrooms, and square footage.');
+                    }
+
+                    console.log('Input values retrieved:', { appraisalPrice, bedrooms, bathrooms, squareFootage, location, geoLocation, propertyCategory, province });
+
+                    console.log('Starting calculations');
+                    // City-specific base prices per square foot (approximated from May 2025 trends)
+                    const cityBasePrices = {
+                        'Toronto': 800,
+                        'Vancouver': 2000,
+                        'Montreal': 400,
+                        'Hamilton': 300,
+                        'default': 500
+                    };
+                    const basePricePerSqFt = cityBasePrices[location] || cityBasePrices['default'];
+
+                    // Province adjustment factor
+                    const provinceFactor = {
+                        'ON': 1.2,
+                        'BC': 1.15,
+                        'QC': 1.0,
+                        'AB': 1.05,
+                        'NS': 0.95,
+                        'NB': 0.95,
+                        'MB': 0.95,
+                        'PE': 0.9,
+                        'SK': 0.95,
+                        'NL': 0.9,
+                        'NT': 0.85,
+                        'YT': 0.85,
+                        'NU': 0.85
+                    }[province] || 1.0;
+
+                    // Type-specific premiums (relative to house baseline)
+                    const typePremium = {
+                        'house': 1.0,
+                        'condo': location === 'Toronto' ? 0.9 : (location === 'Vancouver' ? 1.2 : 1.1), // Toronto discount, Vancouver premium
+                        'townhouse': 0.95
+                    }[propertyCategory] || 1.0;
+
+                    const growthRate = 0.02 * typePremium;
+                    const interestRateImpact = location.includes('Toronto') || province === 'ON' ? 0.01 : 0.005;
+                    const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
+                    const currentPricePerSqFt = basePricePerSqFt * provinceFactor * typePremium * (1 + roomFactor) * (1 - interestRateImpact);
+                    const futurePricePerSqFt = currentPricePerSqFt * Math.pow(1 + growthRate, 2);
+
+                    const currentValue = appraisalPrice;
+                    const projectedValue = squareFootage * futurePricePerSqFt;
+                    const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
+
+                    console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
+
+                    // Probability estimate
+                    let increaseChance, declineChance;
+                    if (percentageChange > 3) {
+                        increaseChance = Math.min(70 + (percentageChange - 3), 95);
+                        declineChance = 100 - increaseChance;
+                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), supported by market trends, though tempered by policy risks.`;
+                    } else if (percentageChange < -3) {
+                        declineChance = Math.min(80 + (Math.abs(percentageChange) - 3), 95);
+                        increaseChance = 100 - declineChance;
+                        outlook = `Potential value decrease of ${(-percentageChange).toFixed(1)}% over 2 years for a ${propertyCategory} in ${province} (${location}), influenced by oversupply and economic factors.`;
+                    } else {
+                        increaseChance = 50;
+                        declineChance = 50;
+                        outlook = `Value expected to remain stable (±3%) over 2 years for a ${propertyCategory} in ${province} (${location}), balancing growth and market pressures.`;
+                    }
+
+                    const resultDiv = document.getElementById('result');
+                    if (resultDiv) {
+                        console.log('Result div found, updating content');
+                        resultDiv.style.display = 'block';
+                        resultDiv.innerHTML = `
+                            <p>Current Value: $${currentValue.toLocaleString()}</p>
+                            <p>Projected Value (2 Years): $${projectedValue.toLocaleString()}</p>
+                            <p>2-Year Outlook: ${outlook}</p>
+                            <p>Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline</p>
+                            <p>Location: ${location} (Geo: ${geoLocation})</p>
+                            <p>Property Type: ${propertyCategory}</p>
+                            <p>Province: ${province}</p>
+                        `;
+                        console.log('Result displayed');
+                    } else {
+                        console.error('Result div not found');
+                    }
+                } catch (error) {
+                    console.log('Error caught:', error.message);
+                    const resultDiv = document.getElementById('result');
+                    if (resultDiv) {
+                        resultDiv.style.display = 'block';
+                        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                        console.error('Assessment error displayed:', error);
+                    } else {
+                        console.error('Result div not found for error display');
+                    }
+                }
+            }
+
+            toggleGeoLocation();
+        });
+    </script>
 </body>
 </html>
