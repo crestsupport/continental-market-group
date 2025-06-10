@@ -188,7 +188,7 @@
                     <input type="text" id="manualCoords" name="manualCoords" placeholder="e.g., 43.6532, -79.3832">
                     <div class="error" id="manualCoordsError"></div>
                 </div>
-                <canvas id="mapCanvas" width="400" height="200" aria-label="Interactive map for setting property location"></canvas>
+                <canvas id="mapCanvas" width="400" height="200" aria-label="Google Maps placeholder for setting property location"></canvas>
             </div>
         </div>
         <form id="stressTestForm" onsubmit="assessProperty(event)">
@@ -260,6 +260,8 @@
             console.log('DOM fully loaded and parsed');
             let hasGeoLocation = false;
             let useGeoLocation = false;
+            const canvas = document.getElementById('mapCanvas');
+            const ctx = canvas.getContext('2d');
 
             function toggleGeoLocation() {
                 const geoCheckbox = document.getElementById('useGeoLocation');
@@ -268,6 +270,10 @@
                     const geoSection = document.getElementById('geoLocationSection');
                     geoSection.style.display = useGeoLocation ? 'block' : 'none';
                     toggleFormFields();
+                    if (!useGeoLocation) {
+                        document.getElementById('geoLocation').value = '';
+                        drawMap({ lat: 0, lng: 0 });
+                    }
                     console.log('Geo toggle updated, useGeoLocation:', useGeoLocation);
                 } else {
                     console.error('Geo-location checkbox not found');
@@ -286,6 +292,18 @@
                         console.error(`Element ${field} not found`);
                     }
                 });
+            }
+
+            function drawMap(coords) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'blue';
+                const x = (coords.lng + 180) * (canvas.width / 360);
+                const y = canvas.height - (coords.lat + 90) * (canvas.height / 180);
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'black';
+                ctx.fillText(`Lat: ${coords.lat.toFixed(4)}, Lng: ${coords.lng.toFixed(4)}`, 10, 20);
             }
 
             const form = document.getElementById('stressTestForm');
@@ -331,7 +349,6 @@
                     const bathrooms = parseInt(document.getElementById('bathrooms').value);
                     const squareFootage = parseInt(document.getElementById('squareFootage').value);
                     const location = document.getElementById('location').value || 'Unknown';
-                    const geoLocation = document.getElementById('geoLocation').value || 'N/A';
                     const manualCoords = document.getElementById('manualCoords').value || '';
                     const propertyCategory = document.getElementById('propertyCategory').value || 'house';
                     const province = document.getElementById('province').value || 'ON';
@@ -340,7 +357,7 @@
                         throw new Error('Please enter positive numbers for appraisal price, bedrooms, bathrooms, and square footage.');
                     }
 
-                    // Validate and parse manual coordinates if provided
+                    // Validate and parse manual coordinates first
                     let coords = { lat: 0, lng: 0 };
                     if (manualCoords) {
                         const coordArray = manualCoords.split(',').map(Number);
@@ -350,10 +367,17 @@
                             if (coords.lat < -90 || coords.lat > 90 || coords.lng < -180 || coords.lng > 180) {
                                 throw new Error('Coordinates must be: Latitude (-90 to 90), Longitude (-180 to 180)');
                             }
+                            document.getElementById('geoLocation').value = `${coords.lat}, ${coords.lng}`;
+                            drawMap(coords);
+                            proceedWithAssessment(coords);
+                            return;
                         } else {
                             throw new Error('Invalid coordinate format. Use "latitude, longitude" (e.g., 43.6532, -79.3832)');
                         }
-                    } else if (useGeoLocation && navigator.geolocation) {
+                    }
+
+                    // If no manual coords and geolocation is enabled, use it
+                    if (useGeoLocation && navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
                             (position) => {
                                 coords.lat = position.coords.latitude;
@@ -361,17 +385,18 @@
                                 hasGeoLocation = true;
                                 toggleFormFields();
                                 document.getElementById('geoLocation').value = `${coords.lat}, ${coords.lng}`;
+                                drawMap(coords);
                                 proceedWithAssessment(coords);
                             },
                             (error) => {
                                 throw new Error('Geolocation failed: ' + error.message);
                             }
                         );
-                        return; // Exit early to handle async geolocation
+                    } else {
+                        // Default to 0,0 if no geolocation or manual input
+                        drawMap(coords);
+                        proceedWithAssessment(coords);
                     }
-
-                    // Proceed with assessment using manual coords or default to 0,0 if none
-                    proceedWithAssessment(coords);
 
                 } catch (error) {
                     console.log('Error caught:', error.message);
