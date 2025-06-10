@@ -165,7 +165,7 @@
     <div class="nav">
         <a href="#home">Home</a>
         <a href="#terms-privacy">Terms & Privacy</a>
-        <a href="mailto:catalystcg@outlook.com">Contact Us</a>
+        <a href="mailto:catalystcg@outlook.com?subject=Contact%20from%20Real%20Estate%20Stress%20Tester&body=Hello,%20I%20have%20a%20question%20or%20comment:" onclick="this.href='mailto:catalystcg@outlook.com?subject=Contact%20from%20Real%20Estate%20Stress%20Tester&body=Hello,%20I%20have%20a%20question%20or%20comment:'; if (!window.location.href.includes('mailto:')) alert('Please ensure your email client is configured to open mailto links. Contact us at catalystcg@outlook.com manually if needed.');">Contact Us</a>
     </div>
     <div class="content-wrapper">
         <section id="home">
@@ -516,9 +516,14 @@
             document.querySelectorAll('.nav a').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('mailto:')) {
+                        window.location.href = href;
+                    } else {
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
                     }
                 });
             });
