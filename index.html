@@ -255,17 +255,17 @@
                 console.error('Form element not found');
             }
 
-            // National market data with adjusted postal code factors
+            // National market data with tightened range
             const marketData = {
                 nationalTrends: {
-                    priceChangeAnnual: -0.03, // -3% based on Ontario's April 2025 decline
-                    salesDrop: 0.05,         // 5% drop aligning with Ontario trends
-                    unsoldInventory: 0.10,   // 10% increase reflecting higher inventory
-                    basePrice: 679           // $679,866 national avg from Statistics Canada
+                    priceChangeAnnual: -0.015, // -1.5% to reflect a stable decline
+                    salesDrop: 0.03,          // 3% drop aligning with Ontario trends
+                    unsoldInventory: 0.05,    // 5% increase for moderate inventory growth
+                    basePrice: 679            // $679,866 national avg
                 },
                 policyImpact: {
-                    interestRate: 0.0275,    // Bank of Canada rate as of June 2025
-                    economicUncertainty: 0.05 // 5% to reflect trade concerns
+                    interestRate: 0.0275,     // Bank of Canada rate
+                    economicUncertainty: 0.02 // Reduced to 2% for minimal impact
                 },
                 weights: {
                     priceChange: 0.4,
@@ -274,14 +274,12 @@
                     policyImpact: 0.1
                 },
                 postalCodeFactors: {
-                    // Adjusted multipliers based on realistic trends
-                    'M5V': 1.03, // Toronto, +3% from realtor.ca
-                    'V6B': 1.01, // Vancouver, +1% from CMHC
-                    'H3B': 1.00, // Montreal, baseline
-                    'T2P': 0.96, // Calgary, -4% from CMHC
-                    'B3J': 0.95, // Halifax, -5% from realtor.ca
-                    'L0A': 0.98  // Millbrook, -2% estimated rural softening
-                    // Add more FSAs as you collect data
+                    'M5V': 0.995, // Toronto, -0.5% adjustment
+                    'V6B': 0.99,  // Vancouver, -1%
+                    'H3B': 1.00,  // Montreal, baseline
+                    'T2P': 0.98,  // Calgary, -2%
+                    'B3J': 0.97,  // Halifax, -3%
+                    'L0A': 0.99   // Millbrook, -1%
                 }
             };
 
@@ -311,7 +309,7 @@
                     const postalCodePrefix = postalCode.slice(0, 3);
                     const postalFactor = marketData.postalCodeFactors[postalCodePrefix] || 1.0;
 
-                    // Calculate national market sentiment score (-1 to 1, negative for decline)
+                    // Calculate constrained market sentiment score
                     const nationalData = marketData.nationalTrends;
                     const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
                                           (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
@@ -319,30 +317,26 @@
                                           (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
                     const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02); // Cap at ±2% over 2 years
 
-                    const interestRateImpact = 0.01;
-                    const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
-                    const currentPricePerUnit = nationalData.basePrice * postalFactor * (1 + roomFactor) * (1 - interestRateImpact);
-                    const futurePricePerUnit = currentPricePerUnit * Math.pow(1 + adjustedGrowthRate, 2);
-
+                    // Use appraisal as base with tight growth range
                     const currentValue = appraisalPrice;
-                    const projectedValue = squareFootage * futurePricePerUnit;
+                    const projectedValue = currentValue * (1 + adjustedGrowthRate);
                     const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
 
                     console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
 
                     let increaseChance, declineChance, outlook;
-                    if (percentageChange < -5) {
-                        declineChance = Math.min(70 + (Math.abs(percentageChange) - 5), 95);
-                        increaseChance = 100 - declineChance;
-                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years, driven by national market trends and economic uncertainty.`;
-                    } else if (percentageChange > 5) {
-                        increaseChance = Math.min(70 + (percentageChange - 5), 95);
-                        declineChance = 100 - increaseChance;
-                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, supported by national trends, though tempered by risks.`;
-                    } else {
-                        increaseChance = 40;
+                    if (percentageChange < -2) {
                         declineChance = 60;
-                        outlook = `Value expected to decline or remain stable (±5%) over 2 years, reflecting current national market conditions.`;
+                        increaseChance = 40;
+                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years due to market conditions.`;
+                    } else if (percentageChange > 2) {
+                        increaseChance = 60;
+                        declineChance = 40;
+                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
+                    } else {
+                        increaseChance = 50;
+                        declineChance = 50;
+                        outlook = `Value expected to remain stable (±2%) over 2 years, reflecting current market trends.`;
                     }
 
                     const resultDiv = document.getElementById('result');
