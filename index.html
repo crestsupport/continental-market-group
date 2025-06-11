@@ -147,6 +147,17 @@
                 <div id="payment">
                     <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
                 </div>
+                <p>Once payment is confirmed, you will be redirected to fill in the following details using a unique token provided to you:</p>
+                <ul>
+                    <li>1. Postal Code (e.g., M5V 2T6)</li>
+                    <li>2. Estimated Appraisal Price ($CAD)</li>
+                    <li>3. Property Category (House, Condo, or Townhouse)</li>
+                    <li>4. Province/Territory</li>
+                    <li>5. Number of Bedrooms</li>
+                    <li>6. Number of Bathrooms</li>
+                    <li>7. Square Footage</li>
+                    <li>8. City</li>
+                </ul>
             </div>
             <div id="unlockForm" style="display: none;">
                 <h3>Enter Your Payment Token</h3>
@@ -343,80 +354,4 @@
 
                     // Calculate constrained market sentiment score
                     const nationalData = marketData.nationalTrends;
-                    const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
-                                          (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
-                                          (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
-                                          (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
-                    const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02); // Cap at ±2% over 2 years
-
-                    // Use appraisal as base with tight growth range
-                    const currentValue = appraisalPrice;
-                    const projectedValue = currentValue * (1 + adjustedGrowthRate);
-                    const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
-
-                    console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
-
-                    let increaseChance, declineChance, outlook;
-                    if (percentageChange < -2) {
-                        declineChance = 60;
-                        increaseChance = 40;
-                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years due to market conditions.`;
-                    } else if (percentageChange > 2) {
-                        increaseChance = 60;
-                        declineChance = 40;
-                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
-                    } else {
-                        increaseChance = 50;
-                        declineChance = 50;
-                        outlook = `Value expected to remain stable (±2%) over 2 years, reflecting current market trends.`;
-                    }
-
-                    const resultDiv = document.getElementById('result');
-                    if (resultDiv) {
-                        console.log('Result div found, updating content');
-                        resultDiv.style.display = 'block';
-                        resultDiv.innerHTML = `
-                            <p>Current Value: $${currentValue.toLocaleString()}</p>
-                            <p>Projected Value (2 Years): $${projectedValue.toLocaleString()}</p>
-                            <p>2-Year Outlook: ${outlook}</p>
-                            <p>Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline</p>
-                            <p>Location: ${location} (Postal Code: ${postalCode})</p>
-                            <p>Property Type: ${propertyCategory}</p>
-                            <p>Province: ${province}</p>
-                        `;
-                        console.log('Result displayed');
-                    } else {
-                        console.error('Result div not found');
-                    }
-                } catch (error) {
-                    console.log('Error caught:', error.message);
-                    const resultDiv = document.getElementById('result');
-                    if (resultDiv) {
-                        resultDiv.style.display = 'block';
-                        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-                        console.error('Assessment error displayed:', error);
-                    } else {
-                        console.error('Result div not found for error display');
-                    }
-                }
-            }
-
-            // Smooth scroll for navigation
-            document.querySelectorAll('.nav a').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const href = this.getAttribute('href');
-                    if (href.startsWith('mailto:')) {
-                        window.location.href = href;
-                    } else {
-                        const target = document.querySelector(href);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+                    const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange
