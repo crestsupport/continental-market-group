@@ -148,15 +148,23 @@
                     <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
                 </div>
             </div>
-            <div class="section">
-                <h3>Postal Code Input</h3>
+            <div id="unlockForm" style="display: none;">
+                <h3>Enter Your Payment Token</h3>
                 <div class="form-group">
-                    <label for="postalCode">Enter Your Postal Code (e.g., M5V 2T6):</label>
-                    <input type="text" id="postalCode" name="postalCode" pattern="[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d" placeholder="e.g., M5V 2T6" required>
-                    <div class="error" id="postalCodeError"></div>
+                    <label for="paymentToken">Payment Token (Provided After Payment):</label>
+                    <input type="text" id="paymentToken" name="paymentToken" placeholder="Enter token" required>
+                    <button onclick="unlockForm()">Unlock Form</button>
                 </div>
             </div>
-            <form id="stressTestForm" onsubmit="assessProperty(event)">
+            <form id="stressTestForm" style="display: none;" onsubmit="assessProperty(event)">
+                <div class="section">
+                    <h3>Postal Code Input</h3>
+                    <div class="form-group">
+                        <label for="postalCode">Enter Your Postal Code (e.g., M5V 2T6):</label>
+                        <input type="text" id="postalCode" name="postalCode" pattern="[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d" placeholder="e.g., M5V 2T6" required>
+                        <div class="error" id="postalCodeError"></div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
                     <input type="number" id="appraisalPrice" name="appraisalPrice" min="0" required>
@@ -245,14 +253,38 @@
             console.log('DOM fully loaded and parsed');
 
             const form = document.getElementById('stressTestForm');
-            if (form) {
+            const paymentDiv = document.getElementById('payment');
+            const unlockFormDiv = document.getElementById('unlockForm');
+            if (form && paymentDiv && unlockFormDiv) {
                 form.addEventListener('submit', function(event) {
                     console.log('Form submitted, preventing default');
                     event.preventDefault();
                     assessProperty(event);
                 });
+
+                // Check URL for token on load
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+                if (token === 'unique123') { // Replace with your actual token
+                    form.style.display = 'block';
+                    paymentDiv.style.display = 'none';
+                    unlockFormDiv.style.display = 'none';
+                } else {
+                    unlockFormDiv.style.display = 'block';
+                }
             } else {
-                console.error('Form element not found');
+                console.error('Form or payment div not found');
+            }
+
+            function unlockForm() {
+                const inputToken = document.getElementById('paymentToken').value;
+                if (inputToken === 'unique123') { // Replace with your actual token
+                    form.style.display = 'block';
+                    paymentDiv.style.display = 'none';
+                    unlockFormDiv.style.display = 'none';
+                } else {
+                    alert('Invalid token. Please use the token provided after payment.');
+                }
             }
 
             // National market data with tightened range
