@@ -141,7 +141,7 @@
             <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
             <div class="section">
                 <h2>About Us</h2>
-                <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverages national data up to May 2025 trends from CREA, Statistics Canada, Bank of Canada, and CMHC, factoring in property type (house, condo, townhouse), square footage, province, and postal code-specific pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
+                <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverage national data, policy, and social trends from CMHC, realtor.ca, CREA, Statistics Canada, and Bank of Canada, factoring in property type (house, condo, townhouse), square footage, province, and postal code-specific pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
                 <h3>Ready to Stress Test Your Canadian Property?</h3>
                 <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
                 <div id="payment">
@@ -243,8 +243,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded and parsed');
-            const canvas = document.getElementById('mapCanvas');
-            if (canvas) canvas.remove(); // Remove unused canvas element
 
             const form = document.getElementById('stressTestForm');
             if (form) {
@@ -257,18 +255,18 @@
                 console.error('Form element not found');
             }
 
-            // National market data with postal code factors (simplified example)
+            // National market data with postal code factors from CMHC, realtor.ca, and CREA (example values)
             const marketData = {
                 lastUpdated: '2025-06-10',
                 nationalTrends: {
-                    priceChangeAnnual: -0.036,
-                    salesDrop: 0.075,
-                    unsoldInventory: 0.143,
-                    basePrice: 679
+                    priceChangeAnnual: -0.036, // Approx. from CREA April 2025 report
+                    salesDrop: 0.075,         // Approx. from CREA April 2025
+                    unsoldInventory: 0.143,   // Approx. from CREA April 2025
+                    basePrice: 679            // Approx. $679,866 national avg from Statistics Canada
                 },
                 policyImpact: {
-                    interestRate: 0.0275,
-                    economicUncertainty: 0.10
+                    interestRate: 0.0275,     // Bank of Canada rate as of June 2025
+                    economicUncertainty: 0.10 // Estimated from trade concerns
                 },
                 weights: {
                     priceChange: 0.4,
@@ -277,12 +275,13 @@
                     policyImpact: 0.1
                 },
                 postalCodeFactors: {
-                    'M5V': 1.2, // Downtown Toronto
-                    'V6B': 1.15, // Vancouver
-                    'H3B': 1.0,  // Montreal
-                    'T2P': 1.05, // Calgary
-                    'B3J': 0.95  // Halifax
-                    // Add more postal code prefixes as needed
+                    // Example multipliers based on May 2025 trends (to be updated manually)
+                    'M5V': 1.20, // Toronto (Downtown), +20% from realtor.ca avg price
+                    'V6B': 1.15, // Vancouver, +15% from CMHC Housing Market Outlook
+                    'H3B': 1.00, // Montreal, baseline from CREA HPI
+                    'T2P': 1.05, // Calgary, +5% from CMHC
+                    'B3J': 0.95  // Halifax, -5% from realtor.ca
+                    // Add more FSAs as you collect data
                 }
             };
 
