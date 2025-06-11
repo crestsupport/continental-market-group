@@ -258,14 +258,14 @@
             // National market data with adjusted postal code factors
             const marketData = {
                 nationalTrends: {
-                    priceChangeAnnual: -0.015, // Adjusted to -1.5% based on recent softening trends (e.g., CREA May 2025)
-                    salesDrop: 0.03,          // Adjusted to 3% drop (CREA)
-                    unsoldInventory: 0.08,    // Adjusted to 8% increase (CREA)
-                    basePrice: 679            // $679,866 national avg from Statistics Canada
+                    priceChangeAnnual: -0.03, // -3% based on Ontario's April 2025 decline
+                    salesDrop: 0.05,         // 5% drop aligning with Ontario trends
+                    unsoldInventory: 0.10,   // 10% increase reflecting higher inventory
+                    basePrice: 679           // $679,866 national avg from Statistics Canada
                 },
                 policyImpact: {
-                    interestRate: 0.0275,     // Bank of Canada rate as of June 2025
-                    economicUncertainty: 0.05 // Reduced to 5% to reflect less severe concerns
+                    interestRate: 0.0275,    // Bank of Canada rate as of June 2025
+                    economicUncertainty: 0.05 // 5% to reflect trade concerns
                 },
                 weights: {
                     priceChange: 0.4,
@@ -274,13 +274,13 @@
                     policyImpact: 0.1
                 },
                 postalCodeFactors: {
-                    // Adjusted multipliers based on realistic May 2025 trends
-                    'M5V': 1.05, // Toronto (Downtown), +5% from realtor.ca
-                    'V6B': 1.03, // Vancouver, +3% from CMHC
-                    'H3B': 1.00, // Montreal, baseline from CREA
-                    'T2P': 0.98, // Calgary, -2% from CMHC
-                    'B3J': 0.97, // Halifax, -3% from realtor.ca
-                    'L0A': 1.02  // Millbrook, ON, +2% estimated rural growth
+                    // Adjusted multipliers based on realistic trends
+                    'M5V': 1.03, // Toronto, +3% from realtor.ca
+                    'V6B': 1.01, // Vancouver, +1% from CMHC
+                    'H3B': 1.00, // Montreal, baseline
+                    'T2P': 0.96, // Calgary, -4% from CMHC
+                    'B3J': 0.95, // Halifax, -5% from realtor.ca
+                    'L0A': 0.98  // Millbrook, -2% estimated rural softening
                     // Add more FSAs as you collect data
                 }
             };
@@ -317,7 +317,7 @@
                                           (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
                                           (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
                                           (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
-                    const adjustedGrowthRate = sentimentScore * 0.5; // Scaled to a more conservative range
+                    const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02); // Cap at ±2% over 2 years
 
                     const interestRateImpact = 0.01;
                     const roomFactor = (bedrooms + bathrooms * 0.5) / 10;
