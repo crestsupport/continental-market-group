@@ -11,11 +11,18 @@
             padding: 0;
             background-color: #f4f7f9;
             color: #333;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
         nav {
             background-color: #2c3e50;
             padding: 1rem;
+            width: 100%;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
         }
         nav a {
             color: #ecf0f1;
@@ -28,8 +35,8 @@
             color: #3498db;
         }
         .content {
-            max-width: 900px;
-            margin: 2rem auto;
+            max-width: 600px;
+            margin: 6rem auto 2rem;
             padding: 2rem;
             background: #fff;
             border-radius: 8px;
@@ -134,19 +141,12 @@
                     <input type="number" id="squareFootage" name="squareFootage" placeholder="e.g., 1200" required>
                     <label for="location">Location</label>
                     <input type="text" id="location" name="location" placeholder="e.g., Downtown Toronto" required>
-                    <button type="submit">Submit</button>
+                    <button type="submit">Submit & Pay</button>
                 </div>
                 <div id="postalCodeError"></div>
                 <div id="appraisalPriceError"></div>
                 <div id="emailError"></div>
             </form>
-            <div id="payment" style="display: none;">
-                <h3>Complete Payment to Receive Results</h3>
-                <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) to receive your 24-month outlook assessment.</p>
-                <button id="checkout-button">Proceed to Payment</button>
-                <div id="checkout-message"></div>
-                <button id="sendForProcessing" style="display: none;">Send for Processing</button>
-            </div>
         </div>
         <div id="about-us" class="section">
             <h2>About Us</h2>
@@ -169,62 +169,9 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('stressTestForm');
-            const paymentDiv = document.getElementById('payment');
-            const checkoutButton = document.getElementById('checkout-button');
-            const sendForProcessing = document.getElementById('sendForProcessing');
 
-            if (form && paymentDiv) {
+            if (form) {
                 form.style.display = 'block';
-
-                function calculateResults(data) {
-                    if (!data.email) {
-                        return { error: "Email is required to receive results." };
-                    }
-                    const marketData = {
-                        nationalTrends: { priceChangeAnnual: -0.015, salesDrop: 0.03, unsoldInventory: 0.05, basePrice: 679 },
-                        policyImpact: { interestRate: 0.0275, economicUncertainty: 0.02 },
-                        weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
-                        postalCodeFactors: { 'M5V': 0.995, 'V6B': 0.99, 'H3B': 1.00, 'T2P': 0.98, 'B3J': 0.97, 'L0A': 0.99 }
-                    };
-                    const postalCodePrefix = data.postalCode.toUpperCase().replace(/\s/g, '').slice(0, 3);
-                    const postalFactor = marketData.postalCodeFactors[postalCodePrefix] || 1.0;
-                    const nationalData = marketData.nationalTrends;
-                    const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
-                                          (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
-                                          (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
-                                          (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
-                    const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02);
-                    const currentValue = parseFloat(data.appraisalPrice);
-                    const projectedValue = currentValue * (1 + adjustedGrowthRate);
-                    const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
-
-                    let increaseChance, declineChance, outlook;
-                    if (percentageChange < -2) {
-                        declineChance = 60; increaseChance = 40;
-                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years due to market conditions.`;
-                    } else if (percentageChange > 2) {
-                        increaseChance = 60; declineChance = 40;
-                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
-                    } else {
-                        increaseChance = 50; declineChance = 50;
-                        outlook = `Value expected to remain stable (±2%) over 2 years, reflecting current market trends.`;
-                    }
-
-                    return {
-                        fullResult: `
-                            Your Stress Test Results:
-                            Email: ${data.email}
-                            Current Value: $${currentValue.toLocaleString()}
-                            Projected Value (2 Years): $${projectedValue.toLocaleString()}
-                            2-Year Outlook: ${outlook}
-                            Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline
-                            Location: ${data.location} (Postal Code: ${data.postalCode})
-                            Property Type: ${data.propertyCategory}
-                            Province: ${data.province}
-                            Please save these results for your records.
-                        `
-                    };
-                }
 
                 form.onsubmit = function(event) {
                     event.preventDefault();
@@ -251,42 +198,25 @@
                         document.getElementById('appraisalPriceError').textContent = 'Please enter positive numbers for appraisal price and square footage.';
                         return;
                     }
-                    const { fullResult, error } = calculateResults(formData);
-                    if (error) {
-                        document.getElementById('emailError').textContent = error;
-                        return;
-                    }
-                    // Store form data instead of results
-                    localStorage.setItem('formData', JSON.stringify(formData));
-                    form.style.display = 'none';
-                    paymentDiv.style.display = 'block';
+
+                    // Generate a unique ID for tracking
+                    const uniqueId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+
+                    // Store form data with unique ID
+                    localStorage.setItem(uniqueId, JSON.stringify(formData));
+
+                    // Redirect to Stripe payment with unique ID
+                    const stripeUrl = `https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}`;
+                    window.location.href = stripeUrl;
+
+                    // Send email with unique ID and form data
+                    const subject = 'Stress Test Submission';
+                    const body = `Submission ID: ${uniqueId}\nPlease process the payment and send results. Details: Email: ${formData.email}, Postal Code: ${formData.postalCode}, Appraisal Price: ${formData.appraisalPrice}, Property Type: ${formData.propertyCategory}, Province: ${formData.province}, Bedrooms: ${formData.bedrooms}, Bathrooms: ${formData.bathrooms}, Square Footage: ${formData.squareFootage}, Location: ${formData.location}`;
+                    window.location.href = `mailto:catalystcg@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 };
-
-                checkoutButton.addEventListener('click', () => {
-                    const formData = JSON.parse(localStorage.getItem('formData'));
-                    if (formData) {
-                        const session = window.open(`https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}`, '_blank');
-                        if (session) {
-                            document.getElementById('checkout-message').textContent = 'Please complete the payment to receive your results.';
-                            // Simulate payment confirmation (in practice, integrate Stripe webhook)
-                            setTimeout(() => {
-                                sendForProcessing.style.display = 'block';
-                                checkoutButton.style.display = 'none';
-                            }, 2000); // Simulate 2-second payment process
-                        }
-                    }
-                });
-
-                sendForProcessing.addEventListener('click', () => {
-                    const formData = JSON.parse(localStorage.getItem('formData'));
-                    if (formData) {
-                        const subject = 'Stress Test Submission';
-                        const body = `Please process my payment and send the results. Submitted details: Email: ${formData.email}, Postal Code: ${formData.postalCode}, Appraisal Price: ${formData.appraisalPrice}, Property Type: ${formData.propertyCategory}, Province: ${formData.province}, Bedrooms: ${formData.bedrooms}, Bathrooms: ${formData.bathrooms}, Square Footage: ${formData.squareFootage}, Location: ${formData.location}`;
-                        window.location.href = `mailto:catalystcg@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        paymentDiv.style.display = 'none';
-                        alert('Your submission has been sent. Results will be emailed after payment confirmation.');
-                    }
-                });
             }
         });
     </script>
