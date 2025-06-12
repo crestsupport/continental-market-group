@@ -3,445 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canadian Real Estate Stress Tester</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="favicon.png"> <!-- Replace with your favicon -->
+    <title>Real Estate Stress Test</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .content-wrapper {
-            background-color: rgba(255, 255, 255, 0.85);
-            color: #4A4A4A;
-            padding: 1.5em;
-            border-radius: 8px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            margin: 1em 0;
-        }
-        .logo {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            height: 40px;
-        }
-        .nav {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 15px;
-        }
-        .nav a {
-            color: #007BFF;
-            text-decoration: none;
-            font-weight: 700;
-            padding: 5px 10px;
-            transition: color 0.3s;
-        }
-        .nav a:hover {
-            color: #0056b3;
-        }
-        section {
-            margin-top: 60px;
-            padding: 1.5em;
-            scroll-margin-top: 60px;
-        }
-        h1 { font-size: 2.2em; font-weight: 700; }
-        h2 { font-size: 1.8em; font-weight: 700; }
-        h3 { font-size: 1.5em; font-weight: 700; }
-        p { font-size: 1.1em; line-height: 1.6; margin-bottom: 1.5em; }
-        .form-group {
-            margin-bottom: 1em;
-            text-align: left;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5em;
-            font-weight: 700;
-        }
-        input, select {
-            width: 100%;
-            padding: 0.5em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
-        }
-        input:disabled, select:disabled {
-            background-color: #e0e0e0;
-            cursor: not-allowed;
-        }
-        button, .payment-link a {
-            width: 100%;
-            padding: 0.75em;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            font-family: 'Roboto', sans-serif;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        button:disabled, .payment-link a:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled), .payment-link a:hover:not(:disabled) {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-        .section, #result, .disclaimer, #terms-privacy {
-            padding: 1.5em;
-            border-radius: 4px;
-            background-color: rgba(255, 255, 255, 0.95);
-            margin: 1em 0;
-        }
-        #result {
-            display: none;
-        }
-        .error {
-            color: red;
-            font-size: 0.875em;
-            margin-top: 0.5em;
-        }
-        .price-highlight {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #856404;
-            background-color: #fff3cd;
-            padding: 2px 6px;
-            border-radius: 3px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
-            animation: pulse 1.5s infinite;
-        }
-        s {
-            color: #666;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .flag {
-            font-size: 1.5em;
-            vertical-align: middle;
-        }
-        form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1em;
-        }
-        @media (max-width: 768px) {
-            form { grid-template-columns: 1fr; }
-            .nav { top: 10px; }
-            .logo { top: 10px; }
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .content { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .form-group { margin: 20px 0; }
+        input, select, button { padding: 10px; margin: 5px 0; }
+        .section { display: none; margin-top: 20px; }
+        #postalCodeError, #appraisalPriceError, #emailError { color: red; }
+        .active { display: block; }
     </style>
 </head>
 <body>
-    <img src="logo.png" alt="Continental Market Group Logo" class="logo"> <!-- Updated logo with "C" above "MG", white on red maple leaf -->
-    <div class="nav">
-        <a href="#home">Home</a>
-        <a href="#terms-privacy">Terms & Privacy</a>
-        <a href="mailto:catalystcg@outlook.com?subject=Contact%20from%20Real%20Estate%20Stress%20Tester&body=Hello,%20I%20have%20a%20question%20or%20comment:" onclick="this.href='mailto:catalystcg@outlook.com?subject=Contact%20from%20Real%20Estate%20Stress%20Tester&body=Hello,%20I%20have%20a%20question%20or%20comment:'; if (!window.location.href.includes('mailto:')) alert('Please ensure your email client is configured to open mailto links. Contact us at catalystcg@outlook.com manually if needed.');">Contact Us</a>
-    </div>
-    <div class="content-wrapper">
-        <section id="home">
-            <h1>Canadian Real Estate Stress Tester 🇨🇦</h1>
-            <div class="section">
-                <h2>About Us</h2>
-                <p>We are a data-driven platform powered by AI and machine learning, dedicated to providing impartial real estate assessment tools across Canada. Operated by Continental Market Group, our approach leverage national data, policy, and social trends from CMHC, realtor.ca, CREA, Statistics Canada, and Bank of Canada, factoring in property type (✓ house, condo, townhouse), square footage (✓), province (✓), and postal code-specific (✓) pricing to project values. It also considers potential impacts from interest rates and market trends.</p>
-                <h3>Ready to Stress Test Your Canadian Property?</h3>
-                <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) via Stripe to unlock your assessment results.</p>
-                <div id="payment">
-                    <a href="https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02" id="checkout-button" class="payment-link" target="_blank">Buy Now ($19.99)</a>
-                </div>
-            </div>
-            <div id="unlockForm" style="display: none;">
-                <h3>Enter Your Payment Token</h3>
+    <nav>
+        <a href="#" onclick="showSection('stress-test'); return false;">Stress Test</a>
+        <a href="#" onclick="showSection('about-us'); return false;">About Us</a>
+        <a href="#" onclick="showSection('privacy'); return false;">Privacy</a>
+        <a href="#" onclick="showSection('terms'); return false;">Terms</a>
+    </nav>
+    <div class="content">
+        <div id="stress-test" class="section active">
+            <h2>Real Estate Stress Test</h2>
+            <form id="stressTestForm">
                 <div class="form-group">
-                    <label for="paymentToken">Payment Token (Provided After Payment):</label>
-                    <input type="text" id="paymentToken" name="paymentToken" placeholder="Enter token" required>
-                    <button onclick="unlockForm()">Unlock Form</button>
-                </div>
-            </div>
-            <form id="stressTestForm" style="display: none;" onsubmit="assessProperty(event)">
-                <div class="section">
-                    <h3>Postal Code Input</h3>
-                    <div class="form-group">
-                        <label for="postalCode">Enter Your Postal Code (e.g., M5V 2T6):</label>
-                        <input type="text" id="postalCode" name="postalCode" pattern="[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d" placeholder="e.g., M5V 2T6" required>
-                        <div class="error" id="postalCodeError"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="appraisalPrice">Estimated Appraisal Price ($CAD):</label>
-                    <input type="number" id="appraisalPrice" name="appraisalPrice" min="0" required>
-                    <div class="error" id="appraisalPriceError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="propertyCategory">Property Category:</label>
+                    <label for="email">Email <span style="color: red;">*</span>:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <label for="postalCode">Postal Code:</label>
+                    <input type="text" id="postalCode" name="postalCode" placeholder="e.g., M5V 2T6" required>
+                    <label for="appraisalPrice">Appraisal Price ($):</label>
+                    <input type="number" id="appraisalPrice" name="appraisalPrice" placeholder="e.g., 500000" required>
+                    <label for="propertyCategory">Property Type:</label>
                     <select id="propertyCategory" name="propertyCategory" required>
-                        <option value="house">House</option>
-                        <option value="condo">Condo</option>
-                        <option value="townhouse">Townhouse</option>
+                        <option value="">Select Property Type</option>
+                        <option value="Condo">Condo</option>
+                        <option value="House">House</option>
+                        <option value="Townhouse">Townhouse</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="Duplex">Duplex</option>
                     </select>
-                    <div class="error" id="propertyCategoryError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="province">Province/Territory:</label>
+                    <label for="province">Province:</label>
                     <select id="province" name="province" required>
-                        <option value="ON">Ontario</option>
-                        <option value="QC">Quebec</option>
-                        <option value="NS">Nova Scotia</option>
-                        <option value="NB">New Brunswick</option>
-                        <option value="MB">Manitoba</option>
-                        <option value="BC">British Columbia</option>
-                        <option value="PE">Prince Edward Island</option>
-                        <option value="SK">Saskatchewan</option>
-                        <option value="AB">Alberta</option>
-                        <option value="NL">Newfoundland and Labrador</option>
-                        <option value="NT">Northwest Territories</option>
-                        <option value="YT">Yukon</option>
-                        <option value="NU">Nunavut</option>
+                        <option value="">Select Province</option>
+                        <option value="Ontario">Ontario</option>
+                        <option value="British Columbia">British Columbia</option>
+                        <option value="Alberta">Alberta</option>
+                        <option value="Quebec">Quebec</option>
+                        <option value="Manitoba">Manitoba</option>
+                        <option value="Saskatchewan">Saskatchewan</option>
+                        <option value="Nova Scotia">Nova Scotia</option>
+                        <option value="New Brunswick">New Brunswick</option>
+                        <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                        <option value="Prince Edward Island">Prince Edward Island</option>
+                        <option value="Northwest Territories">Northwest Territories</option>
+                        <option value="Yukon">Yukon</option>
+                        <option value="Nunavut">Nunavut</option>
                     </select>
-                    <div class="error" id="provinceError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="bedrooms">Number of Bedrooms:</label>
-                    <input type="number" id="bedrooms" name="bedrooms" min="0" required>
-                    <div class="error" id="bedroomsError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="bathrooms">Number of Bathrooms:</label>
-                    <input type="number" id="bathrooms" name="bathrooms" min="0" required>
-                    <div class="error" id="bathroomsError"></div>
-                </div>
-                <div class="form-group">
+                    <label for="bedrooms">Bedrooms:</label>
+                    <input type="number" id="bedrooms" name="bedrooms" placeholder="e.g., 2" required>
+                    <label for="bathrooms">Bathrooms:</label>
+                    <input type="number" id="bathrooms" name="bathrooms" placeholder="e.g., 1.5" required>
                     <label for="squareFootage">Square Footage:</label>
-                    <input type="number" id="squareFootage" name="squareFootage" min="0" required>
-                    <div class="error" id="squareFootageError"></div>
+                    <input type="number" id="squareFootage" name="squareFootage" placeholder="e.g., 1200" required>
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" placeholder="e.g., Downtown Toronto" required>
+                    <button type="submit">Submit</button>
                 </div>
-                <div class="form-group">
-                    <label for="location">City:</label>
-                    <input type="text" id="location" name="location" required>
-                    <div class="error" id="locationError"></div>
-                </div>
-                <button type="submit" id="submitBtn">Calculate 2-Year Outlook</button>
+                <div id="postalCodeError"></div>
+                <div id="appraisalPriceError"></div>
+                <div id="emailError"></div>
             </form>
-            <div id="result"></div>
-            <div class="disclaimer">
-                <p><strong>Disclaimer:</strong> This tool provides estimates based on national data which may not be up to today's date for informational purposes only. It is not financial, legal, or real estate advice. Results may not reflect real-time local conditions, and we are not liable for decisions based on this tool. Consult a professional for personalized advice.</p>
-                <p>Secured by <a href="https://stripe.com" target="_blank">Stripe</a> | Data from CMHC & CREA | <a href="#terms-privacy">Terms & Privacy</a></p>
+            <div id="payment" style="display: none;">
+                <h3>Complete Payment to Receive Results</h3>
+                <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) to receive your assessment.</p>
+                <div id="checkout-message"></div>
+                <button id="sendForProcessing">Send for Processing</button>
             </div>
-        </section>
-        <section id="terms-privacy">
-            <h2>Terms & Privacy</h2>
-            <h3>Terms of Use</h3>
-            <p><strong>Acceptance of Terms:</strong> By accessing or using the Canadian Real Estate Stress Tester ("Service") provided by Continental Market Group ("Company," "we," "us," or "our"), you agree to be bound by these Terms of Use. If you do not agree, please do not use the Service.</p>
-            <p><strong>Use of Service:</strong> The Service is intended for personal, non-commercial use. You may not use the Service for any illegal or unauthorized purpose. We reserve the right to terminate or restrict access to the Service at our discretion without notice.</p>
-            <p><strong>Payment and Fees:</strong> Access to certain features requires payment via Stripe. All fees are in CAD and non-refundable unless required by law. Pricing is subject to change, and we will notify users of significant changes with reasonable notice.</p>
-            <p><strong>Intellectual Property:</strong> All content, including text, graphics, and code, is the property of Continental Market Group and protected by Canadian and international copyright laws. You may not reproduce or distribute any content without our written consent.</p>
-            <p><strong>Disclaimer of Warranties:</strong> The Service is provided "as is" without warranties of any kind, either express or implied, including but not limited to accuracy, reliability, or fitness for a particular purpose. We do not guarantee that the Service will be uninterrupted or error-free.</p>
-            <p><strong>Limitation of Liability:</strong> To the fullest extent permitted by law, the Company shall not be liable for any indirect, incidental, special, or consequential damages arising from the use or inability to use the Service, including but not limited to financial losses or decisions based on assessment results.</p>
-            <p><strong>Modifications:</strong> We may update these Terms of Use at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
-
-            <h3>Privacy Policy</h3>
-            <p><strong>Information We Collect:</strong> The Service collects postal code data entered by users, processed in-browser and not stored or transmitted by us. No other personal information (e.g., name, email) is collected unless voluntarily provided via the "Contact Us" link.</p>
-            <p><strong>Use of Information:</strong> Any data collected is used solely to provide the Service's functionality (e.g., postal code-based assessments). We do not sell, trade, or share your information with third parties.</p>
-            <p><strong>Data Security:</strong> We implement reasonable security measures to protect against unauthorized access or disclosure. However, no online transmission is completely secure, and we cannot guarantee absolute security.</p>
-            <p><strong>Cookies and Tracking:</strong> The Service does not use cookies or tracking technologies. Your browser may store temporary data for functionality, which is cleared upon session end.</p>
-            <p><strong>Compliance with PIPEDA:</strong> We adhere to the Personal Information Protection and Electronic Documents Act (PIPEDA) by limiting data collection to what is necessary and ensuring transparency in our practices.</p>
-            <p><strong>Your Rights:</strong> You may contact us at <a href="mailto:catalystcg@outlook.com">catalystcg@outlook.com</a> to inquire about any data processed or to request its deletion, though minimal data is retained.</p>
-            <p><strong>Changes to Privacy Policy:</strong> We may update this policy to reflect changes in our practices. Updates will be posted here, and continued use signifies acceptance.</p>
-
-            <p><strong>Contact Us:</strong> For questions about these Terms or Privacy Policy, email us at <a href="mailto:catalystcg@outlook.com">catalystcg@outlook.com</a>.</p>
-        </section>
+        </div>
+        <div id="about-us" class="section">
+            <h2>About Us</h2>
+            <p>We are a team dedicated to providing real estate stress testing tools to help you assess property value trends. Our goal is to offer simple, reliable insights for your investment decisions.</p>
+        </div>
+        <div id="privacy" class="section">
+            <h2>Privacy</h2>
+            <p>Your email and property data are used solely to deliver your stress test results. We do not share your information with third parties. By using this service, you agree to our data handling practices.</p>
+        </div>
+        <div id="terms" class="section">
+            <h2>Terms</h2>
+            <p>This service is provided "as is" for informational purposes only. Payment of $19.99 CAD is required to receive results. We are not liable for investment decisions based on these estimates.</p>
+        </div>
     </div>
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded and parsed');
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
 
+        document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('stressTestForm');
             const paymentDiv = document.getElementById('payment');
-            const unlockFormDiv = document.getElementById('unlockForm');
-            if (form && paymentDiv && unlockFormDiv) {
-                form.addEventListener('submit', function(event) {
-                    console.log('Form submitted, preventing default');
-                    event.preventDefault();
-                    assessProperty(event);
-                });
+            const sendForProcessing = document.getElementById('sendForProcessing');
 
-                // Check URL for token on load
-                const urlParams = new URLSearchParams(window.location.search);
-                const token = urlParams.get('token');
-                if (token === 'unique123') { // Replace with your actual token
-                    form.style.display = 'block';
-                    paymentDiv.style.display = 'none';
-                    unlockFormDiv.style.display = 'none';
-                } else {
-                    unlockFormDiv.style.display = 'block';
-                }
-            } else {
-                console.error('Form or payment div not found');
-            }
+            if (form && paymentDiv) {
+                form.style.display = 'block';
 
-            function unlockForm() {
-                const inputToken = document.getElementById('paymentToken').value;
-                if (inputToken === 'unique123') { // Replace with your actual token
-                    form.style.display = 'block';
-                    paymentDiv.style.display = 'none';
-                    unlockFormDiv.style.display = 'none';
-                } else {
-                    alert('Invalid token. Please use the token provided after payment.');
-                }
-            }
-
-            // National market data with tightened range
-            const marketData = {
-                nationalTrends: {
-                    priceChangeAnnual: -0.015, // -1.5% to reflect a stable decline
-                    salesDrop: 0.03,          // 3% drop aligning with Ontario trends
-                    unsoldInventory: 0.05,    // 5% increase for moderate inventory growth
-                    basePrice: 679            // $679,866 national avg
-                },
-                policyImpact: {
-                    interestRate: 0.0275,     // Bank of Canada rate
-                    economicUncertainty: 0.02 // Reduced to 2% for minimal impact
-                },
-                weights: {
-                    priceChange: 0.4,
-                    salesDrop: 0.3,
-                    unsoldInventory: 0.2,
-                    policyImpact: 0.1
-                },
-                postalCodeFactors: {
-                    'M5V': 0.995, // Toronto, -0.5% adjustment
-                    'V6B': 0.99,  // Vancouver, -1%
-                    'H3B': 1.00,  // Montreal, baseline
-                    'T2P': 0.98,  // Calgary, -2%
-                    'B3J': 0.97,  // Halifax, -3%
-                    'L0A': 0.99   // Millbrook, -1%
-                }
-            };
-
-            function assessProperty(event) {
-                console.log('assessProperty function called');
-                event.preventDefault();
-
-                try {
-                    console.log('Attempting to get input values');
-                    const resultDiv = document.getElementById('result');
-                    resultDiv.innerHTML = '<p>Loading...</p>';
-                    resultDiv.style.display = 'block';
-
-                    const appraisalPrice = parseFloat(document.getElementById('appraisalPrice').value);
-                    const bedrooms = parseInt(document.getElementById('bedrooms').value);
-                    const bathrooms = parseInt(document.getElementById('bathrooms').value);
-                    const squareFootage = parseInt(document.getElementById('squareFootage').value);
-                    const location = document.getElementById('location').value || 'Unknown';
-                    const postalCode = document.getElementById('postalCode').value.toUpperCase().replace(/\s/g, '');
-                    const propertyCategory = document.getElementById('propertyCategory').value || 'house';
-                    const province = document.getElementById('province').value || 'ON';
-
-                    if (!appraisalPrice || !bedrooms || !bathrooms || !squareFootage || appraisalPrice <= 0 || squareFootage <= 0) {
-                        throw new Error('Please enter positive numbers for appraisal price, bedrooms, bathrooms, and square footage.');
+                function calculateResults(data) {
+                    if (!data.email) {
+                        return { error: "Email is required to receive results." };
                     }
-
-                    if (!postalCode.match(/[A-Za-z]\d[A-Za-z]\d[A-Za-z]\d/)) {
-                        throw new Error('Please enter a valid Canadian postal code (e.g., M5V 2T6).');
-                    }
-
-                    const postalCodePrefix = postalCode.slice(0, 3);
+                    const marketData = {
+                        nationalTrends: { priceChangeAnnual: -0.015, salesDrop: 0.03, unsoldInventory: 0.05, basePrice: 679 },
+                        policyImpact: { interestRate: 0.0275, economicUncertainty: 0.02 },
+                        weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
+                        postalCodeFactors: { 'M5V': 0.995, 'V6B': 0.99, 'H3B': 1.00, 'T2P': 0.98, 'B3J': 0.97, 'L0A': 0.99 }
+                    };
+                    const postalCodePrefix = data.postalCode.toUpperCase().replace(/\s/g, '').slice(0, 3);
                     const postalFactor = marketData.postalCodeFactors[postalCodePrefix] || 1.0;
-
-                    // Calculate constrained market sentiment score
                     const nationalData = marketData.nationalTrends;
                     const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
                                           (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
                                           (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
                                           (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
-                    const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02); // Cap at ±2% over 2 years
-
-                    // Use appraisal as base with tight growth range
-                    const currentValue = appraisalPrice;
+                    const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02);
+                    const currentValue = parseFloat(data.appraisalPrice);
                     const projectedValue = currentValue * (1 + adjustedGrowthRate);
                     const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
 
-                    console.log('Calculations completed:', { currentValue, projectedValue, percentageChange });
-
                     let increaseChance, declineChance, outlook;
                     if (percentageChange < -2) {
-                        declineChance = 60;
-                        increaseChance = 40;
+                        declineChance = 60; increaseChance = 40;
                         outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years due to market conditions.`;
                     } else if (percentageChange > 2) {
-                        increaseChance = 60;
-                        declineChance = 40;
+                        increaseChance = 60; declineChance = 40;
                         outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
                     } else {
-                        increaseChance = 50;
-                        declineChance = 50;
+                        increaseChance = 50; declineChance = 50;
                         outlook = `Value expected to remain stable (±2%) over 2 years, reflecting current market trends.`;
                     }
 
-                    if (resultDiv) {
-                        console.log('Result div found, updating content');
-                        resultDiv.innerHTML = `
-                            <p>Current Value: $${currentValue.toLocaleString()}</p>
-                            <p>Projected Value (2 Years): $${projectedValue.toLocaleString()}</p>
-                            <p>2-Year Outlook: ${outlook}</p>
-                            <p>Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline</p>
-                            <p>Location: ${location} (Postal Code: ${postalCode})</p>
-                            <p>Property Type: ${propertyCategory}</p>
-                            <p>Province: ${province}</p>
-                        `;
-                        console.log('Result displayed');
-                    } else {
-                        console.error('Result div not found');
-                    }
-                } catch (error) {
-                    console.log('Error caught:', error.message);
-                    const resultDiv = document.getElementById('result');
-                    if (resultDiv) {
-                        resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-                        console.error('Assessment error displayed:', error);
-                    } else {
-                        console.error('Result div not found for error display');
-                    }
+                    return {
+                        fullResult: `
+                            Your Stress Test Results:
+                            Email: ${data.email}
+                            Current Value: $${currentValue.toLocaleString()}
+                            Projected Value (2 Years): $${projectedValue.toLocaleString()}
+                            2-Year Outlook: ${outlook}
+                            Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline
+                            Location: ${data.location} (Postal Code: ${data.postalCode})
+                            Property Type: ${data.propertyCategory}
+                            Province: ${data.province}
+                            Please save these results for your records.
+                        `
+                    };
                 }
-            }
 
-            // Smooth scroll for navigation
-            document.querySelectorAll('.nav a').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const href = this.getAttribute('href');
-                    if (href.startsWith('mailto:')) {
-                        window.location.href = href;
-                    } else {
-                        const target = document.querySelector(href);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth' });
-                        }
+                form.onsubmit = function(event) {
+                    event.preventDefault();
+                    const formData = {
+                        email: document.getElementById('email').value,
+                        postalCode: document.getElementById('postalCode').value,
+                        appraisalPrice: document.getElementById('appraisalPrice').value,
+                        propertyCategory: document.getElementById('propertyCategory').value,
+                        province: document.getElementById('province').value,
+                        bedrooms: document.getElementById('bedrooms').value,
+                        bathrooms: document.getElementById('bathrooms').value,
+                        squareFootage: document.getElementById('squareFootage').value,
+                        location: document.getElementById('location').value
+                    };
+                    if (!formData.email) {
+                        document.getElementById('emailError').textContent = 'Email is required to receive results.';
+                        return;
+                    }
+                    if (!formData.postalCode.match(/[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/)) {
+                        document.getElementById('postalCodeError').textContent = 'Please enter a valid Canadian postal code (e.g., M5V 2T6).';
+                        return;
+                    }
+                    if (!formData.appraisalPrice || formData.appraisalPrice <= 0 || !formData.squareFootage || formData.squareFootage <= 0) {
+                        document.getElementById('appraisalPriceError').textContent = 'Please enter positive numbers for appraisal price and square footage.';
+                        return;
+                    }
+                    const { fullResult, error } = calculateResults(formData);
+                    if (error) {
+                        document.getElementById('emailError').textContent = error;
+                        return;
+                    }
+                    localStorage.setItem('fullResult', fullResult);
+                    form.style.display = 'none';
+                    paymentDiv.style.display = 'block';
+                    sendForProcessing.onclick = function() {
+                        const subject = 'Stress Test Result';
+                        const body = `Please process my payment and send the full results. ${fullResult}`;
+                        window.location.href = `mailto:catalystcg@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    };
+                };
+
+                document.getElementById('checkout-button').addEventListener('click', () => {
+                    const formData = {
+                        email: document.getElementById('email').value,
+                        postalCode: document.getElementById('postalCode').value,
+                        appraisalPrice: document.getElementById('appraisalPrice').value,
+                        propertyCategory: document.getElementById('propertyCategory').value,
+                        province: document.getElementById('province').value,
+                        bedrooms: document.getElementById('bedrooms').value,
+                        bathrooms: document.getElementById('bathrooms').value,
+                        squareFootage: document.getElementById('squareFootage').value,
+                        location: document.getElementById('location').value
+                    };
+                    const session = window.open(`https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}`, '_blank');
+                    if (session) {
+                        setTimeout(() => paymentDiv.style.display = 'none', 2000); // Simulate payment
                     }
                 });
-            });
+            }
         });
     </script>
 </body>
