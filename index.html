@@ -80,13 +80,12 @@
         .active {
             display: block;
         }
-        #payment {
+        .results {
             margin-top: 1.5rem;
-            text-align: center;
-        }
-        .price-highlight {
-            color: #27ae60;
-            font-weight: bold;
+            padding: 1rem;
+            background-color: #dff0d8;
+            border-radius: 4px;
+            display: none;
         }
     </style>
 </head>
@@ -141,12 +140,16 @@
                     <input type="number" id="squareFootage" name="squareFootage" placeholder="e.g., 1200" required>
                     <label for="location">Location</label>
                     <input type="text" id="location" name="location" placeholder="e.g., Downtown Toronto" required>
-                    <button type="submit">Submit & Pay</button>
+                    <button type="submit">Proceed to Payment</button>
                 </div>
                 <div id="postalCodeError"></div>
                 <div id="appraisalPriceError"></div>
                 <div id="emailError"></div>
             </form>
+            <div id="results" class="results">
+                <h3>Your Stress Test Results</h3>
+                <p id="resultText"></p>
+            </div>
         </div>
         <div id="about-us" class="section">
             <h2>About Us</h2>
@@ -169,6 +172,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('stressTestForm');
+            const resultsDiv = document.getElementById('results');
+            const resultText = document.getElementById('resultText');
 
             if (form) {
                 form.style.display = 'block';
@@ -208,15 +213,65 @@
                     // Store form data with unique ID
                     localStorage.setItem(uniqueId, JSON.stringify(formData));
 
-                    // Redirect to Stripe payment with unique ID
-                    const stripeUrl = `https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}`;
+                    // Redirect to Stripe Checkout with success URL
+                    const stripeUrl = `https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
                     window.location.href = stripeUrl;
-
-                    // Send email with unique ID and form data
-                    const subject = 'Stress Test Submission';
-                    const body = `Submission ID: ${uniqueId}\nPlease process the payment and send results. Details: Email: ${formData.email}, Postal Code: ${formData.postalCode}, Appraisal Price: ${formData.appraisalPrice}, Property Type: ${formData.propertyCategory}, Province: ${formData.province}, Bedrooms: ${formData.bedrooms}, Bathrooms: ${formData.bathrooms}, Square Footage: ${formData.squareFootage}, Location: ${formData.location}`;
-                    window.location.href = `mailto:catalystcg@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 };
+            }
+
+            // Simulate success page behavior
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            if (sessionId) {
+                const uniqueId = localStorage.getItem('client_reference_id') || sessionId; // Simulate matching
+                const formData = JSON.parse(localStorage.getItem(uniqueId));
+                if (formData) {
+                    // Simulate payment confirmation and calculate results
+                    const marketData = {
+                        nationalTrends: { priceChangeAnnual: -0.015, salesDrop: 0.03, unsoldInventory: 0.05, basePrice: 679 },
+                        policyImpact: { interestRate: 0.0275, economicUncertainty: 0.02 },
+                        weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
+                        postalCodeFactors: { 'M5V': 0.995, 'V6B': 0.99, 'H3B': 1.00, 'T2P': 0.98, 'B3J': 0.97, 'L0A': 0.99 }
+                    };
+                    const postalCodePrefix = formData.postalCode.toUpperCase().replace(/\s/g, '').slice(0, 3);
+                    const postalFactor = marketData.postalCodeFactors[postalCodePrefix] || 1.0;
+                    const nationalData = marketData.nationalTrends;
+                    const sentimentScore = (nationalData.priceChangeAnnual * marketData.weights.priceChange) +
+                                          (nationalData.salesDrop * marketData.weights.salesDrop * -1) +
+                                          (nationalData.unsoldInventory * marketData.weights.unsoldInventory * -1) +
+                                          (marketData.policyImpact.economicUncertainty * marketData.weights.policyImpact * -1);
+                    const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02);
+                    const currentValue = parseFloat(formData.appraisalPrice);
+                    const projectedValue = currentValue * (1 + adjustedGrowthRate);
+                    const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
+
+                    let increaseChance, declineChance, outlook;
+                    if (percentageChange < -2) {
+                        declineChance = 60; increaseChance = 40;
+                        outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years due to market conditions.`;
+                    } else if (percentageChange > 2) {
+                        increaseChance = 60; declineChance = 40;
+                        outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
+                    } else {
+                        increaseChance = 50; declineChance = 50;
+                        outlook = `Value expected to remain stable (±2%) over 2 years, reflecting current market trends.`;
+                    }
+
+                    const result = `
+                        Email: ${formData.email}
+                        Current Value: $${currentValue.toLocaleString()}
+                        Projected Value (2 Years): $${projectedValue.toLocaleString()}
+                        2-Year Outlook: ${outlook}
+                        Price Movement Probability: ${increaseChance}% chance of increase, ${declineChance}% chance of decline
+                        Location: ${formData.location} (Postal Code: ${formData.postalCode})
+                        Property Type: ${formData.propertyCategory}
+                        Province: ${formData.province}
+                        Please save these results for your records.
+                    `;
+                    resultText.textContent = result;
+                    resultsDiv.style.display = 'block';
+                    localStorage.removeItem(uniqueId); // Clean up
+                }
             }
         });
     </script>
