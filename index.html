@@ -5,17 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real Estate Stress Test</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        nav { background-color: #333; padding: 10px; }
-        nav a { color: white; margin: 0 15px; text-decoration: none; }
-        nav a:hover { text-decoration: underline; }
-        .content { max-width: 800px; margin: 20px auto; padding: 20px; }
-        .form-group { margin: 20px 0; }
-        input, select, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        .section { display: none; margin-top: 20px; }
-        #postalCodeError, #appraisalPriceError, #emailError { color: red; }
-        .active { display: block; }
-        #payment { margin-top: 20px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        nav {
+            background-color: #2c3e50;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        nav a {
+            color: #ecf0f1;
+            margin: 0 1.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #3498db;
+        }
+        .content {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin: 1.5rem 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.25rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #postalCodeError, #appraisalPriceError, #emailError {
+            color: #e74c3c;
+            margin-top: 0.5rem;
+        }
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        #payment {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .price-highlight {
+            color: #27ae60;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -29,13 +94,13 @@
             <h2>Real Estate Stress Test</h2>
             <form id="stressTestForm">
                 <div class="form-group">
-                    <label for="email">Email <span style="color: red;">*</span>:</label>
+                    <label for="email">Email <span style="color: #e74c3c;">*</span></label>
                     <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    <label for="postalCode">Postal Code:</label>
+                    <label for="postalCode">Postal Code</label>
                     <input type="text" id="postalCode" name="postalCode" placeholder="e.g., M5V 2T6" required>
-                    <label for="appraisalPrice">Appraisal Price ($):</label>
+                    <label for="appraisalPrice">Appraisal Price ($)</label>
                     <input type="number" id="appraisalPrice" name="appraisalPrice" placeholder="e.g., 500000" required>
-                    <label for="propertyCategory">Property Type:</label>
+                    <label for="propertyCategory">Property Type</label>
                     <select id="propertyCategory" name="propertyCategory" required>
                         <option value="">Select Property Type</option>
                         <option value="Condo">Condo</option>
@@ -44,7 +109,7 @@
                         <option value="Apartment">Apartment</option>
                         <option value="Duplex">Duplex</option>
                     </select>
-                    <label for="province">Province:</label>
+                    <label for="province">Province</label>
                     <select id="province" name="province" required>
                         <option value="">Select Province</option>
                         <option value="Ontario">Ontario</option>
@@ -61,13 +126,13 @@
                         <option value="Yukon">Yukon</option>
                         <option value="Nunavut">Nunavut</option>
                     </select>
-                    <label for="bedrooms">Bedrooms:</label>
+                    <label for="bedrooms">Bedrooms</label>
                     <input type="number" id="bedrooms" name="bedrooms" placeholder="e.g., 2" required>
-                    <label for="bathrooms">Bathrooms:</label>
+                    <label for="bathrooms">Bathrooms</label>
                     <input type="number" id="bathrooms" name="bathrooms" placeholder="e.g., 1.5" required>
-                    <label for="squareFootage">Square Footage:</label>
+                    <label for="squareFootage">Square Footage</label>
                     <input type="number" id="squareFootage" name="squareFootage" placeholder="e.g., 1200" required>
-                    <label for="location">Location:</label>
+                    <label for="location">Location</label>
                     <input type="text" id="location" name="location" placeholder="e.g., Downtown Toronto" required>
                     <button type="submit">Submit</button>
                 </div>
@@ -77,9 +142,10 @@
             </form>
             <div id="payment" style="display: none;">
                 <h3>Complete Payment to Receive Results</h3>
-                <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) to receive your assessment.</p>
+                <p>Pay <span class="price-highlight">$19.99 CAD</span> (regular price: <s>$39.99 CAD</s>, limited time offer) to receive your 24-month outlook assessment.</p>
+                <button id="checkout-button">Proceed to Payment</button>
                 <div id="checkout-message"></div>
-                <button id="sendForProcessing">Send for Processing</button>
+                <button id="sendForProcessing" style="display: none;">Send for Processing</button>
             </div>
         </div>
         <div id="about-us" class="section">
@@ -104,6 +170,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('stressTestForm');
             const paymentDiv = document.getElementById('payment');
+            const checkoutButton = document.getElementById('checkout-button');
             const sendForProcessing = document.getElementById('sendForProcessing');
 
             if (form && paymentDiv) {
@@ -189,31 +256,35 @@
                         document.getElementById('emailError').textContent = error;
                         return;
                     }
-                    localStorage.setItem('fullResult', fullResult);
+                    // Store form data instead of results
+                    localStorage.setItem('formData', JSON.stringify(formData));
                     form.style.display = 'none';
                     paymentDiv.style.display = 'block';
-                    sendForProcessing.onclick = function() {
-                        const subject = 'Stress Test Result';
-                        const body = `Please process my payment and send the full results. ${fullResult}`;
-                        window.location.href = `mailto:catalystcg@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                    };
                 };
 
-                document.getElementById('checkout-button').addEventListener('click', () => {
-                    const formData = {
-                        email: document.getElementById('email').value,
-                        postalCode: document.getElementById('postalCode').value,
-                        appraisalPrice: document.getElementById('appraisalPrice').value,
-                        propertyCategory: document.getElementById('propertyCategory').value,
-                        province: document.getElementById('province').value,
-                        bedrooms: document.getElementById('bedrooms').value,
-                        bathrooms: document.getElementById('bathrooms').value,
-                        squareFootage: document.getElementById('squareFootage').value,
-                        location: document.getElementById('location').value
-                    };
-                    const session = window.open(`https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}`, '_blank');
-                    if (session) {
-                        setTimeout(() => paymentDiv.style.display = 'none', 2000); // Simulate payment
+                checkoutButton.addEventListener('click', () => {
+                    const formData = JSON.parse(localStorage.getItem('formData'));
+                    if (formData) {
+                        const session = window.open(`https://buy.stripe.com/xyz?prefilled_email=${encodeURIComponent(formData.email)}`, '_blank');
+                        if (session) {
+                            document.getElementById('checkout-message').textContent = 'Please complete the payment to receive your results.';
+                            // Simulate payment confirmation (in practice, integrate Stripe webhook)
+                            setTimeout(() => {
+                                sendForProcessing.style.display = 'block';
+                                checkoutButton.style.display = 'none';
+                            }, 2000); // Simulate 2-second payment process
+                        }
+                    }
+                });
+
+                sendForProcessing.addEventListener('click', () => {
+                    const formData = JSON.parse(localStorage.getItem('formData'));
+                    if (formData) {
+                        const subject = 'Stress Test Submission';
+                        const body = `Please process my payment and send the results. Submitted details: Email: ${formData.email}, Postal Code: ${formData.postalCode}, Appraisal Price: ${formData.appraisalPrice}, Property Type: ${formData.propertyCategory}, Province: ${formData.province}, Bedrooms: ${formData.bedrooms}, Bathrooms: ${formData.bathrooms}, Square Footage: ${formData.squareFootage}, Location: ${formData.location}`;
+                        window.location.href = `mailto:catalystcg@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        paymentDiv.style.display = 'none';
+                        alert('Your submission has been sent. Results will be emailed after payment confirmation.');
                     }
                 });
             }
