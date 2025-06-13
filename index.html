@@ -37,6 +37,7 @@
       color: #007bff;
       text-decoration: none;
       font-size: 14px;
+      margin: 0 10px;
     }
 
     .nav a:hover {
@@ -177,6 +178,8 @@
   <div class="container">
     <div class="nav">
       <a href="index.html">Back to Home</a>
+      <a href="aboutus.html">About Us</a>
+      <a href="mailto:restspprt@outlook.com">Contact Us</a>
     </div>
     <div class="welcome">
       <h1>Welcome to Your Real Estate Stress Test!</h1>
@@ -271,8 +274,8 @@
     <div class="terms">
       <button onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block';">Terms and Privacy</button>
       <div class="terms-details">
-        <p><strong>Terms of Use:</strong> This Real Estate Stress Test service is provided by [Your Company Name]. By accessing or using this service, you agree to be bound by these Terms of Use. The service requires a one-time payment to access stress test results, which are based on current market data and projections. All payments are final, and no refunds will be issued after the purchase is complete. Unauthorized use, reproduction, or distribution of the results is strictly prohibited. We reserve the right to modify these terms at any time, and continued use constitutes acceptance of the updated terms.</p>
-        <p><strong>Privacy Policy:</strong> [Your Company Name] collects personal information, including your email address and property details, to deliver personalized stress test results. This data is processed and stored securely using industry-standard encryption. We do not sell, trade, or share your information with third parties except as required by law or to fulfill the service (e.g., payment processing with Stripe). You may request access to or deletion of your data by contacting us at support@yourcompany.com. Our full privacy policy is available upon request.</p>
+        <p><strong>Terms of Use:</strong> This Real Estate Stress Test service is provided by Continental Market Group. By accessing or using this service, you agree to be bound by these Terms of Use. The service requires a one-time payment to access stress test results, which are based on current market data and 24-month projections derived from economic indicators and trends. All payments are processed securely via Stripe and are non-refundable once the transaction is complete. Unauthorized use, reproduction, distribution, or resale of the results is strictly prohibited and may result in legal action. Continental Market Group reserves the right to modify these terms at any time, and continued use of the service after such modifications constitutes acceptance of the updated terms. Users are responsible for ensuring the accuracy of provided data; Continental Market Group is not liable for decisions made based on the results. For disputes, contact us at restspprt@outlook.com within 30 days of purchase.</p>
+        <p><strong>Privacy Policy:</strong> Continental Market Group collects personal information, including your email address, property details (e.g., location, appraisal price), and payment data, to deliver personalized stress test results and process transactions. This data is processed and stored securely using industry-standard encryption (AES-256) and is hosted on servers compliant with GDPR and CCPA standards. We do not sell, trade, or share your personal information with third parties except as necessary to fulfill the service (e.g., payment processing with Stripe) or as required by law (e.g., subpoenas). Cookies may be used to enhance user experience, and you can manage these preferences via your browser settings. You have the right to access, rectify, or request deletion of your data by contacting us at restspprt@outlook.com. Our full privacy policy, including data retention periods (up to 5 years for transactional data), is available upon request. By using this service, you consent to this policy.</p>
       </div>
     </div>
   </div>
@@ -478,10 +481,13 @@ Sources:
     window.onload = function() {
       console.log('Page loaded, checking for success...'); // Debug log
       const urlParams = new URLSearchParams(window.location.search);
+      console.log('URL Params:', urlParams.toString()); // Debug URL
       if (urlParams.get('success') === 'true') {
+        console.log('Success parameter detected'); // Debug success
         const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
+        console.log('Session Storage Data:', savedData); // Debug data
         if (savedData) {
-          console.log('Retrieved data:', savedData); // Debug log
+          console.log('Data retrieved, processing results...'); // Debug processing
           // Repopulate form for user reference
           countrySelect.value = savedData.country;
           document.getElementById('email').value = savedData.email;
@@ -499,14 +505,16 @@ Sources:
           const result = runStressTest(savedData);
           resultOutput.textContent = result;
           results.style.display = 'block';
+          console.log('Results displayed'); // Debug display
 
           // Clear sessionStorage after displaying results
           sessionStorage.removeItem('stressTestData');
+          console.log('Session storage cleared'); // Debug clear
         } else {
-          console.log('No saved data found in sessionStorage'); // Debug log
+          console.log('No saved data found in sessionStorage'); // Debug no data
         }
       } else {
-        console.log('No success parameter in URL'); // Debug log
+        console.log('No success parameter in URL'); // Debug no success
       }
     };
   </script>
