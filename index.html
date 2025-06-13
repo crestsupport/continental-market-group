@@ -222,7 +222,7 @@
                     localStorage.setItem('client_reference_id', uniqueId); // Store for matching
 
                     // Redirect to Stripe Checkout with success URL
-                    const stripeUrl = `https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
+                    const stripeUrl = `https://buy.stripe.com/your-test-link-here?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
                     window.location.href = stripeUrl;
                 };
             }
@@ -256,15 +256,36 @@
                         const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
 
                         let increaseChance, declineChance, outlook;
+                        let majorVulnerabilities = [];
+                        let majorGrowthFactors = [];
+
                         if (percentageChange < -2) {
                             declineChance = 60; increaseChance = 40;
                             outlook = `Expected value decrease of ${(-percentageChange).toFixed(1)}% over 2 years due to market conditions.`;
+                            majorVulnerabilities = [
+                                `Rising interest rates (${(marketData.policyImpact.interestRate * 100).toFixed(2)}% current impact) could increase borrowing costs, pressuring property values.`,
+                                `Increased economic uncertainty (${(marketData.policyImpact.economicUncertainty * 100).toFixed(2)}% effect) may reduce buyer confidence.`,
+                                `A ${((nationalData.salesDrop * 100) + (nationalData.unsoldInventory * 100)).toFixed(1)}% combined impact from declining sales and rising unsold inventory could further depress prices.`
+                            ];
                         } else if (percentageChange > 2) {
                             increaseChance = 60; declineChance = 40;
                             outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
+                            majorGrowthFactors = [
+                                `Falling interest rates (potential decrease from ${marketData.policyImpact.interestRate * 100}% could stimulate demand.`,
+                                `Favorable government housing policies (e.g., tax incentives) could boost market confidence.`,
+                                `A recovery in sales activity (offsetting the current ${nationalData.salesDrop * 100}% drop) could drive price growth.`
+                            ];
                         } else {
                             increaseChance = 50; declineChance = 50;
                             outlook = `Value expected to remain stable (±2%) over 2 years, reflecting current market trends.`;
+                            majorVulnerabilities = [
+                                `Rising interest rates (${(marketData.policyImpact.interestRate * 100).toFixed(2)}% current impact) could pose a moderate risk.`,
+                                `Economic uncertainty (${(marketData.policyImpact.economicUncertainty * 100).toFixed(2)}% effect) might affect stability.`
+                            ];
+                            majorGrowthFactors = [
+                                `Falling interest rates (potential decrease from ${marketData.policyImpact.interestRate * 100}%) could provide a slight uplift.`,
+                                `Stable government policy could maintain current trends.`
+                            ];
                         }
 
                         const result = `
@@ -276,7 +297,11 @@
                             Location: ${formData.location} (Postal Code: ${formData.postalCode})
                             Property Type: ${formData.propertyCategory}
                             Province: ${formData.province}
-                            Please save these results for your records.
+                            Major Vulnerabilities to Price Decline:
+                            ${majorVulnerabilities.map(v => `- ${v}`).join('\n')}
+                            Major Factors for Price Increase:
+                            ${majorGrowthFactors.map(f => `- ${f}`).join('\n')}
+                            Please save these results for your records. Unlike static appraisals, this stress test highlights dynamic risks and opportunities, empowering you with a proactive strategy.
                         `;
                         resultText.textContent = result;
                         resultsDiv.style.display = 'block';
