@@ -221,9 +221,6 @@
         item.location.toLowerCase() === data.location.toLowerCase() &&
         item.region === data.region &&
         item.propertyType === data.propertyType &&
-        item.bedrooms === parseInt(data.bedrooms) &&
-        item.bathrooms === parseFloat(data.bathrooms) &&
-        item.squareFootage === parseInt(data.squareFootage) &&
         Math.abs(item.appraisalPrice - parseInt(data.appraisalPrice)) < 1000
       );
 
@@ -273,7 +270,7 @@ Sources: ${entry.source.map(s => `${s.name} (${s.lastUpdated})`).join('\n- ')}
       }
 
       sessionStorage.setItem('stressTestData', JSON.stringify(data));
-      const stripeLink = 'https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true&return_url=https://crestsupport.github.io/continental-market-group/index.html';
+      const stripeLink = 'https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true&return_url=https://crestsupport.github.io/continental-market-group/';
       window.location.href = stripeLink;
     };
 
