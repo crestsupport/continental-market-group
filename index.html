@@ -5,88 +5,250 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Real Estate Stress Tester</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    .welcome { margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; }
-    input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
-    button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
-    #results { margin-top: 20px; padding: 20px; border: 1px solid #ccc; display: none; }
-    .error { color: red; }
+    /* General styling for the body */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Container for the entire content */
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Welcome section styling */
+    .welcome {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .welcome h1 {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Form styling */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    /* Country tabs styling */
+    .country-tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .country-tabs button {
+      flex: 1;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .country-tabs button:hover {
+      background-color: #0056b3;
+    }
+
+    .country-tabs .active {
+      background-color: #0056b3;
+    }
+
+    /* Button styling */
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    /* Results styling */
+    #results {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #e6ffe6;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: none;
+    }
+
+    #results h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    #resultOutput {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Error styling */
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
-  <div class="welcome">
-    <h1>Welcome to the Real Estate Stress Tester</h1>
-    <p>Unlike traditional appraisals costing $500–$700, our stress test provides dynamic insights into future price trends for just a fraction of the cost. Understand your property’s potential with data-driven precision. Get started now!</p>
-  </div>
+  <div class="container">
+    <div class="welcome">
+      <h1>Welcome to Your Real Estate Stress Test!</h1>
+      <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outlining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
+    </div>
 
-  <form id="stressTestForm">
-    <div class="form-group">
-      <label for="country">Country</label>
-      <select id="country" required>
-        <option value="">Select Country</option>
-        <option value="Canada">Canada</option>
-        <option value="Australia">Australia</option>
-      </select>
+    <div class="country-tabs">
+      <button class="tab active" onclick="selectCountry('Canada')">Canada</button>
+      <button class="tab" onclick="selectCountry('Australia')">Australia</button>
     </div>
-    <div class="form-group">
-      <label for="location">Location (City/Town)</label>
-      <input type="text" id="location" required>
-    </div>
-    <div class="form-group">
-      <label for="postalCode">Postal Code/Postcode</label>
-      <input type="text" id="postalCode" required>
-    </div>
-    <div class="form-group">
-      <label for="propertyType">Property Type</label>
-      <select id="propertyType" required>
-        <option value="">Select Property Type</option>
-        <option value="House">House</option>
-        <option value="Condo">Condo</option>
-        <option value="Townhouse">Townhouse</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="region">Region</label>
-      <select id="region" required>
-        <option value="">Select Region</option>
-        <!-- Canada -->
-        <option value="Alberta" class="canada">Alberta</option>
-        <option value="British Columbia" class="canada">British Columbia</option>
-        <option value="Manitoba" class="canada">Manitoba</option>
-        <option value="New Brunswick" class="canada">New Brunswick</option>
-        <option value="Newfoundland and Labrador" class="canada">Newfoundland and Labrador</option>
-        <option value="Nova Scotia" class="canada">Nova Scotia</option>
-        <option value="Ontario" class="canada">Ontario</option>
-        <option value="Prince Edward Island" class="canada">Prince Edward Island</option>
-        <option value="Quebec" class="canada">Quebec</option>
-        <option value="Saskatchewan" class="canada">Saskatchewan</option>
-        <option value="Northwest Territories" class="canada">Northwest Territories</option>
-        <option value="Nunavut" class="canada">Nunavut</option>
-        <option value="Yukon" class="canada">Yukon</option>
-        <!-- Australia -->
-        <option value="New South Wales" class="australia">New South Wales</option>
-        <option value="Victoria" class="australia">Victoria</option>
-        <option value="Queensland" class="australia">Queensland</option>
-        <option value="Western Australia" class="australia">Western Australia</option>
-        <option value="South Australia" class="australia">South Australia</option>
-        <option value="Tasmania" class="australia">Tasmania</option>
-        <option value="Australian Capital Territory" class="australia">Australian Capital Territory</option>
-        <option value="Northern Territory" class="australia">Northern Territory</option>
-      </select>
-    </div>
-    <button type="submit">Run Stress Test</button>
-    <p id="error" class="error"></p>
-  </form>
 
-  <div id="results">
-    <h2>Stress Test Results</h2>
-    <p id="resultOutput"></p>
+    <form id="stressTestForm">
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" required placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label for="region">Province / State / Territory</label>
+        <select id="region" required>
+          <option value="">Select Region</option>
+          <!-- Canada -->
+          <option value="Alberta" class="canada">Alberta</option>
+          <option value="British Columbia" class="canada">British Columbia</option>
+          <option value="Manitoba" class="canada">Manitoba</option>
+          <option value="New Brunswick" class="canada">New Brunswick</option>
+          <option value="Newfoundland and Labrador" class="canada">Newfoundland and Labrador</option>
+          <option value="Nova Scotia" class="canada">Nova Scotia</option>
+          <option value="Ontario" class="canada">Ontario</option>
+          <option value="Prince Edward Island" class="canada">Prince Edward Island</option>
+          <option value="Quebec" class="canada">Quebec</option>
+          <option value="Saskatchewan" class="canada">Saskatchewan</option>
+          <option value="Northwest Territories" class="canada">Northwest Territories</option>
+          <option value="Nunavut" class="canada">Nunavut</option>
+          <option value="Yukon" class="canada">Yukon</option>
+          <!-- Australia -->
+          <option value="New South Wales" class="australia">New South Wales</option>
+          <option value="Victoria" class="australia">Victoria</option>
+          <option value="Queensland" class="australia">Queensland</option>
+          <option value="Western Australia" class="australia">Western Australia</option>
+          <option value="South Australia" class="australia">South Australia</option>
+          <option value="Tasmania" class="australia">Tasmania</option>
+          <option value="Australian Capital Territory" class="australia">Australian Capital Territory</option>
+          <option value="Northern Territory" class="australia">Northern Territory</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="postalCode">Postal Code / Postcode</label>
+        <input type="text" id="postalCode" required placeholder="e.g., 2000">
+      </div>
+      <div class="form-group">
+        <label for="appraisalPrice">Appraisal Price ($)</label>
+        <input type="number" id="appraisalPrice" required placeholder="e.g., 500000">
+      </div>
+      <div class="form-group">
+        <label for="propertyType">Property Type</label>
+        <select id="propertyType" required>
+          <option value="">Select Property Type</option>
+          <option value="House">House</option>
+          <option value="Condo">Condo</option>
+          <option value="Townhouse">Townhouse</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="bedrooms">Bedrooms</label>
+        <input type="number" id="bedrooms" required placeholder="e.g., 2">
+      </div>
+      <div class="form-group">
+        <label for="bathrooms">Bathrooms</label>
+        <input type="number" id="bathrooms" required placeholder="e.g., 1.5">
+      </div>
+      <div class="form-group">
+        <label for="squareFootage">Square Footage</label>
+        <input type="number" id="squareFootage" required placeholder="e.g., 1200">
+      </div>
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" required placeholder="e.g., Downtown Toronto or Sydney CBD">
+      </div>
+      <button type="submit">Proceed to Payment</button>
+      <p id="error" class="error"></p>
+    </form>
+
+    <div id="results">
+      <h2>Your Stress Test Results</h2>
+      <p id="resultOutput"></p>
+    </div>
   </div>
 
   <script>
+    // Initialize country selection
+    let selectedCountry = 'Canada';
+    const tabs = document.querySelectorAll('.tab');
+    const regionSelect = document.getElementById('region');
+
+    function selectCountry(country) {
+      selectedCountry = country;
+      tabs.forEach(tab => tab.classList.remove('active'));
+      document.querySelector(`.tab[onclick="selectCountry('${country}')"]`).classList.add('active');
+      filterRegions();
+    }
+
+    // Filter regions based on country selection
+    function filterRegions() {
+      const options = regionSelect.querySelectorAll('option');
+      options.forEach(option => {
+        if (option.value === '') return;
+        option.style.display = (selectedCountry === 'Canada' && option.classList.contains('canada')) ||
+                              (selectedCountry === 'Australia' && option.classList.contains('australia')) ? 'block' : 'none';
+        if (option.style.display === 'none') option.selected = false;
+      });
+    }
+
     // Daily data object (updated daily via external script)
     const dailyData = {
       "date": "2025-06-13",
@@ -97,6 +259,10 @@
           "location": "Millbrook",
           "region": "Ontario",
           "propertyType": "House",
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "squareFootage": 1500,
+          "appraisalPrice": 890000,
           "stressTestMetrics": {
             "currentValue": 890000,
             "projectedValue2Years": 877985,
@@ -106,14 +272,10 @@
               "decline": 50
             },
             "postalCodePriceTrend": {
-              "localGrowth": 2.0,
-              "regionalGrowth": 3.5,
               "description": "Over the past 12 months, house prices in L0A 1G0 have grown by approximately 2%, slightly below the Ontario average of 3.5%. This slower growth reflects Millbrook’s rural setting, which offers stability but less speculative demand compared to urban areas."
             },
             "localDemandDrivers": {
-              "description": "Millbrook’s appeal as a rural community, with proximity to Peterborough (30 km) and the Greater Toronto Area (100 km), attracts remote workers and retirees seeking affordability. Limited new development preserves low inventory, supporting price stability.",
-              "populationGrowth": 1.2,
-              "infrastructure": "No major projects announced; stable rural infrastructure."
+              "description": "Millbrook’s appeal as a rural community, with proximity to Peterborough (30 km) and the Greater Toronto Area (100 km), attracts remote workers and retirees seeking affordability. Limited new development preserves low inventory, supporting price stability."
             },
             "vulnerabilities": [
               "Rising interest rates (2.75% current impact) could pose a moderate risk.",
@@ -136,6 +298,10 @@
           "location": "Sydney",
           "region": "New South Wales",
           "propertyType": "House",
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "squareFootage": 1800,
+          "appraisalPrice": 1500000,
           "stressTestMetrics": {
             "currentValue": 1500000,
             "projectedValue2Years": 1575000,
@@ -145,14 +311,10 @@
               "decline": 40
             },
             "postalCodePriceTrend": {
-              "localGrowth": 3.0,
-              "regionalGrowth": 4.0,
-              "description": "Over the past 12 months, house prices in postcode 2000 have grown by approximately 3%, slightly below the New South Wales average of 4%. This reflects Sydney’s high affordability constraints but sustained demand."
+              "description": "Over the past 12 months, house properties in postcode 2000 have grown by approximately 3%, slightly below the New South Wales average of 4%. This reflects Sydney’s high affordability constraints but sustained demand."
             },
             "localDemandDrivers": {
-              "description": "Sydney’s status as a global city, with major infrastructure projects like the $12.5B Sydney Metro, drives demand. Strong population growth (1.6%) and low inventory support price growth.",
-              "populationGrowth": 1.6,
-              "infrastructure": "Sydney Metro City & Southwest project ($12.5B, completion 2024)."
+              "description": "Sydney’s status as a global city, with major infrastructure projects like the $12.5B Sydney Metro, drives demand. Strong population growth (1.6%) and low inventory support price growth."
             },
             "vulnerabilities": [
               "High interest rates (4.1% current impact) could limit affordability.",
@@ -171,25 +333,6 @@
         }
       ]
     };
-
-    // Filter regions based on country selection
-    const countrySelect = document.getElementById('country');
-    const regionSelect = document.getElementById('region');
-    const form = document.getElementById('stressTestForm');
-    const error = document.getElementById('error');
-    const results = document.getElementById('results');
-    const resultOutput = document.getElementById('resultOutput');
-
-    countrySelect.addEventListener('change', () => {
-      const country = countrySelect.value;
-      const options = regionSelect.querySelectorAll('option');
-      options.forEach(option => {
-        if (option.value === '') return;
-        option.style.display = (country === 'Canada' && option.classList.contains('canada')) ||
-                              (country === 'Australia' && option.classList.contains('australia')) ? 'block' : 'none';
-        if (option.style.display === 'none') option.selected = false;
-      });
-    });
 
     // Validate postal code/postcode
     function validatePostalCode(postalCode, country) {
@@ -211,11 +354,15 @@
         (item.country === 'Canada' ? item.postalCode : item.postcode) === data.postalCode &&
         item.location.toLowerCase() === data.location.toLowerCase() &&
         item.region === data.region &&
-        item.propertyType === data.propertyType
+        item.propertyType === data.propertyType &&
+        item.bedrooms === parseInt(data.bedrooms) &&
+        item.bathrooms === parseFloat(data.bathrooms) &&
+        item.squareFootage === parseInt(data.squareFootage) &&
+        Math.abs(item.appraisalPrice - parseInt(data.appraisalPrice)) < 1000 // Allow slight variance
       );
 
       if (!entry) {
-        return "No data available for the specified location and property type. Please try another input.";
+        return "No data available for the specified location and property details. Please try another input.";
       }
 
       const metrics = entry.stressTestMetrics;
@@ -228,18 +375,25 @@ Price Movement Probability: ${metrics.priceMovementProbability.increase}% chance
 Location: ${entry.location} (${data.country === 'Canada' ? entry.postalCode : entry.postcode})
 Property Type: ${entry.propertyType}
 Region: ${entry.region}
-Postal Code Price Trend: ${metrics.postalCodePriceTrend.description}
-Local Demand Drivers: ${metrics.localDemandDrivers.description}
 Major Vulnerabilities to Price Decline:
 - ${metrics.vulnerabilities[0]}
 - ${metrics.vulnerabilities[1]}
 Major Factors for Price Increase:
 - ${metrics.factorsForIncrease[0]}
 - ${metrics.factorsForIncrease[1]}
+Additional Observations:
+- ${metrics.postalCodePriceTrend.description}
+- ${metrics.localDemandDrivers.description}
 Sources:
 - ${entry.source.map(s => `${s.name} (${s.lastUpdated})`).join('\n- ')}
       `;
     }
+
+    // Form submission handler
+    const form = document.getElementById('stressTestForm');
+    const error = document.getElementById('error');
+    const results = document.getElementById('results');
+    const resultOutput = document.getElementById('resultOutput');
 
     form.onsubmit = function(e) {
       e.preventDefault();
@@ -247,15 +401,20 @@ Sources:
       results.style.display = 'none';
 
       const data = {
-        country: countrySelect.value,
-        location: document.getElementById('location').value,
+        country: selectedCountry,
+        email: document.getElementById('email').value,
+        region: document.getElementById('region').value,
         postalCode: document.getElementById('postalCode').value.trim(),
+        appraisalPrice: document.getElementById('appraisalPrice').value,
         propertyType: document.getElementById('propertyType').value,
-        region: regionSelect.value
+        bedrooms: document.getElementById('bedrooms').value,
+        bathrooms: document.getElementById('bathrooms').value,
+        squareFootage: document.getElementById('squareFootage').value,
+        location: document.getElementById('location').value
       };
 
       // Validate inputs
-      if (!data.country || !data.location || !data.postalCode || !data.propertyType || !data.region) {
+      if (!data.email || !data.region || !data.postalCode || !data.appraisalPrice || !data.propertyType || !data.bedrooms || !data.bathrooms || !data.squareFootage || !data.location) {
         error.textContent = 'Please fill out all fields.';
         return;
       }
@@ -276,6 +435,9 @@ Sources:
       results.style.display = 'block';
       */
     };
+
+    // Initialize with Canada selected
+    selectCountry('Canada');
   </script>
 </body>
 </html>
