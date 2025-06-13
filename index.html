@@ -222,7 +222,7 @@
                     localStorage.setItem('client_reference_id', uniqueId); // Store for matching
 
                     // Redirect to Stripe Checkout with success URL
-                    const stripeUrl = `https://buy.stripe.com/eVqcMN4Ke6PYbtC8u3a7C02?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
+                    const stripeUrl = `https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
                     window.location.href = stripeUrl;
                 };
             }
