@@ -472,8 +472,11 @@ Sources:
       // Store form data in sessionStorage for post-payment retrieval
       sessionStorage.setItem('stressTestData', JSON.stringify(data));
 
-      // Redirect to Stripe payment link with success callback
-      const stripeLink = 'https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true';
+      // Redirect to Stripe payment link with success callback, adjusted for current URL
+      const baseUrl = window.location.pathname === '/continental-market-group/index.html' 
+        ? 'https://crestsupport.github.io/continental-market-group/index.html'
+        : 'https://crestsupport.github.io/continental-market-group/';
+      const stripeLink = `https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true&return_url=${encodeURIComponent(baseUrl)}`;
       window.location.href = stripeLink;
     };
 
