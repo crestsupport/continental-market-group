@@ -27,6 +27,22 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
+    /* Navigation styling */
+    .nav {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .nav a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav a:hover {
+      text-decoration: underline;
+    }
+
     /* Welcome section styling */
     .welcome {
       text-align: center;
@@ -63,11 +79,6 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       box-sizing: border-box;
-    }
-
-    /* Country selection styling */
-    #country {
-      margin-bottom: 15px;
     }
 
     /* Button styling */
@@ -115,6 +126,23 @@
       margin-top: 5px;
     }
 
+    /* Footer styling */
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
     /* Additional padding for consistency */
     .container > * {
       padding: 5px 0;
@@ -123,6 +151,9 @@
 </head>
 <body>
   <div class="container">
+    <div class="nav">
+      <a href="index.html">Back to Home</a>
+    </div>
     <div class="welcome">
       <h1>Welcome to Your Real Estate Stress Test!</h1>
       <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outlining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
@@ -211,6 +242,10 @@
     <div id="results">
       <h2>Your Stress Test Results</h2>
       <p id="resultOutput"></p>
+    </div>
+
+    <div class="footer">
+      <a href="terms.html">Terms and Privacy</a>
     </div>
   </div>
 
@@ -415,35 +450,31 @@ Sources:
     window.onload = function() {
       console.log('Page loaded, checking for success...'); // Debug log
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('success') === 'true') {
-        const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
-        if (savedData) {
-          console.log('Retrieved data:', savedData); // Debug log
-          // Repopulate form for user reference
-          countrySelect.value = savedData.country;
-          document.getElementById('email').value = savedData.email;
-          document.getElementById('region').value = savedData.region;
-          document.getElementById('postalCode').value = savedData.postalCode;
-          document.getElementById('appraisalPrice').value = savedData.appraisalPrice;
-          document.getElementById('propertyType').value = savedData.propertyType;
-          document.getElementById('bedrooms').value = savedData.bedrooms;
-          document.getElementById('bathrooms').value = savedData.bathrooms;
-          document.getElementById('squareFootage').value = savedData.squareFootage;
-          document.getElementById('location').value = savedData.location;
-          filterRegions(); // Update region display
+      const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
+      if (savedData) {
+        console.log('Retrieved data:', savedData); // Debug log
+        // Repopulate form for user reference
+        countrySelect.value = savedData.country;
+        document.getElementById('email').value = savedData.email;
+        document.getElementById('region').value = savedData.region;
+        document.getElementById('postalCode').value = savedData.postalCode;
+        document.getElementById('appraisalPrice').value = savedData.appraisalPrice;
+        document.getElementById('propertyType').value = savedData.propertyType;
+        document.getElementById('bedrooms').value = savedData.bedrooms;
+        document.getElementById('bathrooms').value = savedData.bathrooms;
+        document.getElementById('squareFootage').value = savedData.squareFootage;
+        document.getElementById('location').value = savedData.location;
+        filterRegions(); // Update region display
 
-          // Display results
-          const result = runStressTest(savedData);
-          resultOutput.textContent = result;
-          results.style.display = 'block';
+        // Display results
+        const result = runStressTest(savedData);
+        resultOutput.textContent = result;
+        results.style.display = 'block';
 
-          // Clear sessionStorage after displaying results
-          sessionStorage.removeItem('stressTestData');
-        } else {
-          console.log('No saved data found in sessionStorage'); // Debug log
-        }
+        // Clear sessionStorage after displaying results
+        sessionStorage.removeItem('stressTestData');
       } else {
-        console.log('No success parameter in URL'); // Debug log
+        console.log('No saved data found in sessionStorage'); // Debug log
       }
     };
   </script>
