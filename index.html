@@ -23,6 +23,7 @@
         .market-selector { margin-bottom: 1rem; }
         .market-selector button { margin-right: 1rem; }
         .hidden { display: none; }
+        .welcome-message { margin-bottom: 2rem; padding: 1rem; background-color: #ecf0f1; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -37,7 +38,10 @@
             <button onclick="setMarket('Australia')">Australia</button>
         </div>
         <div id="stress-test" class="section active">
-            <h2>Real Estate Stress Test</h2>
+            <div class="welcome-message">
+                <h2>Welcome to Your Real Estate Stress Test!</h2>
+                <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outshining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
+            </div>
             <form id="stressTestForm">
                 <div class="form-group">
                     <label for="email">Email <span style="color: #e74c3c;">*</span></label>
