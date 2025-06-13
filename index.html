@@ -65,7 +65,7 @@
       box-sizing: border-box;
     }
 
-    /* Country selection styling (simplified from tabs) */
+    /* Country selection styling */
     #country {
       margin-bottom: 15px;
     }
@@ -185,6 +185,7 @@
           <option value="House">House</option>
           <option value="Condo">Condo</option>
           <option value="Townhouse">Townhouse</option>
+          <option value="Duplex">Duplex</option>
         </select>
       </div>
       <div class="form-group">
@@ -284,9 +285,9 @@
             ]
           },
           "source": [
-            {"name": "CREA", "url": "stats.crea.ca", "lastUpdated": "2025-05-15"},
-            {"name": "Statistics Canada", "url": "www.statcan.gc.ca", "lastUpdated": "2025-03-31"},
-            {"name": "CMHC", "url": "www.cmhc-schl.gc.ca", "lastUpdated": "2025-04-30"}
+            {"name": "CREA", "url": "stats.crea.ca", "lastUpdated": "2025-06-13"},
+            {"name": "Statistics Canada", "url": "www.statcan.gc.ca", "lastUpdated": "2025-06-13"},
+            {"name": "CMHC", "url": "www.cmhc-schl.gc.ca", "lastUpdated": "2025-06-13"}
           ]
         },
         {
@@ -323,9 +324,9 @@
             ]
           },
           "source": [
-            {"name": "CoreLogic", "url": "www.corelogic.com.au", "lastUpdated": "2025-06-04"},
-            {"name": "ABS", "url": "www.abs.gov.au", "lastUpdated": "2025-03-31"},
-            {"name": "Domain", "url": "www.domain.com.au", "lastUpdated": "2025-06-01"}
+            {"name": "CoreLogic", "url": "www.corelogic.com.au", "lastUpdated": "2025-06-13"},
+            {"name": "ABS", "url": "www.abs.gov.au", "lastUpdated": "2025-06-13"},
+            {"name": "Domain", "url": "www.domain.com.au", "lastUpdated": "2025-06-13"}
           ]
         }
       ]
@@ -416,9 +417,24 @@ Sources:
       if (urlParams.get('success') === 'true') {
         const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
         if (savedData) {
+          // Repopulate form for user reference
+          countrySelect.value = savedData.country;
+          document.getElementById('email').value = savedData.email;
+          document.getElementById('region').value = savedData.region;
+          document.getElementById('postalCode').value = savedData.postalCode;
+          document.getElementById('appraisalPrice').value = savedData.appraisalPrice;
+          document.getElementById('propertyType').value = savedData.propertyType;
+          document.getElementById('bedrooms').value = savedData.bedrooms;
+          document.getElementById('bathrooms').value = savedData.bathrooms;
+          document.getElementById('squareFootage').value = savedData.squareFootage;
+          document.getElementById('location').value = savedData.location;
+          filterRegions(); // Update region display
+
+          // Display results
           const result = runStressTest(savedData);
           resultOutput.textContent = result;
           results.style.display = 'block';
+
           // Clear sessionStorage after displaying results
           sessionStorage.removeItem('stressTestData');
         }
