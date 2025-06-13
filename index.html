@@ -5,173 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Real Estate Stress Tester</title>
   <style>
-    /* General styling for the body */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    /* Container for the entire content */
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background-color: #fff;
-      padding: 20px;
-      border: 1px solid #ccc;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Navigation styling */
-    .nav {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .nav a {
-      color: #007bff;
-      text-decoration: none;
-      font-size: 14px;
-      margin: 0 10px;
-    }
-
-    .nav a:hover {
-      text-decoration: underline;
-    }
-
-    /* Welcome section styling */
-    .welcome {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .welcome h1 {
-      font-size: 24px;
-      color: #333;
-    }
-
-    .welcome p {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.5;
-    }
-
-    /* Form styling */
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #333;
-    }
-
-    .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-      font-size: 16px;
-      appearance: none;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
-      background-size: 12px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-
-    /* Button styling */
-    button[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #0056b3;
-    }
-
-    /* Results styling */
-    #results {
-      margin-top: 20px;
-      padding: 20px;
-      background-color: #e6ffe6;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      display: none;
-    }
-
-    #results h2 {
-      font-size: 20px;
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    #resultOutput {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.5;
-    }
-
-    /* Error styling */
-    .error {
-      color: red;
-      font-size: 12px;
-      margin-top: 5px;
-    }
-
-    /* Terms and Privacy styling */
-    .terms {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 12px;
-      color: #666;
-    }
-
-    .terms-details {
-      display: none;
-      margin-top: 10px;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .terms button {
-      background: none;
-      border: none;
-      color: #007bff;
-      cursor: pointer;
-      padding: 0;
-      font-size: 12px;
-    }
-
-    .terms button:hover {
-      text-decoration: underline;
-    }
-
-    /* Additional padding for consistency */
-    .container > * {
-      padding: 5px 0;
-    }
+    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { max-width: 600px; width: 100%; background-color: #fff; padding: 20px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+    .nav { text-align: center; margin-bottom: 20px; }
+    .nav a { color: #007bff; text-decoration: none; font-size: 14px; margin: 0 10px; }
+    .nav a:hover { text-decoration: underline; }
+    .welcome { text-align: center; margin-bottom: 20px; }
+    .welcome h1 { font-size: 24px; color: #333; }
+    .welcome p { font-size: 14px; color: #666; line-height: 1.5; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
+    .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; appearance: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center; background-size: 12px; }
+    .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button[type="submit"] { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button[type="submit"]:hover { background-color: #0056b3; }
+    #results { margin-top: 20px; padding: 20px; background-color: #e6ffe6; border: 1px solid #ccc; border-radius: 4px; display: none; }
+    #results h2 { font-size: 20px; color: #333; margin-bottom: 10px; }
+    #resultOutput { font-size: 14px; color: #666; line-height: 1.5; }
+    .error { color: red; font-size: 12px; margin-top: 5px; }
+    .terms { margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
+    .terms-details { display: none; margin-top: 10px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 4px; }
+    .terms button { background: none; border: none; color: #007bff; cursor: pointer; padding: 0; font-size: 12px; }
+    .terms button:hover { text-decoration: underline; }
+    .container > * { padding: 5px 0; }
   </style>
 </head>
 <body>
@@ -203,7 +59,6 @@
         <label for="region">Province / State / Territory</label>
         <select id="region" required>
           <option value="">Select Region</option>
-          <!-- Canada -->
           <option value="Alberta" class="canada">Alberta</option>
           <option value="British Columbia" class="canada">British Columbia</option>
           <option value="Manitoba" class="canada">Manitoba</option>
@@ -217,7 +72,6 @@
           <option value="Northwest Territories" class="canada">Northwest Territories</option>
           <option value="Nunavut" class="canada">Nunavut</option>
           <option value="Yukon" class="canada">Yukon</option>
-          <!-- Australia -->
           <option value="New South Wales" class="australia">New South Wales</option>
           <option value="Victoria" class="australia">Victoria</option>
           <option value="Queensland" class="australia">Queensland</option>
@@ -274,14 +128,13 @@
     <div class="terms">
       <button onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block';">Terms and Privacy</button>
       <div class="terms-details">
-        <p><strong>Terms of Use:</strong> This Real Estate Stress Test service is provided by Continental Market Group. By accessing or using this service, you agree to be bound by these Terms of Use. The service requires a one-time payment to access stress test results, which are based on current market data and 24-month projections derived from economic indicators and trends. All payments are processed securely via Stripe and are non-refundable once the transaction is complete. Unauthorized use, reproduction, distribution, or resale of the results is strictly prohibited and may result in legal action. Continental Market Group reserves the right to modify these terms at any time, and continued use of the service after such modifications constitutes acceptance of the updated terms. Users are responsible for ensuring the accuracy of provided data; Continental Market Group is not liable for decisions made based on the results. For disputes, contact us at restspprt@outlook.com within 30 days of purchase.</p>
-        <p><strong>Privacy Policy:</strong> Continental Market Group collects personal information, including your email address, property details (e.g., location, appraisal price), and payment data, to deliver personalized stress test results and process transactions. This data is processed and stored securely using industry-standard encryption (AES-256) and is hosted on servers compliant with GDPR and CCPA standards. We do not sell, trade, or share your personal information with third parties except as necessary to fulfill the service (e.g., payment processing with Stripe) or as required by law (e.g., subpoenas). Cookies may be used to enhance user experience, and you can manage these preferences via your browser settings. You have the right to access, rectify, or request deletion of your data by contacting us at restspprt@outlook.com. Our full privacy policy, including data retention periods (up to 5 years for transactional data), is available upon request. By using this service, you consent to this policy.</p>
+        <p><strong>Terms of Use:</strong> This Real Estate Stress Test service is provided by Continental Market Group. By accessing or using this service, you agree to be bound by these Terms of Use, which comply with applicable laws in Canada (Personal Information Protection and Electronic Documents Act - PIPEDA) and Australia (Privacy Act 1988). The service requires a one-time payment to access stress test results, based on 24-month projections derived from market data and regulated by Canada Mortgage and Housing Corporation (CMHC) guidelines and Australian Securities and Investments Commission (ASIC) standards. Payments are processed securely via Stripe and are non-refundable post-transaction, in accordance with Canadian Consumer Protection Act and Australian Consumer Law. Unauthorized use, reproduction, distribution, or resale of results is prohibited under Canadian Copyright Act and Australian Copyright Act 1968, and may lead to legal action. Continental Market Group may update these terms, with continued use signifying acceptance. Users must provide accurate data; Continental Market Group is not liable for decisions based on results, as per limitations under PIPEDA and Privacy Act 1988. Disputes must be raised at restspprt@outlook.com within 30 days.</p>
+        <p><strong>Privacy Policy:</strong> Continental Market Group collects personal information (e.g., email, property details, payment data) to deliver stress test results and process transactions, in compliance with PIPEDA (Canada) and Privacy Act 1988 (Australia). Data is encrypted (AES-256) and stored on GDPR/CCPA-compliant servers, with retention up to 5 years as permitted by CMHC and ASIC regulations. We do not sell or share data except for service fulfillment (e.g., Stripe) or legal obligations (e.g., Canadian Criminal Code, Australian Evidence Act 1995). Cookies enhance user experience, manageable via browser settings. You may access, rectify, or delete data by contacting restspprt@outlook.com, per your rights under PIPEDA and the Australian Privacy Principles. This policy aligns with CMHC data handling and ASIC consumer protection standards. Usage implies consent.</p>
       </div>
     </div>
   </div>
 
   <script>
-    // Initialize variables
     const form = document.getElementById('stressTestForm');
     const error = document.getElementById('error');
     const results = document.getElementById('results');
@@ -289,7 +142,6 @@
     const countrySelect = document.getElementById('country');
     const regionSelect = document.getElementById('region');
 
-    // Filter regions based on country selection
     countrySelect.addEventListener('change', () => {
       const country = countrySelect.value;
       const options = regionSelect.querySelectorAll('option');
@@ -301,7 +153,6 @@
       });
     });
 
-    // Validate postal code/postcode
     function validatePostalCode(postalCode, country) {
       if (country === 'Canada') {
         const regex = /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/;
@@ -313,7 +164,6 @@
       return false;
     }
 
-    // Daily data object (updated daily via external script)
     const dailyData = {
       "date": "2025-06-13",
       "data": [
@@ -331,30 +181,13 @@
             "currentValue": 890000,
             "projectedValue2Years": 877985,
             "twoYearOutlook": "Value expected to remain stable (±2%) over 2 years, reflecting current market trends.",
-            "priceMovementProbability": {
-              "increase": 50,
-              "decline": 50
-            },
-            "postalCodePriceTrend": {
-              "description": "Over the past 12 months, house prices in L0A 1G0 have grown by approximately 2%, slightly below the Ontario average of 3.5%. This slower growth reflects Millbrook’s rural setting, which offers stability but less speculative demand compared to urban areas."
-            },
-            "localDemandDrivers": {
-              "description": "Millbrook’s appeal as a rural community, with proximity to Peterborough (30 km) and the Greater Toronto Area (100 km), attracts remote workers and retirees seeking affordability. Limited new development preserves low inventory, supporting price stability."
-            },
-            "vulnerabilities": [
-              "Rising interest rates (2.75% current impact) could pose a moderate risk.",
-              "Slower population growth in rural areas may limit demand compared to urban centers."
-            ],
-            "factorsForIncrease": [
-              "Falling interest rates (potential decrease from 2.75%) could provide a slight uplift.",
-              "Continued demand for rural properties as hybrid work persists may enhance Millbrook’s appeal."
-            ]
+            "priceMovementProbability": { "increase": 50, "decline": 50 },
+            "postalCodePriceTrend": { "description": "Over the past 12 months, house prices in L0A 1G0 have grown by approximately 2%, slightly below the Ontario average of 3.5%. This slower growth reflects Millbrook’s rural setting." },
+            "localDemandDrivers": { "description": "Millbrook’s appeal as a rural community attracts remote workers and retirees. Limited development supports stability." },
+            "vulnerabilities": [ "Rising interest rates (2.75%) could pose a risk.", "Slower population growth may limit demand." ],
+            "factorsForIncrease": [ "Falling interest rates could uplift values.", "Hybrid work demand may enhance appeal." ]
           },
-          "source": [
-            {"name": "CREA", "url": "stats.crea.ca", "lastUpdated": "2025-06-13"},
-            {"name": "Statistics Canada", "url": "www.statcan.gc.ca", "lastUpdated": "2025-06-13"},
-            {"name": "CMHC", "url": "www.cmhc-schl.gc.ca", "lastUpdated": "2025-06-13"}
-          ]
+          "source": [ {"name": "CREA", "url": "stats.crea.ca", "lastUpdated": "2025-06-13"}, {"name": "CMHC", "url": "www.cmhc-schl.gc.ca", "lastUpdated": "2025-06-13"} ]
         },
         {
           "country": "Australia",
@@ -369,36 +202,18 @@
           "stressTestMetrics": {
             "currentValue": 1500000,
             "projectedValue2Years": 1575000,
-            "twoYearOutlook": "Value expected to grow slightly (+5%) over 2 years, driven by strong urban demand.",
-            "priceMovementProbability": {
-              "increase": 60,
-              "decline": 40
-            },
-            "postalCodePriceTrend": {
-              "description": "Over the past 12 months, house prices in postcode 2000 have grown by approximately 3%, slightly below the New South Wales average of 4%. This reflects Sydney’s high affordability constraints but sustained demand."
-            },
-            "localDemandDrivers": {
-              "description": "Sydney’s status as a global city, with major infrastructure projects like the $12.5B Sydney Metro, drives demand. Strong population growth (1.6%) and low inventory support price growth."
-            },
-            "vulnerabilities": [
-              "High interest rates (4.1% current impact) could limit affordability.",
-              "Economic uncertainties from global tariffs may slow demand."
-            ],
-            "factorsForIncrease": [
-              "Rate cuts (potential decrease from 4.1%) could boost buyer confidence.",
-              "Infrastructure projects and population growth sustain long-term demand."
-            ]
+            "twoYearOutlook": "Value expected to grow slightly (+5%) over 2 years, driven by urban demand.",
+            "priceMovementProbability": { "increase": 60, "decline": 40 },
+            "postalCodePriceTrend": { "description": "Over the past 12 months, house prices in 2000 have grown by 3%, below New South Wales’ 4% average, due to affordability constraints." },
+            "localDemandDrivers": { "description": "Sydney’s global status and infrastructure projects drive demand. Low inventory supports growth." },
+            "vulnerabilities": [ "High interest rates (4.1%) could limit affordability.", "Global tariffs may slow demand." ],
+            "factorsForIncrease": [ "Rate cuts could boost confidence.", "Population growth sustains demand." ]
           },
-          "source": [
-            {"name": "CoreLogic", "url": "www.corelogic.com.au", "lastUpdated": "2025-06-13"},
-            {"name": "ABS", "url": "www.abs.gov.au", "lastUpdated": "2025-06-13"},
-            {"name": "Domain", "url": "www.domain.com.au", "lastUpdated": "2025-06-13"}
-          ]
+          "source": [ {"name": "CoreLogic", "url": "www.corelogic.com.au", "lastUpdated": "2025-06-13"}, {"name": "ABS", "url": "www.abs.gov.au", "lastUpdated": "2025-06-13"} ]
         }
       ]
     };
 
-    // Run stress test using daily data
     function runStressTest(data) {
       const entry = dailyData.data.find(item =>
         item.country === data.country &&
@@ -412,34 +227,23 @@
         Math.abs(item.appraisalPrice - parseInt(data.appraisalPrice)) < 1000
       );
 
-      if (!entry) {
-        return "No data available for the specified location and property details. Please try another input.";
-      }
-
+      if (!entry) return "No data available for the specified location and property details.";
       const metrics = entry.stressTestMetrics;
       return `
 Current Value: $${metrics.currentValue.toLocaleString()}
 Projected Value (2 Years): $${metrics.projectedValue2Years.toLocaleString()}
 2-Year Outlook: ${metrics.twoYearOutlook}
-Price Movement Probability: ${metrics.priceMovementProbability.increase}% chance of increase, ${metrics.priceMovementProbability.decline}% chance of decline
+Price Movement Probability: ${metrics.priceMovementProbability.increase}% increase, ${metrics.priceMovementProbability.decline}% decline
 Location: ${entry.location} (${data.country === 'Canada' ? entry.postalCode : entry.postcode})
 Property Type: ${entry.propertyType}
 Region: ${entry.region}
-Major Vulnerabilities to Price Decline:
-- ${metrics.vulnerabilities[0]}
-- ${metrics.vulnerabilities[1]}
-Major Factors for Price Increase:
-- ${metrics.factorsForIncrease[0]}
-- ${metrics.factorsForIncrease[1]}
-Additional Observations:
-- ${metrics.postalCodePriceTrend.description}
-- ${metrics.localDemandDrivers.description}
-Sources:
-- ${entry.source.map(s => `${s.name} (${s.lastUpdated})`).join('\n- ')}
+Vulnerabilities: ${metrics.vulnerabilities.join('\n- ')}
+Factors for Increase: ${metrics.factorsForIncrease.join('\n- ')}
+Additional Observations: ${metrics.postalCodePriceTrend.description}\n- ${metrics.localDemandDrivers.description}
+Sources: ${entry.source.map(s => `${s.name} (${s.lastUpdated})`).join('\n- ')}
       `;
     }
 
-    // Form submission handler
     form.onsubmit = function(e) {
       e.preventDefault();
       error.textContent = '';
@@ -458,7 +262,6 @@ Sources:
         location: document.getElementById('location').value
       };
 
-      // Validate inputs
       if (!data.country || !data.email || !data.region || !data.postalCode || !data.appraisalPrice || !data.propertyType || !data.bedrooms || !data.bathrooms || !data.squareFootage || !data.location) {
         error.textContent = 'Please fill out all fields.';
         return;
@@ -469,29 +272,21 @@ Sources:
         return;
       }
 
-      // Store form data in sessionStorage for post-payment retrieval
       sessionStorage.setItem('stressTestData', JSON.stringify(data));
-
-      // Redirect to Stripe payment link with success callback, adjusted for current URL
-      const baseUrl = window.location.pathname === '/continental-market-group/index.html' 
-        ? 'https://crestsupport.github.io/continental-market-group/index.html'
-        : 'https://crestsupport.github.io/continental-market-group/';
-      const stripeLink = `https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true&return_url=${encodeURIComponent(baseUrl)}`;
+      const stripeLink = 'https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true&return_url=https://crestsupport.github.io/continental-market-group/index.html';
       window.location.href = stripeLink;
     };
 
-    // Check for payment success on page load
     window.onload = function() {
-      console.log('Page loaded, checking for success...'); // Debug log
+      console.log('Page loaded, URL:', window.location.href);
       const urlParams = new URLSearchParams(window.location.search);
-      console.log('URL Params:', urlParams.toString()); // Debug URL
+      console.log('URL Params:', urlParams.toString());
       if (urlParams.get('success') === 'true') {
-        console.log('Success parameter detected'); // Debug success
+        console.log('Success detected');
         const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
-        console.log('Session Storage Data:', savedData); // Debug data
+        console.log('Stored data:', savedData);
         if (savedData) {
-          console.log('Data retrieved, processing results...'); // Debug processing
-          // Repopulate form for user reference
+          console.log('Processing results');
           countrySelect.value = savedData.country;
           document.getElementById('email').value = savedData.email;
           document.getElementById('region').value = savedData.region;
@@ -502,22 +297,17 @@ Sources:
           document.getElementById('bathrooms').value = savedData.bathrooms;
           document.getElementById('squareFootage').value = savedData.squareFootage;
           document.getElementById('location').value = savedData.location;
-          filterRegions(); // Update region display
-
-          // Display results instantly
           const result = runStressTest(savedData);
           resultOutput.textContent = result;
           results.style.display = 'block';
-          console.log('Results displayed'); // Debug display
-
-          // Clear sessionStorage after displaying results
+          console.log('Results shown');
           sessionStorage.removeItem('stressTestData');
-          console.log('Session storage cleared'); // Debug clear
+          console.log('Data cleared');
         } else {
-          console.log('No saved data found in sessionStorage'); // Debug no data
+          console.log('No stored data');
         }
       } else {
-        console.log('No success parameter in URL'); // Debug no success
+        console.log('No success parameter');
       }
     };
   </script>
