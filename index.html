@@ -20,8 +20,9 @@
         .active { display: block; }
         .results { margin-top: 1.5rem; padding: 1rem; background-color: #dff0d8; border-radius: 4px; display: none; }
         .loading { text-align: center; color: #7f8c8d; margin-top: 1rem; }
-        .market-selector { margin-bottom: 1rem; }
-        .market-selector button { margin-right: 1rem; }
+        .market-selector { margin-bottom: 1rem; background-color: #3498db; padding: 1rem; border-radius: 4px; }
+        .market-selector button { margin-right: 1rem; background-color: #fff; color: #3498db; border: 1px solid #3498db; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+        .market-selector button:hover { background-color: #2980b9; color: #fff; }
         .hidden { display: none; }
         .welcome-message { margin-bottom: 2rem; padding: 1rem; background-color: #ecf0f1; border-radius: 4px; }
     </style>
@@ -33,11 +34,11 @@
         <a href="#" onclick="event.preventDefault(); showSection('privacy-terms');">Privacy & Terms</a>
     </nav>
     <div class="content">
-        <div class="market-selector">
-            <button onclick="setMarket('Canada')">Canada</button>
-            <button onclick="setMarket('Australia')">Australia</button>
-        </div>
         <div id="stress-test" class="section active">
+            <div class="market-selector">
+                <button onclick="setMarket('Canada')">Canada</button>
+                <button onclick="setMarket('Australia')">Australia</button>
+            </div>
             <div class="welcome-message">
                 <h2>Welcome to Your Real Estate Stress Test!</h2>
                 <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outshining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
@@ -107,10 +108,18 @@
             <div id="loading" class="loading" style="display: none;">Loading your results...</div>
         </div>
         <div id="about-us" class="section">
+            <div class="market-selector">
+                <button onclick="setMarket('Canada')">Canada</button>
+                <button onclick="setMarket('Australia')">Australia</button>
+            </div>
             <h2>About Us</h2>
             <p>We are a dedicated team of big data enthusiasts who make data make sense for the real world, committed to revolutionizing property value assessment across Canada and Australia. Unlike traditional property appraisals, our Real Estate Stress Test delivers a dynamic 24-month outlook, incorporating current market trends, economic indicators, and regional data. With over a decade of experience, we empower property owners and investors with actionable insights to navigate future uncertainties.</p>
         </div>
         <div id="privacy-terms" class="section">
+            <div class="market-selector">
+                <button onclick="setMarket('Canada')">Canada</button>
+                <button onclick="setMarket('Australia')">Australia</button>
+            </div>
             <h2>Privacy Policy & Terms of Use</h2>
             <h3>Privacy Policy</h3>
             <p>At Continental Market Group, we prioritize the privacy and security of our users in both Canada and Australia. When you utilize our Real Estate Stress Test, we collect your email address and property-related data (e.g., postal code/postcode, appraisal price, property type) solely to generate and deliver your personalized 24-month property value outlook. This information is processed using state-of-the-art encryption and stored on secure servers compliant with industry standards, including the Personal Information Protection and Electronic Documents Act (PIPEDA) in Canada and the Privacy Act 1988 in Australia. We do not sell, rent, or share your personal data with third parties for marketing purposes unless you provide explicit consent. Your data is retained only for the duration necessary to fulfill our service obligations—typically 30 days post-delivery—after which it is permanently deleted unless required by law. By submitting your information, you consent to these data handling practices. You may request access, correction, or deletion of your data by contacting us at catalystcg@outlook.com. We comply with applicable privacy laws in Canada and Australia, including the Australian Privacy Principles (APPs), and conduct regular audits to ensure adherence. Our data gathering includes market trends from the Australian Bureau of Statistics (ABS) and CoreLogic for Australia, and equivalent Canadian sources, ensuring accurate regional insights.</p>
@@ -208,6 +217,9 @@
             // Hide all options initially and show only the selected market's options
             document.querySelectorAll('option.canada, option.australia').forEach(opt => opt.classList.add('hidden'));
             document.querySelectorAll(`option.${market.toLowerCase()}`).forEach(opt => opt.classList.remove('hidden'));
+            // Clear any previous form data to avoid mismatch
+            document.getElementById('code').value = '';
+            document.getElementById('region').value = '';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -224,24 +236,33 @@
 
                 form.onsubmit = function(event) {
                     event.preventDefault();
+                    const selectedMarket = localStorage.getItem('selectedMarket') || 'Canada';
+                    const regionSelect = document.getElementById('region');
+                    const codeInput = document.getElementById('code');
                     const formData = {
                         email: document.getElementById('email').value,
-                        region: document.getElementById('region').value,
-                        code: document.getElementById('code').value,
+                        region: regionSelect.value,
+                        code: codeInput.value,
                         appraisalPrice: document.getElementById('appraisalPrice').value,
                         propertyCategory: document.getElementById('propertyCategory').value,
                         bedrooms: document.getElementById('bedrooms').value,
                         bathrooms: document.getElementById('bathrooms').value,
                         squareFootage: document.getElementById('squareFootage').value,
                         location: document.getElementById('location').value,
-                        market: savedMarket
+                        market: selectedMarket
                     };
                     if (!formData.email) {
                         document.getElementById('emailError').textContent = 'Email is required to receive results.';
                         return;
                     }
-                    if (!formData.code.match(savedMarket === 'Canada' ? /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/ : /\d{4}/)) {
-                        document.getElementById('postalCodeError').textContent = `Please enter a valid ${savedMarket === 'Canada' ? 'Canadian postal code (e.g., M5V 2T6)' : 'Australian postcode (e.g., 2000)'}.`;
+                    // Validate based on visible region options
+                    const isCanadaSelected = regionSelect.querySelector('option.canada:not(.hidden)');
+                    const isAustraliaSelected = regionSelect.querySelector('option.australia:not(.hidden)');
+                    const postalPattern = isCanadaSelected ? /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/ : /\d{4}/;
+                    const errorMessage = `Please enter a valid ${isCanadaSelected ? 'Canadian postal code (e.g., M5V 2T6)' : 'Australian postcode (e.g., 2000)'}.`;
+
+                    if (!formData.code.match(postalPattern)) {
+                        document.getElementById('postalCodeError').textContent = errorMessage;
                         return;
                     }
                     if (!formData.appraisalPrice || formData.appraisalPrice <= 0 || !formData.squareFootage || formData.squareFootage <= 0) {
@@ -258,7 +279,7 @@
                     localStorage.setItem('client_reference_id', uniqueId);
 
                     // Redirect to Stripe Checkout with success URL
-                    const stripeUrl = `https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
+                    const stripeUrl = `https://buy.stripe.com/your-test-link-here?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
                     window.location.href = stripeUrl;
                 };
             }
@@ -272,33 +293,33 @@
                     const formData = JSON.parse(localStorage.getItem(storedUniqueId));
                     if (formData) {
                         const marketData = {
-                            [savedMarket]: {
-                                nationalTrends: savedMarket === 'Canada' ? {
+                            [formData.market]: {
+                                nationalTrends: formData.market === 'Canada' ? {
                                     priceChangeAnnual: -0.015, salesDrop: 0.03, unsoldInventory: 0.05, basePrice: 679000
                                 } : {
                                     priceChangeAnnual: 0.037, salesDrop: 0.02, unsoldInventory: 0.03, basePrice: 815912
                                 },
-                                policyImpact: savedMarket === 'Canada' ? {
+                                policyImpact: formData.market === 'Canada' ? {
                                     interestRate: 0.0275, economicUncertainty: 0.02
                                 } : {
                                     interestRate: 0.0425, economicUncertainty: 0.015
                                 },
                                 weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
-                                codeFactors: savedMarket === 'Canada' ? {
+                                codeFactors: formData.market === 'Canada' ? {
                                     'M5V': 0.995, 'V6B': 0.99, 'H3B': 1.00, 'T2P': 0.98
                                 } : {
                                     '2000': 0.98, '3000': 0.95, '4000': 1.00, '5000': 0.97, '6000': 0.93, '7000': 0.90
                                 }
                             }
                         };
-                        const nationalData = marketData[savedMarket].nationalTrends;
-                        const policyImpact = marketData[savedMarket].policyImpact;
-                        const codePrefix = formData.code.toUpperCase().replace(/\s/g, '').slice(0, savedMarket === 'Canada' ? 3 : 4);
-                        const codeFactor = marketData[savedMarket].codeFactors[codePrefix] || 1.0;
-                        const sentimentScore = (nationalData.priceChangeAnnual * marketData[savedMarket].weights.priceChange) +
-                                              (nationalData.salesDrop * marketData[savedMarket].weights.salesDrop * -1) +
-                                              (nationalData.unsoldInventory * marketData[savedMarket].weights.unsoldInventory * -1) +
-                                              (policyImpact.economicUncertainty * marketData[savedMarket].weights.policyImpact * -1);
+                        const nationalData = marketData[formData.market].nationalTrends;
+                        const policyImpact = marketData[formData.market].policyImpact;
+                        const codePrefix = formData.code.toUpperCase().replace(/\s/g, '').slice(0, formData.market === 'Canada' ? 3 : 4);
+                        const codeFactor = marketData[formData.market].codeFactors[codePrefix] || 1.0;
+                        const sentimentScore = (nationalData.priceChangeAnnual * marketData[formData.market].weights.priceChange) +
+                                              (nationalData.salesDrop * marketData[formData.market].weights.salesDrop * -1) +
+                                              (nationalData.unsoldInventory * marketData[formData.market].weights.unsoldInventory * -1) +
+                                              (policyImpact.economicUncertainty * marketData[formData.market].weights.policyImpact * -1);
                         const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02);
                         const currentValue = parseFloat(formData.appraisalPrice);
                         const projectedValue = currentValue * (1 + adjustedGrowthRate);
