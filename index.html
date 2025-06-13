@@ -413,10 +413,12 @@ Sources:
 
     // Check for payment success on page load
     window.onload = function() {
+      console.log('Page loaded, checking for success...'); // Debug log
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('success') === 'true') {
         const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
         if (savedData) {
+          console.log('Retrieved data:', savedData); // Debug log
           // Repopulate form for user reference
           countrySelect.value = savedData.country;
           document.getElementById('email').value = savedData.email;
@@ -437,7 +439,11 @@ Sources:
 
           // Clear sessionStorage after displaying results
           sessionStorage.removeItem('stressTestData');
+        } else {
+          console.log('No saved data found in sessionStorage'); // Debug log
         }
+      } else {
+        console.log('No success parameter in URL'); // Debug log
       }
     };
   </script>
