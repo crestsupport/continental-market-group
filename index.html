@@ -22,9 +22,7 @@
         .active { display: block; }
         .results { margin-top: 1.5rem; padding: 1rem; background-color: #dff0d8; border-radius: 4px; display: none; }
         .loading { text-align: center; color: #7f8c8d; margin-top: 1rem; }
-        .market-selector { margin-bottom: 1rem; background-color: #3498db; padding: 1rem; border-radius: 4px; }
-        .market-selector button { margin-right: 1rem; background-color: #fff; color: #3498db; border: 1px solid #3498db; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
-        .market-selector button:hover { background-color: #2980b9; color: #fff; }
+        .market-selector { margin-bottom: 1rem; }
         .hidden { display: none; }
         .welcome-message { margin-bottom: 2rem; padding: 1rem; background-color: #ecf0f1; border-radius: 4px; }
     </style>
@@ -38,12 +36,16 @@
     <div class="content">
         <div id="stress-test" class="section active">
             <div class="market-selector">
-                <button onclick="setMarket('Canada')">Canada</button>
-                <button onclick="setMarket('Australia')">Australia</button>
+                <label for="market">Select Market</label>
+                <select id="market" name="market" onchange="setMarket(this.value)" required>
+                    <option value="">Select Market</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                </select>
             </div>
             <div class="welcome-message">
                 <h2>Welcome to Your Real Estate Stress Test!</h2>
-                <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outshining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
+                <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outshining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market, fill in your property details, and get your personalized stress test started today!</p>
             </div>
             <form id="stressTestForm">
                 <div class="form-group">
@@ -52,29 +54,6 @@
                     <label for="region">Province / State / Territory</label>
                     <select id="region" name="region" required>
                         <option value="">Select Region</option>
-                        <!-- Canada provinces and territories -->
-                        <option class="canada" value="Alberta">Alberta</option>
-                        <option class="canada" value="British Columbia">British Columbia</option>
-                        <option class="canada" value="Manitoba">Manitoba</option>
-                        <option class="canada" value="New Brunswick">New Brunswick</option>
-                        <option class="canada" value="Newfoundland and Labrador">Newfoundland and Labrador</option>
-                        <option class="canada" value="Nova Scotia">Nova Scotia</option>
-                        <option class="canada" value="Ontario">Ontario</option>
-                        <option class="canada" value="Prince Edward Island">Prince Edward Island</option>
-                        <option class="canada" value="Quebec">Quebec</option>
-                        <option class="canada" value="Saskatchewan">Saskatchewan</option>
-                        <option class="canada" value="Northwest Territories">Northwest Territories</option>
-                        <option class="canada" value="Nunavut">Nunavut</option>
-                        <option class="canada" value="Yukon">Yukon</option>
-                        <!-- Australia states and territories -->
-                        <option class="australia" value="New South Wales">New South Wales</option>
-                        <option class="australia" value="Victoria">Victoria</option>
-                        <option class="australia" value="Queensland">Queensland</option>
-                        <option class="australia" value="Western Australia">Western Australia</option>
-                        <option class="australia" value="South Australia">South Australia</option>
-                        <option class="australia" value="Tasmania">Tasmania</option>
-                        <option class="australia" value="Northern Territory">Northern Territory</option>
-                        <option class="australia" value="Australian Capital Territory">Australian Capital Territory</option>
                     </select>
                     <label for="code">Postal Code / Postcode</label>
                     <input type="text" id="code" name="code" placeholder="e.g., M5V 2T6 or 2000" required>
@@ -111,16 +90,24 @@
         </div>
         <div id="about-us" class="section">
             <div class="market-selector">
-                <button onclick="setMarket('Canada')">Canada</button>
-                <button onclick="setMarket('Australia')">Australia</button>
+                <label for="market">Select Market</label>
+                <select id="market" name="market" onchange="setMarket(this.value)" required>
+                    <option value="">Select Market</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                </select>
             </div>
             <h2>About Us</h2>
             <p>We are a dedicated team of big data enthusiasts who make data make sense for the real world, committed to revolutionizing property value assessment across Canada and Australia. Unlike traditional property appraisals, our Real Estate Stress Test delivers a dynamic 24-month outlook, incorporating current market trends, economic indicators, and regional data. With over a decade of experience, we empower property owners and investors with actionable insights to navigate future uncertainties.</p>
         </div>
         <div id="privacy-terms" class="section">
             <div class="market-selector">
-                <button onclick="setMarket('Canada')">Canada</button>
-                <button onclick="setMarket('Australia')">Australia</button>
+                <label for="market">Select Market</label>
+                <select id="market" name="market" onchange="setMarket(this.value)" required>
+                    <option value="">Select Market</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                </select>
             </div>
             <h2>Privacy Policy & Terms of Use</h2>
             <h3>Privacy Policy</h3>
@@ -187,46 +174,45 @@
         }
 
         function setMarket(market) {
+            if (!market) return;
             localStorage.setItem('selectedMarket', market);
             const regionSelect = document.getElementById('region');
             const codeInput = document.getElementById('code');
+
+            // Clear existing options
             regionSelect.innerHTML = '<option value="">Select Region</option>';
 
+            // Populate with relevant regions
+            const regions = {
+                'Canada': ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Northwest Territories', 'Nunavut', 'Yukon'],
+                'Australia': ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory']
+            };
+
+            regions[market].forEach(region => {
+                const option = document.createElement('option');
+                option.value = region;
+                option.textContent = region;
+                regionSelect.appendChild(option);
+            });
+
+            // Update postal code field
+            codeInput.value = '';
             if (market === 'Canada') {
-                const provincesTerritories = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Northwest Territories', 'Nunavut', 'Yukon'];
-                provincesTerritories.forEach(option => {
-                    const opt = document.createElement('option');
-                    opt.value = option;
-                    opt.className = 'canada';
-                    opt.textContent = option;
-                    regionSelect.appendChild(opt);
-                });
                 codeInput.placeholder = 'e.g., M5V 2T6';
                 codeInput.pattern = '[A-Za-z]\\d[A-Za-z]\\s?\\d[A-Za-z]\\d';
             } else if (market === 'Australia') {
-                const statesTerritories = ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory'];
-                statesTerritories.forEach(option => {
-                    const opt = document.createElement('option');
-                    opt.value = option;
-                    opt.className = 'australia';
-                    opt.textContent = option;
-                    regionSelect.appendChild(opt);
-                });
                 codeInput.placeholder = 'e.g., 2000';
                 codeInput.pattern = '\\d{4}';
             }
-
-            // Clear existing selections and hide all options
-            regionSelect.value = '';
-            document.querySelectorAll('option.canada, option.australia').forEach(opt => opt.classList.add('hidden'));
-            // Show only the selected market's options
-            document.querySelectorAll(`option.${market.toLowerCase()}`).forEach(opt => opt.classList.remove('hidden'));
-            document.getElementById('code').value = '';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             const savedMarket = localStorage.getItem('selectedMarket') || 'Canada';
-            setMarket(savedMarket);
+            const marketSelect = document.getElementById('market');
+            if (marketSelect) {
+                marketSelect.value = savedMarket;
+                setMarket(savedMarket);
+            }
 
             const form = document.getElementById('stressTestForm');
             const resultsDiv = document.getElementById('results');
@@ -257,10 +243,8 @@
                         document.getElementById('emailError').textContent = 'Email is required to receive results.';
                         return;
                     }
-                    const isCanadaSelected = regionSelect.querySelector('option.canada:not(.hidden)');
-                    const isAustraliaSelected = regionSelect.querySelector('option.australia:not(.hidden)');
-                    const postalPattern = isCanadaSelected ? /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/ : /\d{4}/;
-                    const errorMessage = `Please enter a valid ${isCanadaSelected ? 'Canadian postal code (e.g., M5V 2T6)' : 'Australian postcode (e.g., 2000)'}.`;
+                    const postalPattern = selectedMarket === 'Canada' ? /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/ : /\d{4}/;
+                    const errorMessage = `Please enter a valid ${selectedMarket === 'Canada' ? 'Canadian postal code (e.g., M5V 2T6)' : 'Australian postcode (e.g., 2000)'}.`;
 
                     if (!formData.code.match(postalPattern)) {
                         document.getElementById('postalCodeError').textContent = errorMessage;
