@@ -1,312 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real Estate Stress Tester</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .container { max-width: 600px; width: 100%; background-color: #fff; padding: 20px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-    .nav { text-align: center; margin-bottom: 20px; }
-    .nav a { color: #007bff; text-decoration: none; font-size: 14px; margin: 0 10px; }
-    .nav a:hover { text-decoration: underline; }
-    .welcome { text-align: center; margin-bottom: 20px; }
-    .welcome h1 { font-size: 24px; color: #333; }
-    .welcome p { font-size: 14px; color: #666; line-height: 1.5; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
-    .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; appearance: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center; background-size: 12px; }
-    .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    button[type="submit"] { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-    button[type="submit"]:hover { background-color: #0056b3; }
-    #results { margin-top: 20px; padding: 20px; background-color: #e6ffe6; border: 1px solid #ccc; border-radius: 4px; display: none; }
-    #results h2 { font-size: 20px; color: #333; margin-bottom: 10px; }
-    #resultOutput { font-size: 14px; color: #666; line-height: 1.5; }
-    .error { color: red; font-size: 12px; margin-top: 5px; }
-    .terms { margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
-    .terms-details { display: none; margin-top: 10px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 4px; }
-    .terms button { background: none; border: none; color: #007bff; cursor: pointer; padding: 0; font-size: 12px; }
-    .terms button:hover { text-decoration: underline; }
-    .container > * { padding: 5px 0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Stress Test</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f9; color: #333; display: flex; justify-content: center; min-height: 100vh; }
+        nav { background-color: #2c3e50; padding: 1rem; width: 100%; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); position: fixed; top: 0; z-index: 1000; }
+        nav a { color: #ecf0f1; margin: 0 1.5rem; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: #3498db; }
+        .content { max-width: 600px; margin: 6rem auto 2rem; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .form-group { margin: 1.5rem 0; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
+        input, select, button { width: 100%; padding: 0.75rem; margin: 0.25rem 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+        button { background-color: #3498db; color: #fff; border: none; cursor: pointer; transition: background-color 0.3s; }
+        button:hover { background-color: #2980b9; }
+        #postalCodeError, #appraisalPriceError, #emailError { color: #e74c3c; margin-top: 0.5rem; }
+        .section { display: none; }
+        .active { display: block; }
+        .results { margin-top: 1.5rem; padding: 1rem; background-color: #dff0d8; border-radius: 4px; display: none; }
+        .loading { text-align: center; color: #7f8c8d; margin-top: 1rem; }
+        .market-selector { margin-bottom: 1rem; background-color: #3498db; padding: 1rem; border-radius: 4px; }
+        .market-selector button { margin-right: 1rem; background-color: #fff; color: #3498db; border: 1px solid #3498db; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+        .market-selector button:hover { background-color: #2980b9; color: #fff; }
+        .hidden { display: none; }
+        .welcome-message { margin-bottom: 2rem; padding: 1rem; background-color: #ecf0f1; border-radius: 4px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="nav">
-      <a href="index.html">Back to Home</a>
-      <a href="aboutus.html">About Us</a>
-      <a href="mailto:restspprt@outlook.com">Contact Us</a>
+    <nav>
+        <a href="#" onclick="event.preventDefault(); showSection('stress-test');">Stress Test</a>
+        <a href="#" onclick="event.preventDefault(); showSection('about-us');">About Us</a>
+        <a href="#" onclick="event.preventDefault(); showSection('privacy-terms');">Privacy & Terms</a>
+    </nav>
+    <div class="content">
+        <div id="stress-test" class="section active">
+            <div class="market-selector">
+                <button onclick="setMarket('Canada')">Canada</button>
+                <button onclick="setMarket('Australia')">Australia</button>
+            </div>
+            <div class="welcome-message">
+                <h2>Welcome to Your Real Estate Stress Test!</h2>
+                <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outshining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
+            </div>
+            <form id="stressTestForm">
+                <div class="form-group">
+                    <label for="email">Email <span style="color: #e74c3c;">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <label for="region">Province / State / Territory</label>
+                    <select id="region" name="region" required>
+                        <option value="">Select Region</option>
+                        <!-- Canada provinces and territories -->
+                        <option class="canada" value="Alberta">Alberta</option>
+                        <option class="canada" value="British Columbia">British Columbia</option>
+                        <option class="canada" value="Manitoba">Manitoba</option>
+                        <option class="canada" value="New Brunswick">New Brunswick</option>
+                        <option class="canada" value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                        <option class="canada" value="Nova Scotia">Nova Scotia</option>
+                        <option class="canada" value="Ontario">Ontario</option>
+                        <option class="canada" value="Prince Edward Island">Prince Edward Island</option>
+                        <option class="canada" value="Quebec">Quebec</option>
+                        <option class="canada" value="Saskatchewan">Saskatchewan</option>
+                        <option class="canada" value="Northwest Territories">Northwest Territories</option>
+                        <option class="canada" value="Nunavut">Nunavut</option>
+                        <option class="canada" value="Yukon">Yukon</option>
+                        <!-- Australia states and territories -->
+                        <option class="australia" value="New South Wales">New South Wales</option>
+                        <option class="australia" value="Victoria">Victoria</option>
+                        <option class="australia" value="Queensland">Queensland</option>
+                        <option class="australia" value="Western Australia">Western Australia</option>
+                        <option class="australia" value="South Australia">South Australia</option>
+                        <option class="australia" value="Tasmania">Tasmania</option>
+                        <option class="australia" value="Northern Territory">Northern Territory</option>
+                        <option class="australia" value="Australian Capital Territory">Australian Capital Territory</option>
+                    </select>
+                    <label for="code">Postal Code / Postcode</label>
+                    <input type="text" id="code" name="code" placeholder="e.g., M5V 2T6 or 2000" required>
+                    <label for="appraisalPrice">Appraisal Price ($)</label>
+                    <input type="number" id="appraisalPrice" name="appraisalPrice" placeholder="e.g., 500000" required>
+                    <label for="propertyCategory">Property Type</label>
+                    <select id="propertyCategory" name="propertyCategory" required>
+                        <option value="">Select Property Type</option>
+                        <option value="Condo">Condo</option>
+                        <option value="House">House</option>
+                        <option value="Townhouse">Townhouse</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="Duplex">Duplex</option>
+                    </select>
+                    <label for="bedrooms">Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" placeholder="e.g., 2" required>
+                    <label for="bathrooms">Bathrooms</label>
+                    <input type="number" id="bathrooms" name="bathrooms" placeholder="e.g., 1.5" required>
+                    <label for="squareFootage">Square Footage</label>
+                    <input type="number" id="squareFootage" name="squareFootage" placeholder="e.g., 1200" required>
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" placeholder="e.g., Downtown Toronto or Sydney CBD" required>
+                    <button type="submit">Proceed to Payment</button>
+                </div>
+                <div id="postalCodeError"></div>
+                <div id="appraisalPriceError"></div>
+                <div id="emailError"></div>
+            </form>
+            <div id="results" class="results">
+                <h3>Your Stress Test Results</h3>
+                <p id="resultText"></p>
+            </div>
+            <div id="loading" class="loading" style="display: none;">Loading your results...</div>
+        </div>
+        <div id="about-us" class="section">
+            <div class="market-selector">
+                <button onclick="setMarket('Canada')">Canada</button>
+                <button onclick="setMarket('Australia')">Australia</button>
+            </div>
+            <h2>About Us</h2>
+            <p>We are a dedicated team of big data enthusiasts who make data make sense for the real world, committed to revolutionizing property value assessment across Canada and Australia. Unlike traditional property appraisals, our Real Estate Stress Test delivers a dynamic 24-month outlook, incorporating current market trends, economic indicators, and regional data. With over a decade of experience, we empower property owners and investors with actionable insights to navigate future uncertainties.</p>
+        </div>
+        <div id="privacy-terms" class="section">
+            <div class="market-selector">
+                <button onclick="setMarket('Canada')">Canada</button>
+                <button onclick="setMarket('Australia')">Australia</button>
+            </div>
+            <h2>Privacy Policy & Terms of Use</h2>
+            <h3>Privacy Policy</h3>
+            <p>At Continental Market Group, we prioritize the privacy and security of our users in both Canada and Australia. When you utilize our Real Estate Stress Test, we collect your email address and property-related data (e.g., postal code/postcode, appraisal price, property type) solely to generate and deliver your personalized 24-month property value outlook. This information is processed using state-of-the-art encryption and stored on secure servers compliant with industry standards, including the Personal Information Protection and Electronic Documents Act (PIPEDA) in Canada and the Privacy Act 1988 in Australia. We do not sell, rent, or share your personal data with third parties for marketing purposes unless you provide explicit consent. Your data is retained only for the duration necessary to fulfill our service obligations—typically 30 days post-delivery—after which it is permanently deleted unless required by law. By submitting your information, you consent to these data handling practices. You may request access, correction, or deletion of your data by contacting us at catalystcg@outlook.com. We comply with applicable privacy laws in Canada and Australia, including the Australian Privacy Principles (APPs), and conduct regular audits to ensure adherence. Our data gathering includes market trends from the Australian Bureau of Statistics (ABS) and CoreLogic for Australia, and equivalent Canadian sources, ensuring accurate regional insights.</p>
+
+            <h3>Terms of Use</h3>
+            <p>Welcome to the Real Estate Stress Test service provided by Continental Market Group ("we," "us," or "our"). These Terms of Use govern your access to and use of our online platform and services, including the Real Estate Stress Test, available at [your website URL], serving users in Canada and Australia. By accessing or using our services, you agree to be bound by these terms. If you do not agree, please refrain from using our services.</p>
+
+            <h4>1. Service Description</h4>
+            <p>The Real Estate Stress Test is a predictive tool designed to provide a 24-month outlook on property value trends based on user-submitted data, market conditions, and stress testing methodologies. It is available for properties in Canada and Australia and is intended for informational purposes only. It does not constitute financial, legal, investment, or professional advice. Users are encouraged to consult qualified professionals before making investment decisions. Data for Australia is sourced from the Australian Bureau of Statistics (ABS), CoreLogic, and the Real Estate Institute of Australia (REIA), while Canadian data is drawn from equivalent domestic sources.</p>
+
+            <h4>2. Eligibility and Account</h4>
+            <p>You must be at least 19 years of age and reside in Canada or Australia to use our services. No account creation is required; however, you must provide accurate and complete information during the stress test process. We reserve the right to suspend or terminate access if fraudulent or inaccurate data is detected.</p>
+
+            <h4>3. Payment Terms</h4>
+            <p>Access to the detailed 24-month outlook requires a one-time payment, priced at $19.99 CAD for Canada or AUD equivalent for Australia, reflecting our current limited-time offer (regular price: $39.99 CAD/AUD equivalent), processed via our secure Stripe payment gateway. Payments are non-refundable except as required by law or at our sole discretion. We reserve the right to adjust pricing with reasonable notice. All transactions are in the local currency (CAD for Canada, AUD for Australia) and subject to applicable taxes.</p>
+
+            <h4>4. Intellectual Property</h4>
+            <p>All content, including the Real Estate Stress Test tool, reports, algorithms, and website design, is the intellectual property of Continental Market Group and protected by Canadian, Australian, and international copyright laws. You may use the results for personal, non-commercial purposes only. Reproduction, distribution, or modification of our content without prior written consent is prohibited.</p>
+
+            <h4>5. Use of Service</h4>
+            <p>You agree to use the service responsibly and not to:
+            - Submit false or misleading information.
+            - Attempt to reverse-engineer or exploit the tool’s underlying technology.
+            - Use the service for illegal or unauthorized purposes.
+            We may monitor usage to ensure compliance and may suspend access if violations are detected.</p>
+
+            <h4>6. Limitations of Liability</h4>
+            <p>The Real Estate Stress Test provides estimates based on historical data, current market trends, and predictive models. We make no warranties, express or implied, regarding the accuracy, reliability, or suitability of the results. Continental Market Group, its affiliates, officers, and employees shall not be liable for any direct, indirect, incidental, consequential, or punitive damages, including but not limited to financial losses, arising from your use of the service or reliance on its outputs. Our total liability, if any, shall not exceed the amount you paid for the service.</p>
+
+            <h4>7. Disclaimer of Warranties</h4>
+            <p>The service is provided "as is" and "as available" without guarantees of uninterrupted or error-free operation. We do not warrant that the service will meet your specific needs or that any errors will be corrected. Your use of the service is at your own risk.</p>
+
+            <h4>8. Indemnification</h4>
+            <p>You agree to indemnify and hold harmless Continental Market Group from any claims, damages, or losses arising from your use of the service, violation of these terms, or infringement of third-party rights.</p>
+
+            <h4>9. Termination</h4>
+            <p>We reserve the right to terminate or suspend your access to the service at our discretion, with or without notice, if you breach these terms or if operational needs require it. Upon termination, your right to use the service ceases, but prior results remain your property for personal use.</p>
+
+            <h4>10. Changes to Terms</h4>
+            <p>We may update these Terms of Use from time to time to reflect changes in our services, legal requirements, or business practices. Notifications will be posted on this page or via email (if provided). Continued use of the service after changes constitutes acceptance of the new terms.</p>
+
+            <h4>11. Governing Law and Dispute Resolution</h4>
+            <p>These terms are governed by the laws of the Province of Ontario, Canada, for Canadian users, and the laws of New South Wales, Australia, for Australian users, along with their respective federal laws. Any disputes arising from or related to the service shall be resolved through binding arbitration in Toronto, Ontario, for Canadian users, or Sydney, New South Wales, for Australian users, under the rules of the relevant arbitration association (e.g., Canadian Arbitration Association or Australian Centre for International Commercial Arbitration), unless prohibited by law. You agree to waive your right to a jury trial or class action lawsuit. If arbitration is unavailable, exclusive jurisdiction lies with the courts of Ontario, Canada, or New South Wales, Australia, as applicable.</p>
+
+            <h4>12. Force Majeure</h4>
+            <p>We are not liable for delays or failures in service delivery due to circumstances beyond our control, including natural disasters, government actions, internet outages, or third-party service disruptions.</p>
+
+            <h4>13. Contact Information</h4>
+            <p>For questions, support, or to exercise your privacy rights, contact us at catalystcg@outlook.com. Our team is available Monday to Friday, 9 AM to 5 PM EDT (UTC-4) or AEST (UTC+10), depending on your region.</p>
+
+            <h4>14. Severability</h4>
+            <p>If any provision of these terms is found to be unenforceable or invalid, the remaining provisions shall remain in full effect and be interpreted to fulfill the intent of these terms.</p>
+
+            <h4>15. Entire Agreement</h4>
+            <p>These Terms of Use, together with our Privacy Policy, constitute the entire agreement between you and Continental Market Group regarding the use of the Real Estate Stress Test service, superseding any prior agreements or understandings.</p>
+        </div>
     </div>
-    <div class="welcome">
-      <h1>Welcome to Your Real Estate Stress Test!</h1>
-      <p>Step into a smarter way to assess your property’s future! Unlike traditional appraisals—costing $500–$700 in Canada and Australia—the Real Estate Stress Test offers a dynamic, 24-month outlook based on current market trends and economic indicators, all at a fraction of the price. This powerful tool empowers you with actionable insights, outlining static appraisals by predicting value changes and risks. Ready to take control? Simply select your market (Canada or Australia), fill in your property details, and get your personalized stress test started today!</p>
-    </div>
-
-    <form id="stressTestForm">
-      <div class="form-group">
-        <label for="country">Country</label>
-        <select id="country" required>
-          <option value="">Select Country</option>
-          <option value="Canada">Canada</option>
-          <option value="Australia">Australia</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="email">Email *</label>
-        <input type="email" id="email" required placeholder="Enter your email">
-      </div>
-      <div class="form-group">
-        <label for="region">Province / State / Territory</label>
-        <select id="region" required>
-          <option value="">Select Region</option>
-          <option value="Alberta" class="canada">Alberta</option>
-          <option value="British Columbia" class="canada">British Columbia</option>
-          <option value="Manitoba" class="canada">Manitoba</option>
-          <option value="New Brunswick" class="canada">New Brunswick</option>
-          <option value="Newfoundland and Labrador" class="canada">Newfoundland and Labrador</option>
-          <option value="Nova Scotia" class="canada">Nova Scotia</option>
-          <option value="Ontario" class="canada">Ontario</option>
-          <option value="Prince Edward Island" class="canada">Prince Edward Island</option>
-          <option value="Quebec" class="canada">Quebec</option>
-          <option value="Saskatchewan" class="canada">Saskatchewan</option>
-          <option value="Northwest Territories" class="canada">Northwest Territories</option>
-          <option value="Nunavut" class="canada">Nunavut</option>
-          <option value="Yukon" class="canada">Yukon</option>
-          <option value="New South Wales" class="australia">New South Wales</option>
-          <option value="Victoria" class="australia">Victoria</option>
-          <option value="Queensland" class="australia">Queensland</option>
-          <option value="Western Australia" class="australia">Western Australia</option>
-          <option value="South Australia" class="australia">South Australia</option>
-          <option value="Tasmania" class="australia">Tasmania</option>
-          <option value="Australian Capital Territory" class="australia">Australian Capital Territory</option>
-          <option value="Northern Territory" class="australia">Northern Territory</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="postalCode">Postal Code / Postcode</label>
-        <input type="text" id="postalCode" required placeholder="e.g., 2000">
-      </div>
-      <div class="form-group">
-        <label for="appraisalPrice">Appraisal Price ($)</label>
-        <input type="number" id="appraisalPrice" required placeholder="e.g., 500000">
-      </div>
-      <div class="form-group">
-        <label for="propertyType">Property Type</label>
-        <select id="propertyType" required>
-          <option value="">Select Property Type</option>
-          <option value="House">House</option>
-          <option value="Condo">Condo</option>
-          <option value="Townhouse">Townhouse</option>
-          <option value="Duplex">Duplex</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="bedrooms">Bedrooms</label>
-        <input type="number" id="bedrooms" required placeholder="e.g., 2">
-      </div>
-      <div class="form-group">
-        <label for="bathrooms">Bathrooms</label>
-        <input type="number" id="bathrooms" required placeholder="e.g., 1.5">
-      </div>
-      <div class="form-group">
-        <label for="squareFootage">Square Footage</label>
-        <input type="number" id="squareFootage" required placeholder="e.g., 1200">
-      </div>
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input type="text" id="location" required placeholder="e.g., Downtown Toronto or Sydney CBD">
-      </div>
-      <button type="submit">Proceed to Payment</button>
-      <p id="error" class="error"></p>
-    </form>
-
-    <div id="results">
-      <h2>Your Stress Test Results</h2>
-      <p id="resultOutput"></p>
-    </div>
-
-    <div class="terms">
-      <button onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block';">Terms and Privacy</button>
-      <div class="terms-details">
-        <p><strong>Terms of Use:</strong> This Real Estate Stress Test service is provided by Continental Market Group. By accessing or using this service, you agree to be bound by these Terms of Use, which comply with applicable laws in Canada (Personal Information Protection and Electronic Documents Act - PIPEDA) and Australia (Privacy Act 1988). The service requires a one-time payment to access stress test results, based on 24-month projections derived from market data and regulated by Canada Mortgage and Housing Corporation (CMHC) guidelines and Australian Securities and Investments Commission (ASIC) standards. Payments are processed securely via Stripe and are non-refundable post-transaction, in accordance with Canadian Consumer Protection Act and Australian Consumer Law. Unauthorized use, reproduction, distribution, or resale of results is prohibited under Canadian Copyright Act and Australian Copyright Act 1968, and may lead to legal action. Continental Market Group may update these terms, with continued use signifying acceptance. Users must provide accurate data; Continental Market Group is not liable for decisions based on results, as per limitations under PIPEDA and Privacy Act 1988. Disputes must be raised at restspprt@outlook.com within 30 days.</p>
-        <p><strong>Privacy Policy:</strong> Continental Market Group collects personal information (e.g., email, property details, payment data) to deliver stress test results and process transactions, in compliance with PIPEDA (Canada) and Privacy Act 1988 (Australia). Data is encrypted (AES-256) and stored on GDPR/CCPA-compliant servers, with retention up to 5 years as permitted by CMHC and ASIC regulations. We do not sell or share data except for service fulfillment (e.g., Stripe) or legal obligations (e.g., Canadian Criminal Code, Australian Evidence Act 1995). Cookies enhance user experience, manageable via browser settings. You may access, rectify, or delete data by contacting restspprt@outlook.com, per your rights under PIPEDA and the Australian Privacy Principles. This policy aligns with CMHC data handling and ASIC consumer protection standards. Usage implies consent.</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const form = document.getElementById('stressTestForm');
-    const error = document.getElementById('error');
-    const results = document.getElementById('results');
-    const resultOutput = document.getElementById('resultOutput');
-    const countrySelect = document.getElementById('country');
-    const regionSelect = document.getElementById('region');
-
-    countrySelect.addEventListener('change', () => {
-      const country = countrySelect.value;
-      const options = regionSelect.querySelectorAll('option');
-      options.forEach(option => {
-        if (option.value === '') return;
-        option.style.display = (country === 'Canada' && option.classList.contains('canada')) ||
-                              (country === 'Australia' && option.classList.contains('australia')) ? 'block' : 'none';
-        if (option.style.display === 'none') option.selected = false;
-      });
-    });
-
-    function validatePostalCode(postalCode, country) {
-      if (country === 'Canada') {
-        const regex = /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/;
-        return regex.test(postalCode);
-      } else if (country === 'Australia') {
-        const regex = /^\d{4}$/;
-        return regex.test(postalCode);
-      }
-      return false;
-    }
-
-    const dailyData = {
-      "date": "2025-06-13",
-      "data": [
-        {
-          "country": "Canada",
-          "postalCode": "L0A 1G0",
-          "location": "Millbrook",
-          "region": "Ontario",
-          "propertyType": "House",
-          "bedrooms": 3,
-          "bathrooms": 2,
-          "squareFootage": 1500,
-          "appraisalPrice": 890000,
-          "stressTestMetrics": {
-            "currentValue": 890000,
-            "projectedValue2Years": 877985,
-            "twoYearOutlook": "Value expected to remain stable (±2%) over 2 years, reflecting current market trends.",
-            "priceMovementProbability": { "increase": 50, "decline": 50 },
-            "postalCodePriceTrend": { "description": "Over the past 12 months, house prices in L0A 1G0 have grown by approximately 2%, slightly below the Ontario average of 3.5%. This slower growth reflects Millbrook’s rural setting." },
-            "localDemandDrivers": { "description": "Millbrook’s appeal as a rural community attracts remote workers and retirees. Limited development supports stability." },
-            "vulnerabilities": [ "Rising interest rates (2.75%) could pose a risk.", "Slower population growth may limit demand." ],
-            "factorsForIncrease": [ "Falling interest rates could uplift values.", "Hybrid work demand may enhance appeal." ]
-          },
-          "source": [ {"name": "CREA", "url": "stats.crea.ca", "lastUpdated": "2025-06-13"}, {"name": "CMHC", "url": "www.cmhc-schl.gc.ca", "lastUpdated": "2025-06-13"} ]
-        },
-        {
-          "country": "Australia",
-          "postcode": "2000",
-          "location": "Sydney",
-          "region": "New South Wales",
-          "propertyType": "House",
-          "bedrooms": 3,
-          "bathrooms": 2,
-          "squareFootage": 1800,
-          "appraisalPrice": 1500000,
-          "stressTestMetrics": {
-            "currentValue": 1500000,
-            "projectedValue2Years": 1575000,
-            "twoYearOutlook": "Value expected to grow slightly (+5%) over 2 years, driven by urban demand.",
-            "priceMovementProbability": { "increase": 60, "decline": 40 },
-            "postalCodePriceTrend": { "description": "Over the past 12 months, house prices in 2000 have grown by 3%, below New South Wales’ 4% average, due to affordability constraints." },
-            "localDemandDrivers": { "description": "Sydney’s global status and infrastructure projects drive demand. Low inventory supports growth." },
-            "vulnerabilities": [ "High interest rates (4.1%) could limit affordability.", "Global tariffs may slow demand." ],
-            "factorsForIncrease": [ "Rate cuts could boost confidence.", "Population growth sustains demand." ]
-          },
-          "source": [ {"name": "CoreLogic", "url": "www.corelogic.com.au", "lastUpdated": "2025-06-13"}, {"name": "ABS", "url": "www.abs.gov.au", "lastUpdated": "2025-06-13"} ]
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
-      ]
-    };
 
-    function runStressTest(data) {
-      const entry = dailyData.data.find(item =>
-        item.country === data.country &&
-        (item.country === 'Canada' ? item.postalCode : item.postcode) === data.postalCode &&
-        item.location.toLowerCase() === data.location.toLowerCase() &&
-        item.region === data.region &&
-        item.propertyType === data.propertyType &&
-        Math.abs(item.appraisalPrice - parseInt(data.appraisalPrice)) < 1000
-      );
+        function setMarket(market) {
+            localStorage.setItem('selectedMarket', market);
+            const regionSelect = document.getElementById('region');
+            const codeInput = document.getElementById('code');
+            regionSelect.innerHTML = '<option value="">Select Region</option>';
 
-      if (!entry) return "No data available for the specified location and property details.";
-      const metrics = entry.stressTestMetrics;
-      return `
-Current Value: $${metrics.currentValue.toLocaleString()}
-Projected Value (2 Years): $${metrics.projectedValue2Years.toLocaleString()}
-2-Year Outlook: ${metrics.twoYearOutlook}
-Price Movement Probability: ${metrics.priceMovementProbability.increase}% increase, ${metrics.priceMovementProbability.decline}% decline
-Location: ${entry.location} (${data.country === 'Canada' ? entry.postalCode : entry.postcode})
-Property Type: ${entry.propertyType}
-Region: ${entry.region}
-Vulnerabilities: ${metrics.vulnerabilities.join('\n- ')}
-Factors for Increase: ${metrics.factorsForIncrease.join('\n- ')}
-Additional Observations: ${metrics.postalCodePriceTrend.description}\n- ${metrics.localDemandDrivers.description}
-Sources: ${entry.source.map(s => `${s.name} (${s.lastUpdated})`).join('\n- ')}
-      `;
-    }
+            if (market === 'Canada') {
+                const provincesTerritories = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Northwest Territories', 'Nunavut', 'Yukon'];
+                provincesTerritories.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.className = 'canada';
+                    opt.textContent = option;
+                    regionSelect.appendChild(opt);
+                });
+                codeInput.placeholder = 'e.g., M5V 2T6';
+                codeInput.pattern = '[A-Za-z]\\d[A-Za-z]\\s?\\d[A-Za-z]\\d';
+            } else if (market === 'Australia') {
+                const statesTerritories = ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory'];
+                statesTerritories.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.className = 'australia';
+                    opt.textContent = option;
+                    regionSelect.appendChild(opt);
+                });
+                codeInput.placeholder = 'e.g., 2000';
+                codeInput.pattern = '\\d{4}';
+            }
 
-    form.onsubmit = function(e) {
-      e.preventDefault();
-      error.textContent = '';
-      results.style.display = 'none';
-
-      const data = {
-        country: countrySelect.value,
-        email: document.getElementById('email').value,
-        region: document.getElementById('region').value,
-        postalCode: document.getElementById('postalCode').value.trim(),
-        appraisalPrice: document.getElementById('appraisalPrice').value,
-        propertyType: document.getElementById('propertyType').value,
-        bedrooms: document.getElementById('bedrooms').value,
-        bathrooms: document.getElementById('bathrooms').value,
-        squareFootage: document.getElementById('squareFootage').value,
-        location: document.getElementById('location').value
-      };
-
-      if (!data.country || !data.email || !data.region || !data.postalCode || !data.appraisalPrice || !data.propertyType || !data.bedrooms || !data.bathrooms || !data.squareFootage || !data.location) {
-        error.textContent = 'Please fill out all fields.';
-        return;
-      }
-
-      if (!validatePostalCode(data.postalCode, data.country)) {
-        error.textContent = `Invalid ${data.country === 'Canada' ? 'postal code' : 'postcode'} for ${data.country}.`;
-        return;
-      }
-
-      sessionStorage.setItem('stressTestData', JSON.stringify(data));
-      const stripeLink = 'https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?success=true&return_url=https://crestsupport.github.io/continental-market-group/';
-      window.location.href = stripeLink;
-    };
-
-    window.onload = function() {
-      console.log('Page loaded, URL:', window.location.href);
-      const urlParams = new URLSearchParams(window.location.search);
-      console.log('URL Params:', urlParams.toString());
-      if (urlParams.get('success') === 'true') {
-        console.log('Success detected');
-        const savedData = JSON.parse(sessionStorage.getItem('stressTestData'));
-        console.log('Stored data:', savedData);
-        if (savedData) {
-          console.log('Processing results');
-          countrySelect.value = savedData.country;
-          document.getElementById('email').value = savedData.email;
-          document.getElementById('region').value = savedData.region;
-          document.getElementById('postalCode').value = savedData.postalCode;
-          document.getElementById('appraisalPrice').value = savedData.appraisalPrice;
-          document.getElementById('propertyType').value = savedData.propertyType;
-          document.getElementById('bedrooms').value = savedData.bedrooms;
-          document.getElementById('bathrooms').value = savedData.bathrooms;
-          document.getElementById('squareFootage').value = savedData.squareFootage;
-          document.getElementById('location').value = savedData.location;
-          const result = runStressTest(savedData);
-          resultOutput.textContent = result;
-          results.style.display = 'block';
-          console.log('Results shown');
-          sessionStorage.removeItem('stressTestData');
-          console.log('Data cleared');
-        } else {
-          console.log('No stored data');
+            // Hide all options initially and show only the selected market's options
+            document.querySelectorAll('option.canada, option.australia').forEach(opt => opt.classList.add('hidden'));
+            document.querySelectorAll(`option.${market.toLowerCase()}`).forEach(opt => opt.classList.remove('hidden'));
+            // Clear any previous form data to avoid mismatch
+            document.getElementById('code').value = '';
+            document.getElementById('region').value = '';
         }
-      } else {
-        console.log('No success parameter');
-      }
-    };
-  </script>
-</body>
-</html>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedMarket = localStorage.getItem('selectedMarket') || 'Canada';
+            setMarket(savedMarket);
+
+            const form = document.getElementById('stressTestForm');
+            const resultsDiv = document.getElementById('results');
+            const resultText = document.getElementById('resultText');
+            const loadingDiv = document.getElementById('loading');
+
+            if (form) {
+                form.style.display = 'block';
+
+                form.onsubmit = function(event) {
+                    event.preventDefault();
+                    const selectedMarket = localStorage.getItem('selectedMarket') || 'Canada';
+                    const regionSelect = document.getElementById('region');
+                    const codeInput = document.getElementById('code');
+                    const formData = {
+                        email: document.getElementById('email').value,
+                        region: regionSelect.value,
+                        code: codeInput.value,
+                        appraisalPrice: document.getElementById('appraisalPrice').value,
+                        propertyCategory: document.getElementById('propertyCategory').value,
+                        bedrooms: document.getElementById('bedrooms').value,
+                        bathrooms: document.getElementById('bathrooms').value,
+                        squareFootage: document.getElementById('squareFootage').value,
+                        location: document.getElementById('location').value,
+                        market: selectedMarket
+                    };
+                    if (!formData.email) {
+                        document.getElementById('emailError').textContent = 'Email is required to receive results.';
+                        return;
+                    }
+                    // Validate based on visible region options
+                    const isCanadaSelected = regionSelect.querySelector('option.canada:not(.hidden)');
+                    const isAustraliaSelected = regionSelect.querySelector('option.australia:not(.hidden)');
+                    const postalPattern = isCanadaSelected ? /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/ : /\d{4}/;
+                    const errorMessage = `Please enter a valid ${isCanadaSelected ? 'Canadian postal code (e.g., M5V 2T6)' : 'Australian postcode (e.g., 2000)'}.`;
+
+                    if (!formData.code.match(postalPattern)) {
+                        document.getElementById('postalCodeError').textContent = errorMessage;
+                        return;
+                    }
+                    if (!formData.appraisalPrice || formData.appraisalPrice <= 0 || !formData.squareFootage || formData.squareFootage <= 0) {
+                        document.getElementById('appraisalPriceError').textContent = 'Please enter positive numbers for appraisal price and square footage.';
+                        return;
+                    }
+
+                    const uniqueId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+
+                    localStorage.setItem(uniqueId, JSON.stringify(formData));
+                    localStorage.setItem('client_reference_id', uniqueId);
+
+                    // Redirect to Stripe Checkout with success URL
+                    const stripeUrl = `https://buy.stripe.com/test_3cI6op3Ga7U20OY4dNa7C00?prefilled_email=${encodeURIComponent(formData.email)}&client_reference_id=${uniqueId}&success_url=${encodeURIComponent(window.location.href + '?session_id={CHECKOUT_SESSION_ID}')}&cancel_url=${encodeURIComponent(window.location.href)}`;
+                    try {
+                        console.log('Attempting redirect to:', stripeUrl);
+                        window.location.href = stripeUrl;
+                    } catch (error) {
+                        console.error('Redirect failed:', error);
+                        alert('Failed to redirect to payment page. Check console for details.');
+                    }
+                };
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            if (sessionId) {
+                loadingDiv.style.display = 'block';
+                setTimeout(() => {
+                    const storedUniqueId = localStorage.getItem('client_reference_id');
+                    const formData = JSON.parse(localStorage.getItem(storedUniqueId));
+                    if (formData) {
+                        const marketData = {
+                            [formData.market]: {
+                                nationalTrends: formData.market === 'Canada' ? {
+                                    priceChangeAnnual: -0.015, // 1.5% annual decrease
+                                    salesDrop: 0.03, // 3% drop in sales
+                                    unsoldInventory: 0.05, // 5% increase in unsold inventory
+                                    basePrice: 679000 // Average base price
+                                } : {
+                                    priceChangeAnnual: 0.037, // 3.7% annual increase
+                                    salesDrop: 0.02, // 2% drop in sales
+                                    unsoldInventory: 0.03, // 3% increase in unsold inventory
+                                    basePrice: 815912 // Average base price
+                                },
+                                policyImpact: formData.market === 'Canada' ? {
+                                    interestRate: 0.0275, // 2.75% interest rate impact
+                                    economicUncertainty: 0.02 // 2% economic uncertainty
+                                } : {
+                                    interestRate: 0.0425, // 4.25% interest rate impact
+                                    economicUncertainty: 0.015 // 1.5% economic uncertainty
+                                },
+                                weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
+                                codeFactors: formData.market === 'Canada' ? {
+                                    'M5V': 0.995, // Toronto downtown
+                                    'V6B': 0.99,  // Vancouver downtown
+                                    'H3B': 1.00,  // Montreal downtown
+                                    'T2P': 0.98   // Calgary downtown
+                                } : {
+                                    '2000': 0.98, // Sydney NSW
+                                    '3000': 0.95, // Melbourne VIC
+                                    '4000': 1
