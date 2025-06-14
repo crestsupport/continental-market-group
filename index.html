@@ -13,6 +13,8 @@
         .form-group { margin: 1.5rem 0; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
         select, input, button { width: 100%; padding: 0.75rem; margin: 0.25rem 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+        select { appearance: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="%23333"><polygon points="0,0 12,0 6,12"/></svg>') no-repeat right 0.75rem center/12px; background-color: #fff; cursor: pointer; }
+        select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
         button { background-color: #3498db; color: #fff; border: none; cursor: pointer; transition: background-color 0.3s; }
         button:hover { background-color: #2980b9; }
         #postalCodeError, #appraisalPriceError, #emailError { color: #e74c3c; margin-top: 0.5rem; }
@@ -214,10 +216,12 @@
                 codeInput.pattern = '\\d{4}';
             }
 
+            // Clear existing selections and hide all options
+            regionSelect.value = '';
             document.querySelectorAll('option.canada, option.australia').forEach(opt => opt.classList.add('hidden'));
+            // Show only the selected market's options
             document.querySelectorAll(`option.${market.toLowerCase()}`).forEach(opt => opt.classList.remove('hidden'));
             document.getElementById('code').value = '';
-            document.getElementById('region').value = '';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
