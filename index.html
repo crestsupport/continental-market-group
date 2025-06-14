@@ -283,52 +283,69 @@
                     const formData = JSON.parse(localStorage.getItem(storedUniqueId));
                     if (formData) {
                         const marketData = {
-                            [formData.market]: {
-                                nationalTrends: formData.market === 'Canada' ? {
+                            'Canada': {
+                                nationalTrends: {
                                     priceChangeAnnual: -0.015,
                                     salesDrop: 0.03,
                                     unsoldInventory: 0.05,
                                     basePrice: 679000
-                                } : {
+                                },
+                                policyImpact: {
+                                    interestRate: 0.0275,
+                                    economicUncertainty: 0.02
+                                },
+                                weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
+                                codeFactors: {
+                                    'M5V': 0.995, // Toronto Downtown
+                                    'V6B': 0.99,  // Vancouver Downtown
+                                    'H3B': 1.00,  // Montreal Downtown
+                                    'T2P': 0.98   // Calgary Downtown
+                                },
+                                wageGrowth: 0.034, // 3.4% annual growth (May 2025, Statistics Canada)
+                                jobGrowth: 0.000  // Little change in May 2025 (+0.0%)
+                            },
+                            'Australia': {
+                                nationalTrends: {
                                     priceChangeAnnual: 0.037,
                                     salesDrop: 0.02,
                                     unsoldInventory: 0.03,
                                     basePrice: 815912
                                 },
-                                policyImpact: formData.market === 'Canada' ? {
-                                    interestRate: 0.0275,
-                                    economicUncertainty: 0.02
-                                } : {
+                                policyImpact: {
                                     interestRate: 0.0425,
                                     economicUncertainty: 0.015
                                 },
                                 weights: { priceChange: 0.4, salesDrop: 0.3, unsoldInventory: 0.2, policyImpact: 0.1 },
-                                codeFactors: formData.market === 'Canada' ? {
-                                    'M5V': 0.995,
-                                    'V6B': 0.99,
-                                    'H3B': 1.00,
-                                    'T2P': 0.98
-                                } : {
-                                    '2000': 0.98,
-                                    '3000': 0.95,
-                                    '4000': 1.00,
-                                    '5000': 0.97,
-                                    '6000': 0.93,
-                                    '7000': 0.90
-                                }
+                                codeFactors: {
+                                    '2000': 0.98, // Sydney CBD
+                                    '3000': 0.95, // Melbourne CBD
+                                    '4000': 1.00, // Brisbane CBD
+                                    '5000': 0.97, // Adelaide CBD
+                                    '6000': 0.93, // Perth CBD
+                                    '7000': 0.90  // Hobart CBD
+                                },
+                                wageGrowth: 0.034, // 3.4% annual growth (March 2025, ABS)
+                                jobGrowth: 0.000  // Little change in May 2025 (+0.0%)
                             }
                         };
                         const nationalData = marketData[formData.market].nationalTrends;
                         const policyImpact = marketData[formData.market].policyImpact;
                         const codePrefix = formData.code.toUpperCase().replace(/\s/g, '').slice(0, formData.market === 'Canada' ? 3 : 4);
                         const codeFactor = marketData[formData.market].codeFactors[codePrefix] || 1.0;
+                        const wageGrowthImpact = marketData[formData.market].wageGrowth * 0.2; // Moderate impact on demand
+                        const jobGrowthImpact = marketData[formData.market].jobGrowth * 0.3; // Moderate impact on demand
+
                         const sentimentScore = (nationalData.priceChangeAnnual * marketData[formData.market].weights.priceChange) +
                                               (nationalData.salesDrop * marketData[formData.market].weights.salesDrop * -1) +
                                               (nationalData.unsoldInventory * marketData[formData.market].weights.unsoldInventory * -1) +
-                                              (policyImpact.economicUncertainty * marketData[formData.market].weights.policyImpact * -1);
+                                              (policyImpact.economicUncertainty * marketData[formData.market].weights.policyImpact * -1) +
+                                              (wageGrowthImpact) +
+                                              (jobGrowthImpact);
                         const adjustedGrowthRate = Math.max(Math.min(sentimentScore * 0.5, 0.02), -0.02);
+                        const interestRateImpact = policyImpact.interestRate > 0.03 ? -0.01 : 0.01; // Simplified impact
+                        const totalGrowthRate = adjustedGrowthRate + interestRateImpact;
                         const currentValue = parseFloat(formData.appraisalPrice);
-                        const projectedValue = currentValue * (1 + adjustedGrowthRate) * codeFactor;
+                        const projectedValue = currentValue * (1 + totalGrowthRate) * codeFactor;
                         const percentageChange = ((projectedValue - currentValue) / currentValue) * 100;
 
                         let increaseChance, declineChance, outlook;
@@ -343,11 +360,12 @@
                             majorVulnerabilities = [
                                 `Rising interest rates (${(policyImpact.interestRate * 100).toFixed(2)}% impact) could increase borrowing costs.`,
                                 `Economic uncertainty (${(policyImpact.economicUncertainty * 100).toFixed(2)}% effect) may reduce buyer confidence.`,
-                                `Increased unsold inventory (${(nationalData.unsoldInventory * 100).toFixed(1)}%) suggests oversupply risk.`
+                                `Increased unsold inventory (${(nationalData.unsoldInventory * 100).toFixed(1)}%) suggests oversupply risk in ${codePrefix}.`,
+                                `Flat job growth (${(jobGrowthImpact * 100).toFixed(1)}%) may limit local demand.`
                             ];
                             detailedTrends = [
                                 `Annual price change: ${(-nationalData.priceChangeAnnual * 100).toFixed(1)}% decrease.`,
-                                `Sales drop: ${(-nationalData.salesDrop * 100).toFixed(1)}% reduction in activity.`
+                                `Wage growth: ${(marketData[formData.market].wageGrowth * 100).toFixed(1)}% may not offset cost pressures.`
                             ];
                         } else if (percentageChange > 2) {
                             increaseChance = 60;
@@ -355,11 +373,12 @@
                             outlook = `Expected value increase of ${percentageChange.toFixed(1)}% over 2 years, though tempered by risks.`;
                             majorGrowthFactors = [
                                 `Potential interest rate decrease from ${policyImpact.interestRate * 100}% could stimulate demand.`,
-                                `Strong regional demand in ${formData.region} supports growth.`
+                                `Strong wage growth (${(marketData[formData.market].wageGrowth * 100).toFixed(1)}%) supports local purchasing power.`,
+                                `Regional demand in ${formData.region} aligns with ${codePrefix} trends.`
                             ];
                             detailedTrends = [
                                 `Annual price change: ${(nationalData.priceChangeAnnual * 100).toFixed(1)}% increase.`,
-                                `Sales drop: ${(nationalData.salesDrop * 100).toFixed(1)}% reduction mitigated by demand.`
+                                `Job stability: ${(jobGrowthImpact * 100).toFixed(1)}% growth potential.`
                             ];
                         } else {
                             increaseChance = 50;
@@ -369,7 +388,7 @@
                             majorGrowthFactors = [`Potential interest rate decrease from ${policyImpact.interestRate * 100}% could provide a slight uplift.`];
                             detailedTrends = [
                                 `Annual price change: ${(nationalData.priceChangeAnnual * 100).toFixed(1)}% adjustment.`,
-                                `Stable sales activity with ${(nationalData.salesDrop * 100).toFixed(1)}% drop.`
+                                `Wage growth: ${(marketData[formData.market].wageGrowth * 100).toFixed(1)}% with stable job numbers.`
                             ];
                         }
 
